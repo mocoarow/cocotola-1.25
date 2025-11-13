@@ -1,0 +1,7 @@
+- `task run-hello-world` (or `bazelisk run //hello-world:hello-world`): execute the sample binary.
+- `task build-hello-world` (`bazelisk run //hello-world:load`): build and load OCI image target.
+- `task gazelle`: regenerate BUILD files via Gazelle.
+- `task update-repos`: refresh Gazelle deps from `go.work`.
+- `task mod-tidy`: run `bazelisk run @rules_go//go -- mod tidy` to keep go.mod files clean.
+- `task init`: initialize/improve Go workspace references (rarely needed once set up).
+- `go test ./...` or `bazelisk test //...`: run Go/Bazel tests when they are added.
