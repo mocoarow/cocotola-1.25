@@ -1,0 +1,36 @@
+---
+version: "3"
+
+tasks:
+  init:
+    cmds:
+      - go work init
+      - go work use -r .
+
+  gazelle:
+    cmds:
+      - bazelisk run //:gazelle -- -build_tags=small,medium,large
+
+  mod-tidy:
+    cmds:
+      - bazelisk run @rules_go//go -- mod tidy
+
+  update-repos:
+    cmds:
+      - bazelisk run //:gazelle-update-repos
+
+  run-hello-world:
+    cmds:
+      - bazelisk run //hello-world:hello-world
+
+  run-hello-world-remote:
+    cmds:
+      - bazelisk run --config=remote //hello-world:hello-world
+
+  build-hello-world:
+    cmds:
+      - bazelisk run //hello-world:load
+
+  build-hello-world-remote:
+    cmds:
+      - bazelisk run --config=remote //hello-world:load

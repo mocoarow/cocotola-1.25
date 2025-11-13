@@ -1,0 +1,3 @@
+- Purpose: Go 1.25 sample workspace demonstrating Bazel (rules_go, Gazelle, rules_pkg, rules_oci) setup plus a tiny `hello-world` binary.
+- Structure: Root Go module (`go.mod`) plus nested module `hello-world` with `main.go`; Bazel config via `WORKSPACE.bazel`, `MODULE.bazel`, `deps.bzl`, and per-target BUILD files.
+- Tooling: Uses Bazelisk to run Bazel targets; Gazelle handles BUILD file generation; Go workspaces (`go.work`) stitch modules together; Distroless OCI images vendored via rules_oci.

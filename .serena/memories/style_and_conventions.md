@@ -1,0 +1,3 @@
+- Go code sticks to standard Go module layout and naming; keep packages `package main` for binaries and rely on `gofmt` for formatting.
+- Bazel files follow rules_go/Gazelle conventions; prefer letting Gazelle manage BUILD targets (`bazelisk run //:gazelle`).
+- Keep dependencies declared in `MODULE.bazel` + `deps.bzl` and sync with `go.work` so Gazelle can mirror them.
