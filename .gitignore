@@ -33,3 +33,4 @@ profile.cov
 # .vscode/
 
 AGENTS.md
+.mise.toml
