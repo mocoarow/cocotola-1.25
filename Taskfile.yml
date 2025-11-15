@@ -23,7 +23,7 @@ tasks:
   update-mod-project:
     cmds:
       - |
-        pushd {{ .GO_PROJECT }}
+        cd {{ .GO_PROJECT }}
         GOPROXY=direct go get -u ./...
         go mod tidy
     requires:
