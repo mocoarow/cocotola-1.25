@@ -1,0 +1,127 @@
+---
+version: "2"
+run:
+  go: "1.25"
+  build-tags:
+    - small
+    - medium
+    - large
+linters:
+  enable:
+    - bodyclose
+    - errorlint
+    - exhaustive
+    - forbidigo
+    - forcetypeassert
+    - gocognit
+    - gocyclo
+    - gosec
+    - noctx
+    - testpackage
+    - thelper
+    - unconvert
+    - whitespace
+    - asasalint
+    - dupword
+    - dupl
+    - exptostd
+    - nestif
+    - goconst
+    - tagliatelle
+    - predeclared
+    - importas
+    - revive
+    - goheader
+    - nolintlint
+    - paralleltest
+    - testifylint
+    - spancheck
+    - staticcheck
+    - wrapcheck
+    - forcetypeassert
+    - canonicalheader
+    - decorder
+    - nilnil
+    - prealloc
+    - mirror
+    - misspell
+    - nilerr
+    - noctx
+    - predeclared
+    - reassign
+    - unconvert
+    - gocheckcompilerdirectives
+    - makezero
+    - exhaustruct
+    - exhaustive
+    - fatcontext
+    - wsl_v5
+
+  settings:
+    forbidigo:
+      forbid:
+        - pattern: ^fmt\.Print.*$
+    gocognit:
+      min-complexity: 20
+    gocyclo:
+      min-complexity: 12
+    gosec:
+      excludes:
+        - G115
+    staticcheck:
+      checks:
+        - all
+    wrapcheck:
+      extra-ignore-sigs:
+        - errors.Errorf(
+        - .Errorf(
+        - .Errorf
+      ignore-sigs:
+        - errors.Errorf(
+        - .Errorf(
+        - .Errorf
+        - errors.New(
+    wsl_v5:
+      allow-first-in-block: true
+      allow-whole-block: false
+      branch-max-lines: 2
+      disable:
+        - if
+        - expr
+        - switch
+        - append
+        - range
+        - assign
+        - decl
+        - return
+        - defer
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+    rules:
+      - path: _test\.go
+        linters:
+          - dupl
+          - wsl_v5
+          - revive
+          - exhaustruct
+          - wrapcheck
+          - goconst
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
