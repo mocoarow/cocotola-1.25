@@ -5,13 +5,3 @@ load("@gazelle//:def.bzl", "gazelle")
 # gazelle:map_kind go_test smart_go_test //bazel:go_test.bzl
 
 gazelle(name = "gazelle")
-
-gazelle(
-    name = "gazelle-update-repos",
-    args = [
-        "-from_file=go.work",
-        "-to_macro=deps.bzl%go_dependencies",
-        "-prune",
-    ],
-    command = "update-repos",
-)
