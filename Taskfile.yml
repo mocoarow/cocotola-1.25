@@ -1,6 +1,11 @@
 ---
 version: "3"
 
+vars:
+  GO_PROJECTS:
+    - hello-world
+    - third-party-library
+
 tasks:
   init:
     cmds:
@@ -15,9 +20,22 @@ tasks:
     cmds:
       - bazelisk run @rules_go//go -- mod tidy
 
-  update-repos:
+  update-mod-project:
     cmds:
-      - bazelisk run //:gazelle-update-repos
+      - |
+        cd {{ .GO_PROJECT }}
+        GOPROXY=direct go get -u ./...
+        go mod tidy
+    requires:
+      vars: [GO_PROJECT]
+
+  update-mod:
+    cmds:
+      - for:
+          var: GO_PROJECTS
+        task: update-mod-project
+        vars:
+          GO_PROJECT: "{{ .ITEM }}"
 
   run-hello-world:
     cmds:
@@ -27,6 +45,14 @@ tasks:
     cmds:
       - bazelisk run --config=remote //hello-world:hello-world
 
+  run-third-party-library:
+    cmds:
+      - bazelisk run //third-party-library:third-party-library
+
+  run-third-party-library-remote:
+    cmds:
+      - bazelisk run --config=remote //third-party-library:third-party-library
+
   build-hello-world:
     cmds:
       - bazelisk run //hello-world:load
@@ -34,3 +60,11 @@ tasks:
   build-hello-world-remote:
     cmds:
       - bazelisk run --config=remote //hello-world:load
+
+  build-third-party-library:
+    cmds:
+      - bazelisk run //third-party-library:load
+
+  build-third-party-library-remote:
+    cmds:
+      - bazelisk run --config=remote //third-party-library:load
