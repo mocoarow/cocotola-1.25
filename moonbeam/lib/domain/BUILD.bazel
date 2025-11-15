@@ -1,0 +1,9 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "domain",
+    srcs = ["init.go"],
+    importpath = "github.com/mocoarow/cocotola-1.25/moonbeam/lib/domain",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_go_playground_validator_v10//:go_default_library"],
+)

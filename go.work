@@ -3,5 +3,6 @@ go 1.25.4
 use (
 	.
 	./hello-world
+	./moonbeam
 	./third-party-library
 )

@@ -5,6 +5,7 @@ vars:
   GO_PROJECTS:
     - hello-world
     - third-party-library
+    - moonbeam
 
 tasks:
   init:
@@ -19,6 +20,22 @@ tasks:
   mod-tidy:
     cmds:
       - bazelisk run @rules_go//go -- mod tidy
+
+  check-go-project:
+    cmds:
+      - |
+        cd {{ .GO_PROJECT }}
+        golangci-lint run --config ../.golangci.yml --timeout=5m
+    requires:
+      vars: [GO_PROJECT]
+
+  check:
+    cmds:
+      - for:
+          var: GO_PROJECTS
+        task: check-go-project
+        vars:
+          GO_PROJECT: "{{ .ITEM }}"
 
   update-mod-project:
     cmds:
