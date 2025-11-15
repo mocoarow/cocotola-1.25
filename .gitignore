@@ -29,8 +29,8 @@ profile.cov
 /bazel-*
 
 # Editor/IDE
-# .idea/
-# .vscode/
+.idea/
+.vscode/
 
 AGENTS.md
 .mise.toml
