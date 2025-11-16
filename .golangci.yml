@@ -103,6 +103,7 @@ linters:
       - legacy
       - std-error-handling
     paths:
+      - lib/gateway/sqlite3/db_sqlite3_migrate.go
       - third_party$
       - builtin$
       - examples$

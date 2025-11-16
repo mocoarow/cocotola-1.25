@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "service",
+    srcs = [
+        "organization_repository.go",
+        "repository_factory.go",
+        "user_repository.go",
+    ],
+    importpath = "github.com/mocoarow/cocotola-1.25/moonbeam/user/service",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//moonbeam/lib/domain",
+        "//moonbeam/lib/service",
+        "//moonbeam/user/domain",
+    ],
+)

@@ -1,0 +1,41 @@
+load("@rules_go//go:def.bzl", "go_library")
+load("//bazel:go_test.bzl", "smart_go_test")
+
+go_library(
+    name = "gateway",
+    srcs = [
+        "init.go",
+        "model_entity.go",
+        "organization_repository.go",
+        "repository_factory.go",
+    ],
+    importpath = "github.com/mocoarow/cocotola-1.25/moonbeam/user/gateway",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//moonbeam/lib/domain",
+        "//moonbeam/lib/gateway",
+        "//moonbeam/user/domain",
+        "//moonbeam/user/service",
+        "@io_gorm_gorm//:gorm",
+        "@io_opentelemetry_go_otel//:otel",
+    ],
+)
+
+smart_go_test(
+    name = "gateway_test",
+    srcs = [
+        "gateway_m_test.go",
+        "init_m_test.go",
+        "organization_repository_m_test.go",
+    ],
+    deps = [
+        ":gateway",
+        "//moonbeam/lib/gateway",
+        "//moonbeam/testlib/gateway",
+        "//moonbeam/user/domain",
+        "//moonbeam/user/service",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@io_gorm_gorm//:gorm",
+    ],
+)
