@@ -59,7 +59,7 @@ const logShutdownTimeout = 5 * time.Second
 func initLogExporter(ctx context.Context, logConfig *LogConfig) (sdklog.Exporter, error) {
 	initLogExporter, ok := initLogExporters[logConfig.Exporter]
 	if !ok {
-		return nil, fmt.Errorf("invalid exporter: %s", logConfig.Exporter)
+		return nil, fmt.Errorf("invalid log exporter: %s", logConfig.Exporter)
 	}
 
 	return initLogExporter(ctx, logConfig)

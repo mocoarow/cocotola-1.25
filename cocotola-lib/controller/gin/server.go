@@ -1,0 +1,51 @@
+package controller
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"log/slog"
+	"net/http"
+	"strconv"
+	"time"
+
+	"github.com/mocoarow/cocotola-1.25/moonbeam/lib/domain"
+)
+
+func AppServerProcess(ctx context.Context, router http.Handler, port int, readHeaderTimeout time.Duration, shutdownTime time.Duration) error {
+	logger := slog.Default().With(slog.String(domain.LoggerNameKey, "AppServerProcess"))
+
+	httpServer := http.Server{ //nolint:exhaustruct
+		Addr:              ":" + strconv.Itoa(port),
+		Handler:           router,
+		ReadHeaderTimeout: readHeaderTimeout,
+	}
+
+	logger.InfoContext(ctx, fmt.Sprintf("http server listening at %v", httpServer.Addr))
+
+	errCh := make(chan error)
+
+	go func() {
+		defer close(errCh)
+		if err := httpServer.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
+			logger.InfoContext(ctx, fmt.Sprintf("failed to ListenAndServe: %v", err))
+
+			errCh <- err
+		}
+	}()
+
+	select {
+	case <-ctx.Done():
+		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), shutdownTime)
+		defer shutdownCancel()
+		if err := httpServer.Shutdown(shutdownCtx); err != nil {
+			logger.InfoContext(ctx, fmt.Sprintf("Server forced to shutdown: %v", err))
+
+			return fmt.Errorf("httpServer.Shutdown: %w", err)
+		}
+
+		return nil
+	case err := <-errCh:
+		return fmt.Errorf("httpServer.ListenAndServe: %w", err)
+	}
+}

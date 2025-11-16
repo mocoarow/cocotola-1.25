@@ -29,17 +29,19 @@ type UptraceTraceConfig struct {
 }
 
 type TraceConfig struct {
-	Exporter           string              `yaml:"exporter" validate:"required,oneof=otlphttp uptracehttp none"`
+	Exporter           string              `yaml:"exporter" validate:"required,oneof=otlphttp uptracehttp google none"`
 	SamplingPercentage int                 `yaml:"samplingPercentage" validate:"gte=0,lte=100"`
 	OTLP               *OTLPTraceConfig    `yaml:"otlp"`
 	Google             *GoogleTraceConfig  `yaml:"google"`
 	Uptrace            *UptraceTraceConfig `yaml:"uptrace"`
 }
 
+const traceShutdownTimeout = 5 * time.Second
+
 func initTracerExporter(ctx context.Context, traceConfig *TraceConfig) (sdktrace.SpanExporter, error) {
 	initTracerExporter, ok := initTracerExporters[traceConfig.Exporter]
 	if !ok {
-		return nil, fmt.Errorf("invalid exporter: %s", traceConfig.Exporter)
+		return nil, fmt.Errorf("invalid trace exporter: %s", traceConfig.Exporter)
 	}
 
 	return initTracerExporter(ctx, traceConfig)
@@ -83,10 +85,13 @@ func InitTracerProvider(ctx context.Context, traceConfig *TraceConfig, appName s
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 
 	return func() {
-		if err := tp.ForceFlush(ctx); err != nil {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), traceShutdownTimeout)
+		defer cancel()
+
+		if err := tp.ForceFlush(shutdownCtx); err != nil {
 			slog.Default().Error("failed to force flush tracer provider", slog.Any("error", err))
 		}
-		if err := bp.Shutdown(ctx); err != nil {
+		if err := bp.Shutdown(shutdownCtx); err != nil {
 			slog.Default().Error("failed to shutdown span processor", slog.Any("error", err))
 		}
 	}, nil
