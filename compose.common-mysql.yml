@@ -7,9 +7,11 @@ services:
     container_name: local-mysql
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
     environment:
+      # kics-scan ignore-line
       MYSQL_ROOT_PASSWORD: mysql
       MYSQL_PORT: 3306
       MYSQL_USER: username
+      # kics-scan ignore-line
       MYSQL_PASSWORD: password
       MYSQL_DATABASE: local
       TZ: Etc/GMT
