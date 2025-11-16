@@ -55,7 +55,7 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: task test
+      - run: task test-remote
 
       # - name: Convert coverage to SonarQube format
       #   run: task convert-coverage-sonar
