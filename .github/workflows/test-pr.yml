@@ -1,0 +1,35 @@
+---
+name: Test PR
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  test_go:
+    strategy:
+      matrix:
+        go-version: [1.25.x]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      # https://github.com/bazel-contrib/setup-bazel/tree/0.15.0
+      - uses: bazel-contrib/setup-bazel@4fd964a13a440a8aeb0be47350db2fc640f19ca8
+        with:
+          bazelisk-version: 1.x
+
+      - run: bazel info
+
+      # https://github.com/arduino/setup-task/tree/v2.0.0
+      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: task test
