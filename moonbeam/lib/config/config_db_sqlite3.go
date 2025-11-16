@@ -9,6 +9,7 @@ import (
 	gorm_sqlite "github.com/glebarez/sqlite"
 	slog_gorm "github.com/orandin/slog-gorm"
 	"gorm.io/gorm"
+	"gorm.io/plugin/opentelemetry/tracing"
 
 	"github.com/mocoarow/cocotola-1.25/moonbeam/lib/domain"
 )
@@ -45,13 +46,17 @@ func OpenSQLite3(cfg *SQLite3Config, logLevel slog.Level, appName string) (*gorm
 	}
 
 	gormConfig := gorm.Config{ //nolint:exhaustruct
-		Logger: slog_gorm.New(options...), // trace all messages
-		// slog_gorm.WithContextFunc(liblog.LoggerNameKey, func(_ context.Context) (slog.Value, bool) {
-		// 	return slog.StringValue(appName + "-gorm"), true
-		// }),
-		// slog_gorm.SetLogLevel(slog_gorm.DefaultLogType, slog.LevelDebug),
-
+		Logger: slog_gorm.New(options...),
 	}
 
-	return gorm.Open(gormDialector, &gormConfig) //nolint:wrapcheck
+	db, err := gorm.Open(gormDialector, &gormConfig)
+	if err != nil {
+		return nil, fmt.Errorf("open sqlite3: %w", err)
+	}
+
+	if err := db.Use(tracing.NewPlugin()); err != nil {
+		panic(err)
+	}
+
+	return db, nil
 }

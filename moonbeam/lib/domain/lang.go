@@ -7,7 +7,7 @@ const Lang3Len = 3
 const Lang5Len = 5
 
 type Lang2 struct {
-	value string `validate:"required,len=2"`
+	value string
 }
 
 func NewLang2(lang string) (*Lang2, error) {
