@@ -49,7 +49,6 @@ func Run(ctx context.Context, processFuncs ...ProcessFunc) int {
 	var nonCanceledErr error
 
 	for _, pf := range processFuncs {
-		pf := pf
 		eg.Go(func() error {
 			err := pf(ctx)()
 			if err != nil && !errors.Is(err, context.Canceled) {
@@ -63,12 +62,6 @@ func Run(ctx context.Context, processFuncs ...ProcessFunc) int {
 			return err
 		})
 	}
-
-	eg.Go(func() error {
-		<-ctx.Done()
-
-		return ctx.Err()
-	})
 
 	if err := eg.Wait(); err != nil {
 		if nonCanceledErr == nil && errors.Is(err, context.Canceled) {
