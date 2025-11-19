@@ -7,6 +7,8 @@ vars:
     - third-party-library
     - moonbeam
     - cocotola-empty
+  GO_APPS:
+    - cocotola-empty
 
 tasks:
   init:
@@ -37,6 +39,37 @@ tasks:
         task: check-go-project
         vars:
           GO_PROJECT: "{{ .ITEM }}"
+
+  push-project:
+    cmds:
+      - bazelisk run //{{ .PROJECT }}:push -- --tag {{ .TAG }}
+    requires:
+      vars: [PROJECT, TAG]
+
+  push:
+    cmds:
+      - for:
+          var: GO_APPS
+        task: push-project
+        vars:
+          PROJECT: "{{ .ITEM }}"
+    requires:
+      vars: [TAG]
+
+  build-go-project:
+    cmds:
+      - bazelisk run //{{ .PROJECT }}:load
+    requires:
+      vars: [PROJECT]
+
+  build:
+    cmds:
+      - for:
+          var: GO_APPS
+        task: build-go-project
+        vars:
+          PROJECT: "{{ .ITEM }}"
+
   test:
     cmds:
       - docker compose -f compose.test.yml up -d --wait
