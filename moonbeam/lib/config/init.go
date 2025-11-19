@@ -22,6 +22,7 @@ var initDBs map[string]InitDBFunc
 
 func init() {
 	initTracerExporters = map[string]InitTracerExporterFunc{
+		"google":      initTracerExporterGoogle,
 		"otlphttp":    initTracerExporterOTLPHTTP,
 		"otlpgrpc":    initTracerExporterOTLPgRPC,
 		"none":        initTracerExporterNone,

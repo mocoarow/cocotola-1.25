@@ -6,6 +6,7 @@ vars:
     - hello-world
     - third-party-library
     - moonbeam
+    - cocotola-empty
 
 tasks:
   init:
@@ -94,7 +95,6 @@ tasks:
   run-hello-world:
     cmds:
       - bazelisk run //hello-world:hello-world
-
   run-hello-world-remote:
     cmds:
       - bazelisk run --config=remote //hello-world:hello-world
@@ -102,15 +102,20 @@ tasks:
   run-third-party-library:
     cmds:
       - bazelisk run //third-party-library:third-party-library
-
   run-third-party-library-remote:
     cmds:
       - bazelisk run --config=remote //third-party-library:third-party-library
 
+  run-cocotola-empty:
+    cmds:
+      - bazelisk run //cocotola-empty:cocotola-empty
+  run-cocotola-empty-remote:
+    cmds:
+      - bazelisk run --config=remote //cocotola-empty:cocotola-empty
+
   build-hello-world:
     cmds:
       - bazelisk run //hello-world:load
-
   build-hello-world-remote:
     cmds:
       - bazelisk run --config=remote //hello-world:load
@@ -118,7 +123,13 @@ tasks:
   build-third-party-library:
     cmds:
       - bazelisk run //third-party-library:load
-
   build-third-party-library-remote:
     cmds:
       - bazelisk run --config=remote //third-party-library:load
+
+  build-cocotola-empty:
+    cmds:
+      - bazelisk run //cocotola-empty:load
+  build-cocotola-empty-remote:
+    cmds:
+      - bazelisk run --config=remote //cocotola-empty:load

@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"fmt"
 
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
@@ -9,6 +10,10 @@ import (
 )
 
 func initTracerExporterOTLPHTTP(ctx context.Context, traceConfig *TraceConfig) (sdktrace.SpanExporter, error) {
+	if traceConfig.OTLP == nil {
+		return nil, fmt.Errorf("otlp trace configuration is required")
+	}
+
 	options := make([]otlptracehttp.Option, 0)
 	options = append(options, otlptracehttp.WithEndpoint(traceConfig.OTLP.Endpoint))
 	if traceConfig.OTLP.Insecure {
@@ -19,6 +24,10 @@ func initTracerExporterOTLPHTTP(ctx context.Context, traceConfig *TraceConfig) (
 }
 
 func initTracerExporterOTLPgRPC(ctx context.Context, traceConfig *TraceConfig) (sdktrace.SpanExporter, error) {
+	if traceConfig.OTLP == nil {
+		return nil, fmt.Errorf("otlp trace configuration is required")
+	}
+
 	options := make([]otlptracegrpc.Option, 0)
 	options = append(options, otlptracegrpc.WithEndpoint(traceConfig.OTLP.Endpoint))
 	if traceConfig.OTLP.Insecure {
