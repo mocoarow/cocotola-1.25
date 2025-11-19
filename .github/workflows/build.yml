@@ -13,6 +13,7 @@ jobs:
         go-version: [1.25.x]
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       # kics-scan ignore-line
       id-token: write
     steps:
@@ -86,6 +87,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       # kics-scan ignore-line
       id-token: write
     steps:
