@@ -102,7 +102,13 @@ jobs:
 
       # - id: digest_synthesizer
       #   run: |
-      #     DIGEST=$(gcloud artifacts docker tags list us-west1-docker.pkg.dev/mocoarow-25-08/cocotola-synthesizer/cocotola-synthesizer --format json | jq -r '.[] |  select(.tag=="projects/mocoarow-25-08/locations/us-west1/repositories/cocotola-synthesizer/packages/cocotola-synthesizer/tags/latest") | .version' | cut -d':' -f 2)
+      #     DIGEST=$(
+      #       gcloud artifacts docker tags list \
+      #         us-west1-docker.pkg.dev/mocoarow-25-08/cocotola-synthesizer/cocotola-synthesizer \
+      #         --format json |
+      #         jq -r '.[] |  select(.tag=="projects/mocoarow-25-08/locations/us-west1/repositories/cocotola-synthesizer/packages/cocotola-synthesizer/tags/latest") | .version' |
+      #         cut -d':' -f 2
+      #     )
       #     echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
 
       # - run: echo ${{ steps.digest_synthesizer.outputs.digest }}
@@ -116,7 +122,13 @@ jobs:
 
       - id: digest_empty
         run: |
-          DIGEST=$(gcloud artifacts docker tags list us-west1-docker.pkg.dev/mocoarow-25-08/cocotola-empty/cocotola-empty --format json | jq -r '.[] |  select(.tag=="projects/mocoarow-25-08/locations/us-west1/repositories/cocotola-empty/packages/cocotola-empty/tags/latest") | .version' | cut -d':' -f 2)
+          DIGEST=$(
+            gcloud artifacts docker tags list \
+              us-west1-docker.pkg.dev/mocoarow-25-08/cocotola-empty/cocotola-empty \
+              --format json |
+              jq -r '.[] |  select(.tag=="projects/mocoarow-25-08/locations/us-west1/repositories/cocotola-empty/packages/cocotola-empty/tags/latest") | .version' |
+              cut -d':' -f 2
+          )
           echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
 
       - run: echo ${{ steps.digest_empty.outputs.digest }}
