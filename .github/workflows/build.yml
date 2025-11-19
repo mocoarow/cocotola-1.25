@@ -31,12 +31,14 @@ jobs:
       # This most likely means the GitHub Actions workflow permissions are incorrect, or this job is being run from a fork.
       # For more information, please see https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
       - id: auth
-        uses: google-github-actions/auth@v2
+        # https://github.com/google-github-actions/auth/tree/v2.1.13
+        uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed
         with:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.REGISTRY_SERVICE_ACCOUNT_EMAIL }}
 
-      - uses: google-github-actions/setup-gcloud@v2
+      # https://github.com/google-github-actions/setup-gcloud/tree/v2.1.5
+      - uses: google-github-actions/setup-gcloud@6a7c903a70c8625ed6700fa299f5ddb4ca6022e9
 
       # - run: ls -la ${GOOGLE_GHA_CREDS_PATH}
 
@@ -48,8 +50,8 @@ jobs:
 
       # - run: gcloud artifacts repositories describe --location us-west1 cocotola-synthesizer
 
-      # - uses: bazelbuild/setup-bazelisk@v2
-      - uses: bazel-contrib/setup-bazel@0.15.0
+      # https://github.com/bazel-contrib/setup-bazel/tree/0.15.0
+      - uses: bazel-contrib/setup-bazel@4fd964a13a440a8aeb0be47350db2fc640f19ca8
         with:
           bazelisk-version: 1.x
 
@@ -65,7 +67,8 @@ jobs:
 
       - run: bazel info
 
-      - uses: arduino/setup-task@v2
+      # https://github.com/arduino/setup-task/tree/v2.0.0
+      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -93,12 +96,14 @@ jobs:
       # This most likely means the GitHub Actions workflow permissions are incorrect, or this job is being run from a fork.
       # For more information, please see https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
       - id: auth
-        uses: google-github-actions/auth@v2
+        # https://github.com/google-github-actions/auth/tree/v2.1.13
+        uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed
         with:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.REGISTRY_SERVICE_ACCOUNT_EMAIL }}
 
-      - uses: google-github-actions/setup-gcloud@v2
+      # https://github.com/google-github-actions/setup-gcloud/tree/v2.1.5
+      - uses: google-github-actions/setup-gcloud@6a7c903a70c8625ed6700fa299f5ddb4ca6022e9
 
       # - id: digest_synthesizer
       #   run: |
