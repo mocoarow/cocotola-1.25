@@ -16,6 +16,7 @@ jobs:
       contents: read
       # kics-scan ignore-line
       id-token: write
+    environment: production
     steps:
       - uses: actions/checkout@v4
 
