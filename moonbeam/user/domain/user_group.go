@@ -1,0 +1,51 @@
+package domain
+
+import (
+	"fmt"
+
+	libdomain "github.com/mocoarow/cocotola-1.25/moonbeam/lib/domain"
+)
+
+type UserGroupID struct {
+	Value int
+}
+
+func NewUserGroupID(value int) (*UserGroupID, error) {
+	return &UserGroupID{
+		Value: value,
+	}, nil
+}
+
+func (v *UserGroupID) Int() int {
+	return v.Value
+}
+func (v *UserGroupID) IsUserGroupID() bool {
+	return true
+}
+
+type UserGroup struct {
+	*libdomain.BaseModel `validate:"required"`
+	UserGroupID          *UserGroupID    `validate:"required"`
+	OrganizationID       *OrganizationID `validate:"required"`
+	Key                  string          `validate:"required"`
+	Name                 string          `validate:"required"`
+	Description          string
+}
+
+// NewUserGroup returns a new UserGroup
+func NewUserGroup(baseModel *libdomain.BaseModel, userGroupID *UserGroupID, organizationID *OrganizationID, key, name, description string) (*UserGroup, error) {
+	m := UserGroup{
+		BaseModel:      baseModel,
+		UserGroupID:    userGroupID,
+		OrganizationID: organizationID,
+		Key:            key,
+		Name:           name,
+		Description:    description,
+	}
+
+	if err := libdomain.Validator.Struct(&m); err != nil {
+		return nil, fmt.Errorf("validate user group: %w", err)
+	}
+
+	return &m, nil
+}
