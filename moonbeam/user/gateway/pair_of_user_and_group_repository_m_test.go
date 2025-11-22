@@ -89,7 +89,7 @@ func TestPairOfUserAndGroupRepository_DeletePairOfUserAndGroup_shouldRemoveRelat
 
 		after, err := repo.FindUserGroupsByUserID(ctx, owner, user.GetUserID())
 		require.NoError(t, err)
-		assert.Len(t, after, 0)
+		assert.Empty(t, after)
 
 		err = repo.DeletePairOfUserAndGroup(ctx, owner, user.GetUserID(), group.UserGroupID)
 		assert.ErrorIs(t, err, service.ErrPairOfUserAndGroupNotFound)

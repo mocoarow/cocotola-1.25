@@ -35,7 +35,7 @@ func NewPairOfUserAndGroupRepository(ctx context.Context, dialect libgateway.Dia
 	}
 }
 
-func (r *pairOfUserAndGroupRepository) CreatePairOfUserAndGroupBySystemAdmin(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID, userID *domain.UserID, userGroupID *domain.UserGroupID) error {
+func (r *pairOfUserAndGroupRepository) CreatePairOfUserAndGroupBySystemAdmin(ctx context.Context, _ domain.SystemAdminInterface, organizationID *domain.OrganizationID, userID *domain.UserID, userGroupID *domain.UserGroupID) error {
 	_, span := tracer.Start(ctx, "pairOfUserAndGroupRepository.CreatePairOfUserAndGroupBySystemAdmin")
 	defer span.End()
 

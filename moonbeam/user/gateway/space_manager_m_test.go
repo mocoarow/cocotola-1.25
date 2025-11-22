@@ -32,7 +32,7 @@ func TestSpaceManager_CreatePersonalSpace_and_GetPersonalSpace(t *testing.T) {
 
 		target := testAddUser(t, ctx, tr, owner, "space_user", "SPACE USER", "password")
 
-		spaceID, err := mgr.CreatePersonalSpace(ctx, owner, &service.CreatePersonalSpaceParameter{ //nolint:exhaustruct
+		spaceID, err := mgr.CreatePersonalSpace(ctx, owner, &service.CreatePersonalSpaceParameter{
 			UserID:  target.GetUserID(),
 			KeyName: "personal-space",
 			Name:    "Personal Space",
@@ -65,7 +65,7 @@ func TestSpaceManager_AddUserToSpace_shouldAttachExistingSpace(t *testing.T) {
 		require.NoError(t, err)
 
 		spaceRepo := tr.rf.NewSpaceRepository(ctx)
-		spaceID, err := spaceRepo.CreateSpace(ctx, owner, &service.CreateSpaceParameter{ //nolint:exhaustruct
+		spaceID, err := spaceRepo.CreateSpace(ctx, owner, &service.CreateSpaceParameter{
 			Key:       "shared-space",
 			Name:      "Shared Space",
 			SpaceType: "private",

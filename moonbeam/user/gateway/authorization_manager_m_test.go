@@ -49,7 +49,7 @@ func TestAuthorizationManager_CheckAuthorization_shouldReflectGroupMembership_wh
 
 		groupsBefore, err := membershipRepo.FindUserGroupsByUserID(ctx, targetUser, targetUser.GetUserID())
 		require.NoError(t, err)
-		assert.Len(t, groupsBefore, 0)
+		assert.Empty(t, groupsBefore)
 
 		require.NoError(t, authorizationManager.AddUserToGroup(ctx, owner, targetUser.GetUserID(), group.UserGroupID))
 

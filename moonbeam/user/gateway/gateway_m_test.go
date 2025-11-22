@@ -5,13 +5,10 @@ package gateway_test
 import (
 	"context"
 	"crypto/rand"
-	"fmt"
 	"log/slog"
 	"math/big"
 	"testing"
-	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 
@@ -26,47 +23,6 @@ type testResource struct {
 	dialect libgateway.DialectRDBMS
 	db      *gorm.DB
 	rf      service.RepositoryFactory
-}
-
-func outputOrganization(t *testing.T, db *gorm.DB) {
-	t.Helper()
-	var results []gateway.OrganizationEntity
-	if result := db.Find(&results); result.Error != nil {
-		assert.Fail(t, result.Error.Error())
-	}
-	var s string
-	s += "\n   id,version,           created_at,          updated_at,created_by,updated_by,      name,"
-	for i := range results {
-		result := &results[i]
-		s += fmt.Sprintf("\n%5d,%8d,%20s,%20s,%10d,%10d,%10s", result.ID, result.Version, result.CreatedAt.Format(time.RFC3339), result.UpdatedAt.Format(time.RFC3339), result.CreatedBy, result.UpdatedBy, result.Name)
-	}
-	t.Log(s)
-	slog.Default().Info(s)
-}
-
-func outputCasbinRule(t *testing.T, db *gorm.DB) {
-	t.Helper()
-	type Result struct {
-		ID    int
-		Ptype string
-		V0    string
-		V1    string
-		V2    string
-		V3    string
-		V4    string
-		V5    string
-	}
-	var results []Result
-	if result := db.Raw("SELECT * FROM casbin_rule").Scan(&results); result.Error != nil {
-		assert.Fail(t, result.Error.Error())
-	}
-	var s string
-	s += "\n   id,ptype,                  v0,                  v1,         v2,         v3,         v4,         v5"
-	for i := range results {
-		result := &results[i]
-		s += fmt.Sprintf("\n%5d,%5s,%20s,%20s, %10s, %10s, %10s, %10s", result.ID, result.Ptype, result.V0, result.V1, result.V2, result.V3, result.V4, result.V5)
-	}
-	t.Log(s)
 }
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")

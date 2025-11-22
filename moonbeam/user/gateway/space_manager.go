@@ -48,7 +48,7 @@ func (m *spaceManager) CreatePersonalSpace(ctx context.Context, operator domain.
 	}
 
 	spaceRepo := m.rf.NewSpaceRepository(ctx)
-	createParam := &service.CreateSpaceParameter{ //nolint:exhaustruct
+	createParam := &service.CreateSpaceParameter{
 		Key:       param.KeyName,
 		Name:      param.Name,
 		SpaceType: "personal",

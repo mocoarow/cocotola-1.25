@@ -26,7 +26,7 @@ func TestSpaceRepository_CreateAndQuerySpaces(t *testing.T) {
 		defer teardownOrganization(t, tr, orgID)
 
 		repo := gateway.NewSpaceRepository(ctx, tr.dialect, tr.db)
-		param := &service.CreateSpaceParameter{ //nolint:exhaustruct
+		param := &service.CreateSpaceParameter{
 			Key:       "space-key",
 			Name:      "Test Space",
 			SpaceType: "public",

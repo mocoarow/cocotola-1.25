@@ -88,7 +88,7 @@ func (m *authorizationManager) AddPolicyToUserBySystemOwner(ctx context.Context,
 	rbacDomain := domain.NewRBACDomainFromOrganization(organizationID)
 
 	if err := m.rbacRepo.CreatePolicy(ctx, rbacDomain, subject, action, object, effect); err != nil {
-		return fmt.Errorf("Failed to AddPolicy. priv: read: %w", err)
+		return fmt.Errorf("failed to add policy (priv: read): %w", err)
 	}
 
 	return nil
@@ -145,7 +145,7 @@ func (m *authorizationManager) CheckAuthorization(ctx context.Context, operator 
 
 	ok, err := e.Enforce(rbacOperator.Subject(), rbacObject.Object(), rbacAction.Action(), rbacDomain.Domain())
 	if err != nil {
-		return false, fmt.Errorf("Enforce: %w", err)
+		return false, fmt.Errorf("enforce: %w", err)
 	}
 
 	return ok, nil
