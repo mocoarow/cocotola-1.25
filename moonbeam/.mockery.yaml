@@ -1,0 +1,17 @@
+---
+all: false
+dir: '{{.InterfaceDir}}'
+filename: mocks.go
+log-level: info
+structname: '{{.Mock}}{{.InterfaceName}}'
+recursive: false
+packages:
+  github.com/mocoarow/cocotola-1.25/moonbeam/user/service:
+    config:
+      dir: ./user/service/mocks
+      filename: '{{.InterfaceName}}.go'
+      outpkg: mocks
+    interfaces:
+      RepositoryFactory: {}
+      UserRepository: {}
+      TransactionManager: {}

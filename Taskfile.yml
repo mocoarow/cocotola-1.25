@@ -166,3 +166,7 @@ tasks:
   build-cocotola-empty-remote:
     cmds:
       - bazelisk run --config=remote //cocotola-empty:load
+
+  mockery:
+    cmds:
+      - cd moonbeam && mockery --config .mockery.yaml
