@@ -9,10 +9,10 @@ create table `mb_user_group` (
 ,`key_name` varchar(20) character set ascii not null
 ,`name` varchar(40) not null
 ,`description` text
-,`removed` tinyint(1) not null
+,`deleted` tinyint(1) not null
 ,primary key(`id`)
 ,unique(`organization_id`, `key_name`)
-,foreign key(`created_by`) references `mb_app_user`(`id`) on delete cascade
-,foreign key(`updated_by`) references `mb_app_user`(`id`) on delete cascade
+,foreign key(`created_by`) references `mb_user`(`id`) on delete cascade
+,foreign key(`updated_by`) references `mb_user`(`id`) on delete cascade
 ,foreign key(`organization_id`) references `mb_organization`(`id`) on delete cascade
 );
