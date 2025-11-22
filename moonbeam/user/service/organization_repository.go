@@ -13,11 +13,11 @@ var ErrOrganizationNotFound = errors.New("organization not found")
 var ErrOrganizationAlreadyExists = errors.New("organization already exists")
 
 type CreateOrganizationParameter struct {
-	Name       string            `validate:"required"`
-	FirstOwner *AddUserParameter `validate:"required"`
+	Name       string               `validate:"required"`
+	FirstOwner *CreateUserParameter `validate:"required"`
 }
 
-func NewCreateOrganizationParameter(name string, firstOwner *AddUserParameter) (*CreateOrganizationParameter, error) {
+func NewCreateOrganizationParameter(name string, firstOwner *CreateUserParameter) (*CreateOrganizationParameter, error) {
 	m := CreateOrganizationParameter{
 		Name:       name,
 		FirstOwner: firstOwner,

@@ -1,12 +1,14 @@
-create table `mb_user_n_group` (
- `created_at` datetime not null default current_timestamp
+create table `mb_user_n_space` (
+ `id` int auto_increment
+,`created_at` datetime not null default current_timestamp
 ,`created_by` int not null
 ,`organization_id` int not null
 ,`user_id` int not null
-,`user_group_id` int not null
-,primary key(`organization_id`, `user_id`, `user_group_id`)
+,`space_id` int not null
+,primary key(`id`)
+,unique(`organization_id`, `user_id`, `space_id`)
 ,foreign key(`created_by`) references `mb_user`(`id`) on delete cascade
 ,foreign key(`organization_id`) references `mb_organization`(`id`) on delete cascade
 ,foreign key(`user_id`) references `mb_user`(`id`) on delete cascade
-,foreign key(`user_group_id`) references `mb_user_group`(`id`) on delete cascade
+,foreign key(`space_id`) references `mb_space`(`id`) on delete cascade
 );

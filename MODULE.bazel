@@ -30,8 +30,10 @@ use_repo(
     "com_github_samber_slog_gin", 
     "com_github_stretchr_testify",
     "io_gorm_driver_mysql",
+    "org_golang_x_crypto",
     "io_gorm_gorm",
     "io_gorm_plugin_opentelemetry", 
+    "com_github_mocoarow_cocotola_1_25_cocotola_lib",
     "io_opentelemetry_go_contrib_bridges_otelslog",
     "io_opentelemetry_go_contrib_instrumentation_github_com_gin_gonic_gin_otelgin",
     "io_opentelemetry_go_contrib_processors_baggagecopy",
@@ -45,6 +47,9 @@ use_repo(
     "io_opentelemetry_go_otel",
     "org_golang_x_sync",
     "org_uber_go_atomic",
+    "com_github_casbin_casbin_v2",
+    "com_github_casbin_gorm_adapter_v3",
+    "com_github_pkg_errors",
 )
 
 # pkg
