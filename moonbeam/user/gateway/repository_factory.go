@@ -35,5 +35,24 @@ func NewRepositoryFactory(_ context.Context, dialect libgateway.DialectRDBMS, dr
 func (f *repositoryFactory) NewOrganizationRepository(ctx context.Context) service.OrganizationRepository {
 	return NewOrganizationRepository(ctx, f.db)
 }
+func (f *repositoryFactory) NewUserRepository(ctx context.Context) service.UserRepository {
+	return NewUserRepository(ctx, f.dialect, f.db, f)
+}
+
+func (f *repositoryFactory) NewUserGroupRepository(ctx context.Context) service.UserGroupRepository {
+	return NewUserGroupRepository(ctx, f.dialect, f.db)
+}
+
+func (f *repositoryFactory) NewSpaceRepository(ctx context.Context) service.SpaceRepository {
+	return NewSpaceRepository(ctx, f.dialect, f.db)
+}
+
+func (f *repositoryFactory) NewSpaceManager(ctx context.Context) (service.SpaceManager, error) {
+	return NewSpaceManager(ctx, f.dialect, f.db, f)
+}
+
+// func (f *repositoryFactory) NewAuthorizationManager(ctx context.Context) (service.AuthorizationManager, error) {
+// 	return NewAuthorizationManager(ctx, f.dialect, f.db, f)
+// }
 
 type RepositoryFactoryFunc func(ctx context.Context, db *gorm.DB) (service.RepositoryFactory, error)

@@ -12,17 +12,17 @@ import (
 	"github.com/mocoarow/cocotola-1.25/moonbeam/user/service"
 )
 
-type organizationEntity struct {
+type OrganizationEntity struct {
 	BaseModelEntity
 	ID   int
 	Name string
 }
 
-func (e *organizationEntity) TableName() string {
+func (e *OrganizationEntity) TableName() string {
 	return OrganizationTableName
 }
 
-func (e *organizationEntity) toModel() (*domain.Organization, error) {
+func (e *OrganizationEntity) toModel() (*domain.Organization, error) {
 	baseModel, err := e.ToBaseModel()
 	if err != nil {
 		return nil, fmt.Errorf("to base model: %w", err)
@@ -57,8 +57,8 @@ func (r *OrganizationRepository) GetOrganization(ctx context.Context, operator d
 	_, span := tracer.Start(ctx, "organizationRepository.GetOrganization")
 	defer span.End()
 
-	var organization organizationEntity
-	if result := r.db.WithContext(ctx).Where(organizationEntity{ //nolint:exhaustruct
+	var organization OrganizationEntity
+	if result := r.db.WithContext(ctx).Where(OrganizationEntity{ //nolint:exhaustruct
 		ID: operator.GetOrganizationID().Int(),
 	}).First(&organization); result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -75,8 +75,8 @@ func (r *OrganizationRepository) FindOrganizationByName(ctx context.Context, _ d
 	_, span := tracer.Start(ctx, "organizationRepository.FindOrganizationByName")
 	defer span.End()
 
-	var organization organizationEntity
-	if result := r.db.WithContext(ctx).Where(organizationEntity{ //nolint:exhaustruct
+	var organization OrganizationEntity
+	if result := r.db.WithContext(ctx).Where(OrganizationEntity{ //nolint:exhaustruct
 		Name: name,
 	}).First(&organization); result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -93,8 +93,8 @@ func (r *OrganizationRepository) FindOrganizationByID(ctx context.Context, _ dom
 	_, span := tracer.Start(ctx, "organizationRepository.FindOrganizationByID")
 	defer span.End()
 
-	var organization organizationEntity
-	if result := r.db.WithContext(ctx).Where(organizationEntity{ //nolint:exhaustruct
+	var organization OrganizationEntity
+	if result := r.db.WithContext(ctx).Where(OrganizationEntity{ //nolint:exhaustruct
 		ID: id.Int(),
 	}).First(&organization); result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -111,7 +111,7 @@ func (r *OrganizationRepository) CreateOrganization(ctx context.Context, operato
 	_, span := tracer.Start(ctx, "organizationRepository.CreateOrganization")
 	defer span.End()
 
-	organization := organizationEntity{ //nolint:exhaustruct
+	organization := OrganizationEntity{ //nolint:exhaustruct
 		BaseModelEntity: BaseModelEntity{ //nolint:exhaustruct
 			Version:   1,
 			CreatedBy: operator.GetUserID().Int(),
