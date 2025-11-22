@@ -7,7 +7,6 @@ go_library(
         "init.go",
         "organization_repository.go",
         "pair_of_user_and_group_repository.go",
-        "pair_of_user_and_space_repository.go",
         "rbac_repository.go",
         "repository_factory.go",
         "space_manager.go",

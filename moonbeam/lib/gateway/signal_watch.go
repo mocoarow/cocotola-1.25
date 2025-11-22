@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -18,7 +19,7 @@ func SignalWatchProcess(ctx context.Context) error {
 
 	select {
 	case <-ctx.Done():
-		return ctx.Err()
+		return fmt.Errorf("context canceled: %w", ctx.Err())
 	case sig := <-sigs:
 		logger.InfoContext(ctx, "shutdown signal received", slog.String("signal", sig.String()))
 		return context.Canceled
