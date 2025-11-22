@@ -10,6 +10,16 @@ type UserInterface interface {
 	GetOrganizationID() *OrganizationID
 }
 
+type OwnerInterface interface {
+	UserInterface
+	IsOwner() bool
+}
+
+type SystemOwnerInterface interface {
+	OwnerInterface
+	IsSystemOwner() bool
+}
+
 var (
 	SystemAdminID *UserID
 )
