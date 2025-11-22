@@ -7,6 +7,7 @@ go_library(
         "init.go",
         "organization.go",
         "owner.go",
+        "rbac.go",
         "space.go",
         "system_admin.go",
         "system_owner.go",
