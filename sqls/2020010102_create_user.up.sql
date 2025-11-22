@@ -1,4 +1,4 @@
-create table `mb_app_user` (
+create table `mb_user` (
  `id` int auto_increment
 ,`version` int not null default 1
 ,`created_at` datetime not null default current_timestamp
@@ -13,7 +13,7 @@ create table `mb_app_user` (
 ,`provider_id` varchar(40) character set ascii
 ,`provider_access_token` text character set ascii
 ,`provider_refresh_token` text character set ascii
-,`removed` tinyint(1) not null
+,`deleted` tinyint(1) not null
 ,primary key(`id`)
 ,unique(`organization_id`, `login_id`)
 ,foreign key(`organization_id`) references `mb_organization`(`id`) on delete cascade
