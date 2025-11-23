@@ -35,3 +35,4 @@ profile.cov
 AGENTS.md
 .mise.toml
 DESIGN.md
+*.txt

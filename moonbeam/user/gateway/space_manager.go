@@ -14,14 +14,14 @@ import (
 	"github.com/mocoarow/cocotola-1.25/moonbeam/user/service"
 )
 
-type spaceManager struct {
+type SpaceManager struct {
 	dialect  libgateway.DialectRDBMS
 	db       *gorm.DB
 	rf       service.RepositoryFactory
 	rbacRepo service.RBACRepository
 }
 
-var _ service.SpaceManager = (*spaceManager)(nil)
+var _ service.SpaceManager = (*SpaceManager)(nil)
 
 func NewSpaceManager(ctx context.Context, dialect libgateway.DialectRDBMS, db *gorm.DB, rf service.RepositoryFactory) (service.SpaceManager, error) {
 	rbacRepo, err := NewRBACRepository(ctx, db)
@@ -29,7 +29,7 @@ func NewSpaceManager(ctx context.Context, dialect libgateway.DialectRDBMS, db *g
 		return nil, fmt.Errorf("new rbac repository: %w", err)
 	}
 
-	return &spaceManager{
+	return &SpaceManager{
 		dialect:  dialect,
 		db:       db,
 		rf:       rf,
@@ -37,8 +37,8 @@ func NewSpaceManager(ctx context.Context, dialect libgateway.DialectRDBMS, db *g
 	}, nil
 }
 
-func (m *spaceManager) CreatePersonalSpace(ctx context.Context, operator domain.UserInterface, param *service.CreatePersonalSpaceParameter) (*domain.SpaceID, error) {
-	ctx, span := tracer.Start(ctx, "spaceManager.CreatePersonalSpace")
+func (m *SpaceManager) CreatePersonalSpace(ctx context.Context, operator domain.UserInterface, param *service.CreatePersonalSpaceParameter) (*domain.SpaceID, error) {
+	ctx, span := tracer.Start(ctx, "SpaceManager.CreatePersonalSpace")
 	defer span.End()
 
 	userRepo := m.rf.NewUserRepository(ctx)
@@ -58,15 +58,35 @@ func (m *spaceManager) CreatePersonalSpace(ctx context.Context, operator domain.
 		return nil, fmt.Errorf("CreateSpace: %w", err)
 	}
 
-	if err := m.attachUserToSpace(ctx, targetUser.GetOrganizationID(), targetUser.GetUserID(), spaceID); err != nil {
-		return nil, fmt.Errorf("attachUserToSpace: %w", err)
+	if err := m.addUserToSpace(ctx, targetUser.GetOrganizationID(), targetUser.GetUserID(), spaceID); err != nil {
+		return nil, fmt.Errorf("addUserToSpace: %w", err)
 	}
 
 	return spaceID, nil
 }
 
-func (m *spaceManager) AddUserToSpace(ctx context.Context, operator domain.SystemOwnerInterface, userID domain.UserID, spaceID *domain.SpaceID) error {
-	ctx, span := tracer.Start(ctx, "spaceManager.AddUserToSpace")
+func (m *SpaceManager) CreatePublicDefaultSpace(ctx context.Context, operator domain.SystemOwnerInterface) (*domain.SpaceID, error) {
+	spaceRepo := m.rf.NewSpaceRepository(ctx)
+	addSpaceParam := service.CreateSpaceParameter{
+		Key:       service.PublicDefaultSpaceKey,
+		Name:      service.PublicDefaultSpaceName,
+		SpaceType: "public",
+	}
+
+	spaceID, err := spaceRepo.CreateSpace(ctx, operator, &addSpaceParam)
+	if err != nil {
+		return nil, fmt.Errorf("CreateSpace: %w", err)
+	}
+
+	if err := m.addUserToSpace(ctx, operator.GetOrganizationID(), operator.GetUserID(), spaceID); err != nil {
+		return nil, fmt.Errorf("addUserToSpace: %w", err)
+	}
+
+	return spaceID, nil
+}
+
+func (m *SpaceManager) AddUserToSpace(ctx context.Context, operator domain.UserInterface, userID domain.UserID, spaceID *domain.SpaceID) error {
+	ctx, span := tracer.Start(ctx, "SpaceManager.AddUserToSpace")
 	defer span.End()
 
 	var space spaceEntity
@@ -90,14 +110,14 @@ func (m *spaceManager) AddUserToSpace(ctx context.Context, operator domain.Syste
 		return service.ErrUserNotFound
 	}
 
-	if err := m.attachUserToSpace(ctx, targetUser.GetOrganizationID(), targetUser.GetUserID(), spaceID); err != nil {
-		return fmt.Errorf("attachUserToSpace: %w", err)
+	if err := m.addUserToSpace(ctx, targetUser.GetOrganizationID(), targetUser.GetUserID(), spaceID); err != nil {
+		return fmt.Errorf("addUserToSpace: %w", err)
 	}
 
 	return nil
 }
 
-func (m *spaceManager) GetPersonalSpace(ctx context.Context, operator domain.UserInterface) (*domain.Space, error) {
+func (m *SpaceManager) GetPersonalSpace(ctx context.Context, operator domain.UserInterface) (*domain.Space, error) {
 	spaces, err := m.findSpacesByUser(ctx, operator)
 	if err != nil {
 		return nil, fmt.Errorf("findSpacesByUser: %w", err)
@@ -112,7 +132,7 @@ func (m *spaceManager) GetPersonalSpace(ctx context.Context, operator domain.Use
 	return nil, service.ErrSpaceNotFound
 }
 
-func (m *spaceManager) attachUserToSpace(ctx context.Context, organizationID *domain.OrganizationID, userID *domain.UserID, spaceID *domain.SpaceID) error {
+func (m *SpaceManager) addUserToSpace(ctx context.Context, organizationID *domain.OrganizationID, userID *domain.UserID, spaceID *domain.SpaceID) error {
 	rbacDomain := domain.NewRBACDomainFromOrganization(organizationID)
 	rbacUser := domain.NewRBACUserFromUser(userID)
 	rbacSpace := domain.NewRBACRoleFromSpace(organizationID, spaceID)
@@ -135,7 +155,7 @@ func (m *spaceManager) attachUserToSpace(ctx context.Context, organizationID *do
 	return nil
 }
 
-func (m *spaceManager) findSpacesByUser(ctx context.Context, operator domain.UserInterface) ([]*domain.Space, error) {
+func (m *SpaceManager) findSpacesByUser(ctx context.Context, operator domain.UserInterface) ([]*domain.Space, error) {
 	rbacDomain := domain.NewRBACDomainFromOrganization(operator.GetOrganizationID())
 	rbacUser := domain.NewRBACUserFromUser(operator.GetUserID())
 
