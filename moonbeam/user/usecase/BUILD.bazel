@@ -3,7 +3,10 @@ load("//bazel:go_test.bzl", "smart_go_test")
 
 go_library(
     name = "usecase",
-    srcs = ["verify_password_command.go"],
+    srcs = [
+        "create_organization_command.go",
+        "verify_password_command.go",
+    ],
     importpath = "github.com/mocoarow/cocotola-1.25/moonbeam/user/usecase",
     visibility = ["//visibility:public"],
     deps = [

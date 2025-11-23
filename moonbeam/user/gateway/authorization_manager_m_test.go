@@ -34,7 +34,7 @@ func TestAuthorizationManager_CheckAuthorization_shouldReflectGroupMembership_wh
 		rbacGroup := domain.NewRBACRoleFromGroup(orgID, group.UserGroupID)
 		rbacObject := domain.NewRBACAllUserRolesObjectFromOrganization(orgID)
 
-		require.NoError(t, authorizationManager.AddPolicyToGroup(ctx, owner, rbacGroup, service.RBACSetAction, rbacObject, service.RBACAllowEffect))
+		require.NoError(t, authorizationManager.AttachPolicyToGroup(ctx, owner, rbacGroup, service.RBACSetAction, rbacObject, service.RBACAllowEffect))
 
 		targetUser := testAddUser(t, ctx, tr, owner, "LOGIN_ID_TARGET", "USERNAME_TARGET", "PASSWORD_TARGET")
 		otherUser := testAddUser(t, ctx, tr, owner, "LOGIN_ID_OTHER", "USERNAME_OTHER", "PASSWORD_OTHER")
