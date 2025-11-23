@@ -27,6 +27,9 @@ func (v *UserID) Int() int {
 func (v *UserID) IsUserID() bool {
 	return true
 }
+func (v *UserID) GetRBACSubject() RBACSubject {
+	return NewRBACUserFromUser(v)
+}
 
 type User struct {
 	*libdomain.BaseModel `validate:"required"`

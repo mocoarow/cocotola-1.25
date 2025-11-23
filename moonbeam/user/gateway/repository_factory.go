@@ -51,8 +51,8 @@ func (f *repositoryFactory) NewSpaceManager(ctx context.Context) (service.SpaceM
 	return NewSpaceManager(ctx, f.dialect, f.db, f)
 }
 
-// func (f *repositoryFactory) NewAuthorizationManager(ctx context.Context) (service.AuthorizationManager, error) {
-// 	return NewAuthorizationManager(ctx, f.dialect, f.db, f)
-// }
+func (f *repositoryFactory) NewAuthorizationManager(ctx context.Context) (service.AuthorizationManager, error) {
+	return NewAuthorizationManager(ctx, f.dialect, f.db, f)
+}
 
 type RepositoryFactoryFunc func(ctx context.Context, db *gorm.DB) (service.RepositoryFactory, error)

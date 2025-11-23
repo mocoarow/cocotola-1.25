@@ -22,6 +22,64 @@ func (_m *MockRepositoryFactory) EXPECT() *MockRepositoryFactory_Expecter {
 	return &MockRepositoryFactory_Expecter{mock: &_m.Mock}
 }
 
+// NewAuthorizationManager provides a mock function with given fields: ctx
+func (_m *MockRepositoryFactory) NewAuthorizationManager(ctx context.Context) (service.AuthorizationManager, error) {
+	ret := _m.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for NewAuthorizationManager")
+	}
+
+	var r0 service.AuthorizationManager
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context) (service.AuthorizationManager, error)); ok {
+		return rf(ctx)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context) service.AuthorizationManager); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(service.AuthorizationManager)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockRepositoryFactory_NewAuthorizationManager_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'NewAuthorizationManager'
+type MockRepositoryFactory_NewAuthorizationManager_Call struct {
+	*mock.Call
+}
+
+// NewAuthorizationManager is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *MockRepositoryFactory_Expecter) NewAuthorizationManager(ctx interface{}) *MockRepositoryFactory_NewAuthorizationManager_Call {
+	return &MockRepositoryFactory_NewAuthorizationManager_Call{Call: _e.mock.On("NewAuthorizationManager", ctx)}
+}
+
+func (_c *MockRepositoryFactory_NewAuthorizationManager_Call) Run(run func(ctx context.Context)) *MockRepositoryFactory_NewAuthorizationManager_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context))
+	})
+	return _c
+}
+
+func (_c *MockRepositoryFactory_NewAuthorizationManager_Call) Return(_a0 service.AuthorizationManager, _a1 error) *MockRepositoryFactory_NewAuthorizationManager_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockRepositoryFactory_NewAuthorizationManager_Call) RunAndReturn(run func(context.Context) (service.AuthorizationManager, error)) *MockRepositoryFactory_NewAuthorizationManager_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewOrganizationRepository provides a mock function with given fields: ctx
 func (_m *MockRepositoryFactory) NewOrganizationRepository(ctx context.Context) service.OrganizationRepository {
 	ret := _m.Called(ctx)
