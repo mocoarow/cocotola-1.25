@@ -61,54 +61,54 @@ func (m *authorizationManager) AddUserToGroup(ctx context.Context, operator doma
 	return nil
 }
 
-func (m *authorizationManager) AddPolicyToUser(ctx context.Context, operator domain.UserInterface, subject domain.RBACSubject, action domain.RBACAction, object domain.RBACObject, effect domain.RBACEffect) error {
-	ctx, span := tracer.Start(ctx, "authorizationManager.AddPolicyToUser")
+func (m *authorizationManager) AttachPolicyToUser(ctx context.Context, operator domain.UserInterface, subject domain.RBACSubject, action domain.RBACAction, object domain.RBACObject, effect domain.RBACEffect) error {
+	ctx, span := tracer.Start(ctx, "authorizationManager.AttachPolicyToUser")
 	defer span.End()
 
 	rbacDomain := domain.NewRBACDomainFromOrganization(operator.GetOrganizationID())
 
 	if err := m.rbacRepo.CreatePolicy(ctx, rbacDomain, subject, action, object, effect); err != nil {
-		return fmt.Errorf("rbacRepo.CreatePolicy. priv: read: %w", err)
+		return fmt.Errorf("CreatePolicy: %w", err)
 	}
 
 	return nil
 }
 
-func (m *authorizationManager) AddPolicyToUserBySystemAdmin(ctx context.Context, _ domain.SystemAdminInterface, organizationID *domain.OrganizationID, subject domain.RBACSubject, action domain.RBACAction, object domain.RBACObject, effect domain.RBACEffect) error {
+func (m *authorizationManager) AttachPolicyToUserBySystemAdmin(ctx context.Context, _ domain.SystemAdminInterface, organizationID *domain.OrganizationID, subject domain.RBACSubject, action domain.RBACAction, object domain.RBACObject, effect domain.RBACEffect) error {
 	rbacDomain := domain.NewRBACDomainFromOrganization(organizationID)
 
 	if err := m.rbacRepo.CreatePolicy(ctx, rbacDomain, subject, action, object, effect); err != nil {
-		return fmt.Errorf("CreatePolicy. priv: read: %w", err)
+		return fmt.Errorf("CreatePolicy: %w", err)
 	}
 
 	return nil
 }
-func (m *authorizationManager) AddPolicyToUserBySystemOwner(ctx context.Context, operator domain.SystemOwnerInterface, subject domain.RBACSubject, action domain.RBACAction, object domain.RBACObject, effect domain.RBACEffect) error {
+func (m *authorizationManager) AttachPolicyToUserBySystemOwner(ctx context.Context, operator domain.SystemOwnerInterface, subject domain.RBACSubject, action domain.RBACAction, object domain.RBACObject, effect domain.RBACEffect) error {
 	organizationID := operator.GetOrganizationID()
 	rbacDomain := domain.NewRBACDomainFromOrganization(organizationID)
 
 	if err := m.rbacRepo.CreatePolicy(ctx, rbacDomain, subject, action, object, effect); err != nil {
-		return fmt.Errorf("failed to add policy (priv: read): %w", err)
+		return fmt.Errorf("CreatePolicy: %w", err)
 	}
 
 	return nil
 }
 
-func (m *authorizationManager) AddPolicyToGroup(ctx context.Context, operator domain.UserInterface, subject domain.RBACSubject, action domain.RBACAction, object domain.RBACObject, effect domain.RBACEffect) error {
+func (m *authorizationManager) AttachPolicyToGroup(ctx context.Context, operator domain.UserInterface, subject domain.RBACSubject, action domain.RBACAction, object domain.RBACObject, effect domain.RBACEffect) error {
 	rbacDomain := domain.NewRBACDomainFromOrganization(operator.GetOrganizationID())
 
 	if err := m.rbacRepo.CreatePolicy(ctx, rbacDomain, subject, action, object, effect); err != nil {
-		return fmt.Errorf("CreatePolicy. priv: read: %w", err)
+		return fmt.Errorf("CreatePolicy: %w", err)
 	}
 
 	return nil
 }
 
-func (m *authorizationManager) AddPolicyToGroupBySystemAdmin(ctx context.Context, _ domain.SystemAdminInterface, organizationID *domain.OrganizationID, subject domain.RBACSubject, action domain.RBACAction, object domain.RBACObject, effect domain.RBACEffect) error {
+func (m *authorizationManager) AttachPolicyToGroupBySystemAdmin(ctx context.Context, _ domain.SystemAdminInterface, organizationID *domain.OrganizationID, subject domain.RBACSubject, action domain.RBACAction, object domain.RBACObject, effect domain.RBACEffect) error {
 	rbacDomain := domain.NewRBACDomainFromOrganization(organizationID)
 
 	if err := m.rbacRepo.CreatePolicy(ctx, rbacDomain, subject, action, object, effect); err != nil {
-		return fmt.Errorf("CreatePolicy. priv: read: %w", err)
+		return fmt.Errorf("CreatePolicy: %w", err)
 	}
 
 	return nil
