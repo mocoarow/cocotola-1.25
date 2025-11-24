@@ -19,10 +19,6 @@ func TestSpaceManager_CreatePersonalSpace_and_GetPersonalSpace(t *testing.T) {
 
 	fn := func(t *testing.T, ctx context.Context, tr testResource) {
 		t.Helper()
-		unlock := acquireCasbinLock(t)
-		defer unlock()
-		defer teardownCasbin(t, tr)
-
 		orgID, sysOwner, owner := setupTestOrganization(ctx, t, tr)
 		_ = sysOwner
 		defer teardownOrganization(t, tr, orgID)
@@ -54,10 +50,6 @@ func TestSpaceManager_AddUserToSpace_shouldAttachExistingSpace(t *testing.T) {
 
 	fn := func(t *testing.T, ctx context.Context, tr testResource) {
 		t.Helper()
-		unlock := acquireCasbinLock(t)
-		defer unlock()
-		defer teardownCasbin(t, tr)
-
 		orgID, sysOwner, owner := setupTestOrganization(ctx, t, tr)
 		defer teardownOrganization(t, tr, orgID)
 

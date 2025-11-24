@@ -3,6 +3,7 @@ package gateway
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"gorm.io/gorm"
 
@@ -91,6 +92,9 @@ func (r *pairOfUserAndGroupRepository) FindUserGroupsByUserID(ctx context.Contex
 	result := make([]*domain.UserGroup, 0, len(roles))
 	seen := make(map[int]struct{})
 	for _, role := range roles {
+		if !strings.Contains(role.Role(), ",role:") {
+			continue
+		}
 		orgID, userGroupID, err := domain.NewOrganizationAndUserGroupIDsFromRole(role)
 		if err != nil {
 			return nil, fmt.Errorf("domain.NewOrganizationAndUserGroupIDsFromRole: %w", err)

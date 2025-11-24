@@ -7,7 +7,6 @@ import (
 	"crypto/rand"
 	"fmt"
 	"math/big"
-	"sync"
 	"testing"
 	"time"
 
@@ -33,12 +32,8 @@ func TestCreateOrganizationCommand_Execute_shouldProvisionOrganizationResources_
 		t.Run(dialect.Name(), func(t *testing.T) {
 			t.Parallel()
 
-			unlock := acquireCasbinLock(t)
-			defer unlock()
-
 			sqlDB, err := db.DB()
 			require.NoError(t, err)
-			defer sqlDB.Close()
 
 			rf, err := gateway.NewRepositoryFactory(ctx, dialect, dialect.Name(), db, time.UTC)
 			require.NoError(t, err)
@@ -59,10 +54,23 @@ func TestCreateOrganizationCommand_Execute_shouldProvisionOrganizationResources_
 
 			t.Cleanup(func() {
 				cleanupOrganization(t, db, orgID)
+				sqlDB.Close()
 			})
 
 			userRepo := rf.NewUserRepository(ctx)
 			sysOwner, err := userRepo.FindSystemOwnerByOrganizationID(ctx, sysAdmin, orgID)
+			require.NoError(t, err)
+
+			authorizationManager, err := gateway.NewAuthorizationManager(ctx, dialect, db, rf)
+			require.NoError(t, err)
+
+			ownerParam, err := service.NewCreateUserParameter(fmt.Sprintf("owner_%s", randString(6)), fmt.Sprintf("Owner %s", randString(6)), "owner-password", "", "", "", "")
+			require.NoError(t, err)
+			ownerID, err := userRepo.CreateUser(ctx, sysOwner, ownerParam)
+			require.NoError(t, err)
+			ownerUser, err := userRepo.FindUserByID(ctx, sysOwner, ownerID)
+			require.NoError(t, err)
+			owner, err := domain.NewOwner(ownerUser)
 			require.NoError(t, err)
 
 			t.Run("system owner is provisioned", func(t *testing.T) { //nolint:paralleltest
@@ -91,26 +99,13 @@ func TestCreateOrganizationCommand_Execute_shouldProvisionOrganizationResources_
 			t.Run("system owner policies allow managing user roles", func(t *testing.T) { //nolint:paralleltest
 				t.Helper()
 				allUserRoles := domain.NewRBACAllUserRolesObjectFromOrganization(orgID)
-				rbacDomain := domain.NewRBACDomainFromOrganization(orgID)
-				rbacSystemOwner := sysOwner.GetUserID().GetRBACSubject()
+				ok, err := authorizationManager.CheckAuthorization(ctx, sysOwner, service.RBACSetAction, allUserRoles)
+				require.NoError(t, err)
+				require.True(t, ok)
 
-				requireCasbinPolicy(t, ctx, db, []string{
-					"p",
-					rbacSystemOwner.Subject(),
-					allUserRoles.Object(),
-					service.RBACSetAction.Action(),
-					service.RBACAllowEffect.Effect(),
-					rbacDomain.Domain(),
-				})
-
-				requireCasbinPolicy(t, ctx, db, []string{
-					"p",
-					rbacSystemOwner.Subject(),
-					allUserRoles.Object(),
-					service.RBACUnsetAction.Action(),
-					service.RBACAllowEffect.Effect(),
-					rbacDomain.Domain(),
-				})
+				ok, err = authorizationManager.CheckAuthorization(ctx, sysOwner, service.RBACUnsetAction, allUserRoles)
+				require.NoError(t, err)
+				require.True(t, ok)
 			})
 
 			t.Run("owner group policies allow managing user roles", func(t *testing.T) { //nolint:paralleltest
@@ -118,26 +113,15 @@ func TestCreateOrganizationCommand_Execute_shouldProvisionOrganizationResources_
 				require.NotNil(t, ownerGroup, "owner group must be created before checking policies")
 
 				allUserRoles := domain.NewRBACAllUserRolesObjectFromOrganization(orgID)
-				rbacDomain := domain.NewRBACDomainFromOrganization(orgID)
-				rbacOwnerGroup := domain.NewRBACRoleFromGroup(orgID, ownerGroup.UserGroupID)
+				require.NoError(t, authorizationManager.AddUserToGroup(ctx, sysOwner, owner.GetUserID(), ownerGroup.UserGroupID))
 
-				requireCasbinPolicy(t, ctx, db, []string{
-					"p",
-					rbacOwnerGroup.Subject(),
-					allUserRoles.Object(),
-					service.RBACSetAction.Action(),
-					service.RBACAllowEffect.Effect(),
-					rbacDomain.Domain(),
-				})
+				ok, err := authorizationManager.CheckAuthorization(ctx, owner, service.RBACSetAction, allUserRoles)
+				require.NoError(t, err)
+				require.True(t, ok)
 
-				requireCasbinPolicy(t, ctx, db, []string{
-					"p",
-					rbacOwnerGroup.Subject(),
-					allUserRoles.Object(),
-					service.RBACUnsetAction.Action(),
-					service.RBACAllowEffect.Effect(),
-					rbacDomain.Domain(),
-				})
+				ok, err = authorizationManager.CheckAuthorization(ctx, owner, service.RBACUnsetAction, allUserRoles)
+				require.NoError(t, err)
+				require.True(t, ok)
 			})
 
 			t.Run("public default space is created", func(t *testing.T) { //nolint:paralleltest
@@ -165,16 +149,6 @@ func randString(n int) string {
 	return string(b)
 }
 
-var casbinMu sync.Mutex
-
-func acquireCasbinLock(t *testing.T) func() {
-	t.Helper()
-	casbinMu.Lock()
-	return func() {
-		casbinMu.Unlock()
-	}
-}
-
 func cleanupOrganization(t *testing.T, db *gorm.DB, orgID *domain.OrganizationID) {
 	t.Helper()
 
@@ -185,21 +159,4 @@ func cleanupOrganization(t *testing.T, db *gorm.DB, orgID *domain.OrganizationID
 	db.Exec("delete from mb_user_group where organization_id = ?", orgID.Int())
 	db.Exec("delete from mb_user where organization_id = ?", orgID.Int())
 	db.Exec("delete from mb_organization where id = ?", orgID.Int())
-}
-
-func requireCasbinPolicy(t *testing.T, ctx context.Context, db *gorm.DB, expected []string) {
-	t.Helper()
-
-	require.Len(t, expected, 6)
-
-	type casbinRule struct {
-		ID int
-	}
-
-	var rule casbinRule
-	err := db.WithContext(ctx).Table("casbin_rule").Where(
-		"ptype = ? AND v0 = ? AND v1 = ? AND v2 = ? AND v3 = ? AND v4 = ?",
-		expected[0], expected[1], expected[2], expected[3], expected[4], expected[5],
-	).First(&rule).Error
-	require.NoError(t, err, "casbin policy not found: %v", expected)
 }

@@ -53,9 +53,8 @@ func addSubjectGroupingPolicy(t *testing.T, ctx context.Context, rbacRepository 
 func TestA(t *testing.T) { //nolint:paralleltest
 	fn := func(t *testing.T, ctx context.Context, tr testResource) {
 		t.Helper()
-		unlock := acquireCasbinLock(t)
-		defer unlock()
-		defer teardownCasbin(t, tr)
+		// unlock := lockCasbin(t)
+		// defer unlock()
 		// rbacRepo := gateway.RBACRepository{
 		// 	DB:   ts.db,
 		// 	Conf: gateway.Conf,
@@ -63,30 +62,32 @@ func TestA(t *testing.T) { //nolint:paralleltest
 		rbacRepo, err := gateway.NewRBACRepository(ctx, tr.db)
 		require.NoError(t, err)
 		e := rbacRepo.GetEnforcer()
-
+		domainName := RandString(orgNameLength)
+		domainID, err := RandInt(1000000000)
+		require.NoError(t, err)
 		// rbacRepo.Init()
 
 		// err := initRBACRepository(t, ts.db, gateway.Conf)
 		// require.NoError(t, err)
-		addPolicy(t, ctx, rbacRepo, "domain1", "alice", "read", "domain:1,data:1", true)
-		addPolicy(t, ctx, rbacRepo, "domain1", "bob", "write", "domain:1,data:2", true)
+		addPolicy(t, ctx, rbacRepo, domainName, "alice", "read", fmt.Sprintf("domain:%d,data:1", domainID), true)
+		addPolicy(t, ctx, rbacRepo, domainName, "bob", "write", fmt.Sprintf("domain:%d,data:2", domainID), true)
 		// rbacRepo.AddPolicy(domain.NewRBACDomain("domain1"), domain.NewRBACUser("alice"), domain.NewRBACAction("write"), domain.NewRBACObject("data1"), service.RBACAllowEffect)
-		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,child:1", "domain:1,data:1")
+		addObjectGroupingPolicy(t, ctx, rbacRepo, domainName, fmt.Sprintf("domain:%d,child:1", domainID), fmt.Sprintf("domain:%d,data:1", domainID))
 
 		tests := []testSDOA{
-			{subject: "alice", domain: "domain1", object: "domain:1,data:1", action: "read", want: true},
-			{subject: "alice", domain: "domain1", object: "domain:1,data:1", action: "write", want: false},
-			{subject: "alice", domain: "domain1", object: "domain:1,data:2", action: "read", want: false},
-			{subject: "alice", domain: "domain1", object: "domain:1,data:2", action: "write", want: false},
-			{subject: "alice", domain: "domain1", object: "domain:1,child:1", action: "read", want: true},
-			{subject: "alice", domain: "domain1", object: "domain:1,child:1", action: "write", want: false},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,data:1", domainID), action: "read", want: true},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,data:1", domainID), action: "write", want: false},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,data:2", domainID), action: "read", want: false},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,data:2", domainID), action: "write", want: false},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,child:1", domainID), action: "read", want: true},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,child:1", domainID), action: "write", want: false},
 
-			{subject: "bob", domain: "domain1", object: "domain:1,data:1", action: "read", want: false},
-			{subject: "bob", domain: "domain1", object: "domain:1,data:1", action: "write", want: false},
-			{subject: "bob", domain: "domain1", object: "domain:1,data:2", action: "read", want: false},
-			{subject: "bob", domain: "domain1", object: "domain:1,data:2", action: "write", want: true},
-			{subject: "bob", domain: "domain1", object: "domain:1,child:1", action: "read", want: false},
-			{subject: "bob", domain: "domain1", object: "domain:1,child:1", action: "write", want: false},
+			{subject: "bob", domain: domainName, object: fmt.Sprintf("domain:%d,data:1", domainID), action: "read", want: false},
+			{subject: "bob", domain: domainName, object: fmt.Sprintf("domain:%d,data:1", domainID), action: "write", want: false},
+			{subject: "bob", domain: domainName, object: fmt.Sprintf("domain:%d,data:2", domainID), action: "read", want: false},
+			{subject: "bob", domain: domainName, object: fmt.Sprintf("domain:%d,data:2", domainID), action: "write", want: true},
+			{subject: "bob", domain: domainName, object: fmt.Sprintf("domain:%d,child:1", domainID), action: "read", want: false},
+			{subject: "bob", domain: domainName, object: fmt.Sprintf("domain:%d,child:1", domainID), action: "write", want: false},
 			// {subject: "bob", domain: "domain1", object: "domain:1_data:1", action: "write", want: false},
 			// {subject: "bob", domain: "domain1", object: "domain:1_data:2", action: "read", want: false},
 			// {subject: "bob", domain: "domain1", object: "domain:1_data:2", action: "write", want: true},
@@ -112,35 +113,36 @@ func TestA(t *testing.T) { //nolint:paralleltest
 func TestB(t *testing.T) { //nolint:paralleltest
 	fn := func(t *testing.T, ctx context.Context, tr testResource) {
 		t.Helper()
-		unlock := acquireCasbinLock(t)
-		defer unlock()
-		defer teardownCasbin(t, tr)
+		// unlock := lockCasbin(t)
+		// defer unlock()
 		rbacRepo, err := gateway.NewRBACRepository(ctx, tr.db)
 		require.NoError(t, err)
 		e := rbacRepo.GetEnforcer()
 
-		addSubjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "alice", "domain:1,reader")
-		addSubjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "bob", "domain:1,writer")
+		domainName := RandString(orgNameLength)
+		domainID, err := RandInt(1000000000)
+		require.NoError(t, err)
 
-		addPolicy(t, ctx, rbacRepo, "domain1", "domain:1,reader", "read", "domain:1,data:1", true)
-		addPolicy(t, ctx, rbacRepo, "domain1", "domain:1,writer", "write", "domain:1,data:2", true)
+		addSubjectGroupingPolicy(t, ctx, rbacRepo, domainName, "alice", fmt.Sprintf("domain:%d,reader", domainID))
+		addSubjectGroupingPolicy(t, ctx, rbacRepo, domainName, "bob", fmt.Sprintf("domain:%d,writer", domainID))
 
-		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,child:1", "domain:1,data:1")
+		addPolicy(t, ctx, rbacRepo, domainName, fmt.Sprintf("domain:%d,reader", domainID), "read", fmt.Sprintf("domain:%d,data:1", domainID), true)
+		addPolicy(t, ctx, rbacRepo, domainName, fmt.Sprintf("domain:%d,writer", domainID), "write", fmt.Sprintf("domain:%d,data:2", domainID), true)
+		addObjectGroupingPolicy(t, ctx, rbacRepo, domainName, fmt.Sprintf("domain:%d,child:1", domainID), fmt.Sprintf("domain:%d,data:1", domainID))
 
 		tests := []testSDOA{
-			{subject: "alice", domain: "domain1", object: "domain:1,data:1", action: "read", want: true},
-			{subject: "alice", domain: "domain1", object: "domain:1,data:1", action: "write", want: false},
-			{subject: "alice", domain: "domain1", object: "domain:1,data:2", action: "read", want: false},
-			{subject: "alice", domain: "domain1", object: "domain:1,data:2", action: "write", want: false},
-			{subject: "alice", domain: "domain1", object: "domain:1,child:1", action: "read", want: true},
-			{subject: "alice", domain: "domain1", object: "domain:1,child:1", action: "write", want: false},
-
-			{subject: "bob", domain: "domain1", object: "domain:1,data:1", action: "read", want: false},
-			{subject: "bob", domain: "domain1", object: "domain:1,data:1", action: "write", want: false},
-			{subject: "bob", domain: "domain1", object: "domain:1,data:2", action: "read", want: false},
-			{subject: "bob", domain: "domain1", object: "domain:1,data:2", action: "write", want: true},
-			{subject: "bob", domain: "domain1", object: "domain:1,child:1", action: "read", want: false},
-			{subject: "bob", domain: "domain1", object: "domain:1,child:1", action: "write", want: false},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,data:1", domainID), action: "read", want: true},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,data:1", domainID), action: "write", want: false},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,data:2", domainID), action: "read", want: false},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,data:2", domainID), action: "write", want: false},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,child:1", domainID), action: "read", want: true},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,child:1", domainID), action: "write", want: false},
+			{subject: "bob", domain: domainName, object: fmt.Sprintf("domain:%d,data:1", domainID), action: "read", want: false},
+			{subject: "bob", domain: domainName, object: fmt.Sprintf("domain:%d,data:1", domainID), action: "write", want: false},
+			{subject: "bob", domain: domainName, object: fmt.Sprintf("domain:%d,data:2", domainID), action: "read", want: false},
+			{subject: "bob", domain: domainName, object: fmt.Sprintf("domain:%d,data:2", domainID), action: "write", want: true},
+			{subject: "bob", domain: domainName, object: fmt.Sprintf("domain:%d,child:1", domainID), action: "read", want: false},
+			{subject: "bob", domain: domainName, object: fmt.Sprintf("domain:%d,child:1", domainID), action: "write", want: false},
 			// {subject: "bob", domain: "domain1", object: "domain:1_data:1", action: "write", want: false},
 			// {subject: "bob", domain: "domain1", object: "domain:1_data:2", action: "read", want: false},
 			// {subject: "bob", domain: "domain1", object: "domain:1_data:2", action: "write", want: true},
@@ -163,22 +165,25 @@ func TestB(t *testing.T) { //nolint:paralleltest
 func TestC(t *testing.T) { //nolint:paralleltest
 	fn := func(t *testing.T, ctx context.Context, tr testResource) {
 		t.Helper()
-		unlock := acquireCasbinLock(t)
-		defer unlock()
-		defer teardownCasbin(t, tr)
+		// unlock := lockCasbin(t)
+		// defer unlock(
 		rbacRepo, err := gateway.NewRBACRepository(ctx, tr.db)
 		require.NoError(t, err)
 		e := rbacRepo.GetEnforcer()
 
-		addSubjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "alice", "domain:1,reader")
+		domainName := RandString(orgNameLength)
+		domainID, err := RandInt(1000000000)
+		require.NoError(t, err)
 
-		addPolicy(t, ctx, rbacRepo, "domain1", "domain:1,reader", "read", "domain:1,data:2", true)
-		addPolicy(t, ctx, rbacRepo, "domain1", "domain:1,reader", "read", "domain:1,data:4", false)
+		addSubjectGroupingPolicy(t, ctx, rbacRepo, domainName, "alice", fmt.Sprintf("domain:%d,reader", domainID))
 
-		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,data:2", "domain:1,data:1")
-		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,data:3", "domain:1,data:2")
-		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,data:4", "domain:1,data:3")
-		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,data:5", "domain:1,data:4")
+		addPolicy(t, ctx, rbacRepo, domainName, fmt.Sprintf("domain:%d,reader", domainID), "read", fmt.Sprintf("domain:%d,data:2", domainID), true)
+		addPolicy(t, ctx, rbacRepo, domainName, fmt.Sprintf("domain:%d,reader", domainID), "read", fmt.Sprintf("domain:%d,data:4", domainID), false)
+
+		addObjectGroupingPolicy(t, ctx, rbacRepo, domainName, fmt.Sprintf("domain:%d,data:2", domainID), fmt.Sprintf("domain:%d,data:1", domainID))
+		addObjectGroupingPolicy(t, ctx, rbacRepo, domainName, fmt.Sprintf("domain:%d,data:3", domainID), fmt.Sprintf("domain:%d,data:2", domainID))
+		addObjectGroupingPolicy(t, ctx, rbacRepo, domainName, fmt.Sprintf("domain:%d,data:4", domainID), fmt.Sprintf("domain:%d,data:3", domainID))
+		addObjectGroupingPolicy(t, ctx, rbacRepo, domainName, fmt.Sprintf("domain:%d,data:5", domainID), fmt.Sprintf("domain:%d,data:4", domainID))
 		// 1/
 		// - 2/ <= alice can read
 		//   - 3/ <= alice also can read
@@ -186,11 +191,11 @@ func TestC(t *testing.T) { //nolint:paralleltest
 		//	     - 5/ <= alice also can't read
 
 		tests := []testSDOA{
-			{subject: "alice", domain: "domain1", object: "domain:1,data:1", action: "read", want: false},
-			{subject: "alice", domain: "domain1", object: "domain:1,data:2", action: "read", want: true},
-			{subject: "alice", domain: "domain1", object: "domain:1,data:3", action: "read", want: true},
-			{subject: "alice", domain: "domain1", object: "domain:1,data:4", action: "read", want: false},
-			{subject: "alice", domain: "domain1", object: "domain:1,data:5", action: "read", want: false},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,data:1", domainID), action: "read", want: false},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,data:2", domainID), action: "read", want: true},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,data:3", domainID), action: "read", want: true},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,data:4", domainID), action: "read", want: false},
+			{subject: "alice", domain: domainName, object: fmt.Sprintf("domain:%d,data:5", domainID), action: "read", want: false},
 		}
 		for _, tt := range tests {
 			t.Run(tt.String(), func(t *testing.T) {
@@ -227,12 +232,3 @@ func TestC(t *testing.T) { //nolint:paralleltest
 //		}
 //		testDB(t, fn)
 //	}
-func teardownCasbin(t *testing.T, tr testResource) {
-	t.Helper()
-	// delete all organizations
-	// ts.db.Exec("delete from space where organization_id = ?", orgID.Int())
-	tr.db.Exec("delete from casbin_rule")
-	// db.Where("true").Delete(&spaceEntity{})
-	// db.Where("true").Delete(&userEntity{})
-	// db.Where("true").Delete(&organizationEntity{})
-}

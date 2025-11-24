@@ -20,10 +20,6 @@ func TestUserRepository_CreateAndFindUser_shouldReturnUser_whenOwnerCreates(t *t
 
 	fn := func(t *testing.T, ctx context.Context, tr testResource) {
 		t.Helper()
-		unlock := acquireCasbinLock(t)
-		defer unlock()
-		defer teardownCasbin(t, tr)
-
 		orgID, _, owner := setupTestOrganization(ctx, t, tr)
 		defer teardownOrganization(t, tr, orgID)
 
