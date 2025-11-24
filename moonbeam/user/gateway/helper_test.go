@@ -5,7 +5,6 @@ package gateway_test
 import (
 	"context"
 	"fmt"
-	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -41,14 +40,4 @@ func setupTestOrganization(ctx context.Context, t *testing.T, tr testResource) (
 	require.NoError(t, err)
 
 	return orgID, sysOwner, owner
-}
-
-var casbinMu sync.Mutex
-
-func acquireCasbinLock(t *testing.T) func() {
-	t.Helper()
-	casbinMu.Lock()
-	return func() {
-		casbinMu.Unlock()
-	}
 }

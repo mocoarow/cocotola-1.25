@@ -19,14 +19,21 @@ go_library(
 
 smart_go_test(
     name = "usecase_test",
-    srcs = ["verify_password_command_s_test.go"],
+    srcs = [
+        "create_organization_command_m_test.go",
+        "verify_password_command_s_test.go",
+    ],
     deps = [
         ":usecase",
         "//moonbeam/lib/domain",
+        "//moonbeam/lib/gateway",
+        "//moonbeam/testlib/gateway",
         "//moonbeam/user/domain",
+        "//moonbeam/user/gateway",
         "//moonbeam/user/service",
         "//moonbeam/user/service/mocks",
         "@com_github_stretchr_testify//mock",
         "@com_github_stretchr_testify//require",
+        "@io_gorm_gorm//:gorm",
     ],
 )

@@ -20,10 +20,6 @@ func TestPairOfUserAndGroupRepository_FindUserGroupsByUserID_shouldReturnGroups_
 
 	fn := func(t *testing.T, ctx context.Context, tr testResource) {
 		t.Helper()
-		unlock := acquireCasbinLock(t)
-		defer unlock()
-		defer teardownCasbin(t, tr)
-
 		orgID, _, owner := setupTestOrganization(ctx, t, tr)
 		defer teardownOrganization(t, tr, orgID)
 
@@ -67,10 +63,6 @@ func TestPairOfUserAndGroupRepository_DeletePairOfUserAndGroup_shouldRemoveRelat
 
 	fn := func(t *testing.T, ctx context.Context, tr testResource) {
 		t.Helper()
-		unlock := acquireCasbinLock(t)
-		defer unlock()
-		defer teardownCasbin(t, tr)
-
 		orgID, _, owner := setupTestOrganization(ctx, t, tr)
 		defer teardownOrganization(t, tr, orgID)
 

@@ -45,6 +45,8 @@ func NewRBACRepository(_ context.Context, db *gorm.DB) (service.RBACRepository, 
 		panic(errors.New("db is nil"))
 	}
 
+	gormadapter.TurnOffAutoMigrate(db)
+
 	a, err := gormadapter.NewAdapterByDB(db)
 	if err != nil {
 		return nil, fmt.Errorf("gormadapter.NewAdapterByDB: %w", err)

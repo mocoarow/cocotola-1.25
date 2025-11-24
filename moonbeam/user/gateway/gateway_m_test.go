@@ -39,6 +39,14 @@ func RandString(n int) string {
 	return string(b)
 }
 
+func RandInt(v int) (int, error) {
+	n, err := rand.Int(rand.Reader, big.NewInt(int64(v)))
+	if err != nil {
+		return 0, err
+	}
+	return int(n.Int64()), nil
+}
+
 func testDB(t *testing.T, fn func(t *testing.T, ctx context.Context, tr testResource)) {
 	t.Helper()
 	ctx := context.Background()
