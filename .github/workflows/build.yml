@@ -18,7 +18,7 @@ jobs:
       id-token: write
     environment: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # test
       - uses: actions/create-github-app-token@v1
@@ -93,7 +93,7 @@ jobs:
       id-token: write
     environment: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # This step needs 'id-token: write' permission
       # Error: google-github-actions/auth failed with: gitHub Actions did not inject $ACTIONS_ID_TOKEN_REQUEST_TOKEN or $ACTIONS_ID_TOKEN_REQUEST_URL into this job.
