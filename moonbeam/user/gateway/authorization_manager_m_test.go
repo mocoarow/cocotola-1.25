@@ -19,27 +19,35 @@ func TestAuthorizationManager_CheckAuthorization_shouldReflectGroupMembership_wh
 
 	fn := func(t *testing.T, ctx context.Context, tr testResource) {
 		t.Helper()
-		orgID, sysOwner, owner := setupTestOrganization(ctx, t, tr)
+		// given
+		// organization
+		//   <ORGANIZATION> with random name
+		// groups
+		//   TEST_GROUP
+		// users
+		//   TARGET_USER
+		//   OTHER_USER
+		orgID, _, owner := setupTestOrganization(ctx, t, tr)
 		defer teardownOrganization(t, tr, orgID)
 
 		authorizationManager, err := gateway.NewAuthorizationManager(ctx, tr.dialect, tr.db, tr.rf)
 		require.NoError(t, err)
 		membershipRepo := gateway.NewPairOfUserAndGroupRepository(ctx, tr.dialect, tr.db, tr.rf)
 
-		group := testAddUserGroup(t, ctx, tr, owner, "GROUP_KEY_Auth", "GROUP_NAME_Auth", "GROUP_DESC_Auth")
+		group := testAddUserGroup(t, ctx, tr, owner, "TEST_GROUP", "GROUP_NAME_Auth", "GROUP_DESC_Auth")
 		rbacGroup := domain.NewRBACRoleFromGroup(orgID, group.UserGroupID)
-		rbacObject := domain.NewRBACAllUserRolesObjectFromOrganization(orgID)
+		if err := authorizationManager.AttachPolicyToGroup(ctx, owner, rbacGroup, service.CreateUserAction, service.AnyObject, service.RBACAllowEffect); err != nil {
+			require.NoError(t, err)
+		}
 
-		require.NoError(t, authorizationManager.AttachPolicyToGroup(ctx, owner, rbacGroup, service.RBACSetAction, rbacObject, service.RBACAllowEffect))
+		targetUser := testAddUser(t, ctx, tr, owner, "TARGET_USER", "USERNAME_TARGET", "PASSWORD_TARGET")
+		otherUser := testAddUser(t, ctx, tr, owner, "OTHER_USER", "USERNAME_OTHER", "PASSWORD_OTHER")
 
-		targetUser := testAddUser(t, ctx, tr, owner, "LOGIN_ID_TARGET", "USERNAME_TARGET", "PASSWORD_TARGET")
-		otherUser := testAddUser(t, ctx, tr, owner, "LOGIN_ID_OTHER", "USERNAME_OTHER", "PASSWORD_OTHER")
-
-		ok, err := authorizationManager.CheckAuthorization(ctx, targetUser, service.RBACSetAction, rbacObject)
+		ok, err := authorizationManager.CheckAuthorization(ctx, targetUser, service.CreateUserAction, service.AnyObject)
 		require.NoError(t, err)
 		assert.False(t, ok, "user without group membership must not have permission")
 
-		ok, err = authorizationManager.CheckAuthorization(ctx, otherUser, service.RBACSetAction, rbacObject)
+		ok, err = authorizationManager.CheckAuthorization(ctx, otherUser, service.CreateUserAction, service.AnyObject)
 		require.NoError(t, err)
 		assert.False(t, ok)
 
@@ -47,6 +55,7 @@ func TestAuthorizationManager_CheckAuthorization_shouldReflectGroupMembership_wh
 		require.NoError(t, err)
 		assert.Empty(t, groupsBefore)
 
+		// when
 		require.NoError(t, authorizationManager.AddUserToGroup(ctx, owner, targetUser.GetUserID(), group.UserGroupID))
 
 		groupsAfter, err := membershipRepo.FindUserGroupsByUserID(ctx, targetUser, targetUser.GetUserID())
@@ -57,19 +66,22 @@ func TestAuthorizationManager_CheckAuthorization_shouldReflectGroupMembership_wh
 		require.NoError(t, err)
 		e := rbacRepo.GetEnforcer()
 		require.NoError(t, e.LoadPolicy())
-		manual, err := e.Enforce(domain.NewRBACUserFromUser(targetUser.GetUserID()).Subject(), rbacObject.Object(), service.RBACSetAction.Action(), domain.NewRBACDomainFromOrganization(orgID).Domain())
+
+		// then
+		// TARGET_USER should gain permission via group membership
+		manual, err := e.Enforce(domain.NewRBACUserFromUser(targetUser.GetUserID()).Subject(), service.AnyObject.Object(), service.CreateUserAction.Action(), domain.NewRBACDomainFromOrganization(orgID).Domain())
 		require.NoError(t, err)
 		assert.True(t, manual)
 
-		ok, err = authorizationManager.CheckAuthorization(ctx, targetUser, service.RBACSetAction, rbacObject)
+		// TARGET_USER should gain permission via group membership
+		ok, err = authorizationManager.CheckAuthorization(ctx, targetUser, service.CreateUserAction, service.AnyObject)
 		require.NoError(t, err)
 		assert.True(t, ok, "user should gain permission after joining group")
 
-		ok, err = authorizationManager.CheckAuthorization(ctx, otherUser, service.RBACSetAction, rbacObject)
+		// OTHER_USER should remain unauthorized
+		ok, err = authorizationManager.CheckAuthorization(ctx, otherUser, service.CreateUserAction, service.AnyObject)
 		require.NoError(t, err)
 		assert.False(t, ok, "unrelated user must remain unauthorized")
-
-		_ = sysOwner
 	}
 
 	testDB(t, fn)

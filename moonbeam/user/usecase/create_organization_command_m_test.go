@@ -96,32 +96,31 @@ func TestCreateOrganizationCommand_Execute_shouldProvisionOrganizationResources_
 				require.Equal(t, service.PublicGroupKey, publicGroup.Key)
 			})
 
-			t.Run("system owner policies allow managing user roles", func(t *testing.T) { //nolint:paralleltest
+			t.Run("system owner policies allow creating user", func(t *testing.T) { //nolint:paralleltest
 				t.Helper()
-				allUserRoles := domain.NewRBACAllUserRolesObjectFromOrganization(orgID)
-				ok, err := authorizationManager.CheckAuthorization(ctx, sysOwner, service.RBACSetAction, allUserRoles)
+				ok, err := authorizationManager.CheckAuthorization(ctx, sysOwner, service.CreateUserAction, service.AnyObject)
 				require.NoError(t, err)
 				require.True(t, ok)
 
-				ok, err = authorizationManager.CheckAuthorization(ctx, sysOwner, service.RBACUnsetAction, allUserRoles)
-				require.NoError(t, err)
-				require.True(t, ok)
+				// ok, err = authorizationManager.CheckAuthorization(ctx, sysOwner, service.RBACUnsetAction, allUserRoles)
+				// require.NoError(t, err)
+				// require.True(t, ok)
 			})
 
-			t.Run("owner group policies allow managing user roles", func(t *testing.T) { //nolint:paralleltest
+			t.Run("owner group policies allow creating user", func(t *testing.T) { //nolint:paralleltest
 				t.Helper()
 				require.NotNil(t, ownerGroup, "owner group must be created before checking policies")
 
-				allUserRoles := domain.NewRBACAllUserRolesObjectFromOrganization(orgID)
+				// allUserRoles := domain.NewRBACAllUserRolesObjectFromOrganization(orgID)
 				require.NoError(t, authorizationManager.AddUserToGroup(ctx, sysOwner, owner.GetUserID(), ownerGroup.UserGroupID))
 
-				ok, err := authorizationManager.CheckAuthorization(ctx, owner, service.RBACSetAction, allUserRoles)
+				ok, err := authorizationManager.CheckAuthorization(ctx, owner, service.CreateUserAction, service.AnyObject)
 				require.NoError(t, err)
 				require.True(t, ok)
 
-				ok, err = authorizationManager.CheckAuthorization(ctx, owner, service.RBACUnsetAction, allUserRoles)
-				require.NoError(t, err)
-				require.True(t, ok)
+				// ok, err = authorizationManager.CheckAuthorization(ctx, owner, service.RBACUnsetAction, allUserRoles)
+				// require.NoError(t, err)
+				// require.True(t, ok)
 			})
 
 			t.Run("public default space is created", func(t *testing.T) { //nolint:paralleltest

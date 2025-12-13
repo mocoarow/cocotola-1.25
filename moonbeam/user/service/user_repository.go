@@ -16,6 +16,14 @@ var ErrSystemOwnerNotFound = errors.New("system owner not found")
 
 var ErrUnauthenticated = errors.New("unauthenticated")
 
+var CreateUserAction = domain.NewRBACAction("CreateUser")
+var ListUsersAction = domain.NewRBACAction("ListUsers")
+var GetUserAction = domain.NewRBACAction("GetUser")
+var UpdateUserAction = domain.NewRBACAction("UpdateUser")
+var DeleteUserAction = domain.NewRBACAction("DeleteUser")
+
+var CreateOwnerAction = domain.NewRBACAction("CreateOwner")
+
 type CreateUserParameter struct {
 	LoginID              string `validate:"required,max=255"`
 	Username             string `validate:"required,max=255"`
