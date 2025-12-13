@@ -22,14 +22,14 @@ func NewCreateFirstOwnerCommand(txManager service.TransactionManager, nonTxManag
 	}
 }
 
-func (u *CreateFirstOwnerCommand) checkAuthorization(ctx context.Context, operator domain.SystemOwnerInterface, param *service.CreateUserParameter) error {
+func (u *CreateFirstOwnerCommand) checkAuthorization(_ context.Context, _ domain.SystemOwnerInterface, _ *service.CreateUserParameter) error {
 	// system-owner can create owner
 	return nil
 }
 
 func (u *CreateFirstOwnerCommand) Execute(ctx context.Context, operator domain.SystemOwnerInterface, param *service.CreateUserParameter) (*domain.UserID, error) {
 	if err := u.checkAuthorization(ctx, operator, param); err != nil {
-		return nil, err //nolint:wrapcheck
+		return nil, fmt.Errorf("checkAuthorization: %w", err)
 	}
 
 	fn2 := func(rf service.RepositoryFactory) (*domain.UserID, error) {
@@ -74,7 +74,7 @@ func (u *CreateFirstOwnerCommand) Execute(ctx context.Context, operator domain.S
 	}
 	firstOwnerID, err := libservice.Do1(ctx, u.txManager, fn2)
 	if err != nil {
-		return nil, err //nolint:wrapcheck
+		return nil, fmt.Errorf("Do1: %w", err)
 	}
 
 	return firstOwnerID, nil
