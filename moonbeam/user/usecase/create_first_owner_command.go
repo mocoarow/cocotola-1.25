@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	libdomain "github.com/mocoarow/cocotola-1.25/moonbeam/lib/domain"
 	libservice "github.com/mocoarow/cocotola-1.25/moonbeam/lib/service"
 
 	"github.com/mocoarow/cocotola-1.25/moonbeam/user/domain"
@@ -24,25 +23,7 @@ func NewCreateFirstOwnerCommand(txManager service.TransactionManager, nonTxManag
 }
 
 func (u *CreateFirstOwnerCommand) checkAuthorization(ctx context.Context, operator domain.SystemOwnerInterface, param *service.CreateUserParameter) error {
-	fn1 := func(rf service.RepositoryFactory) error {
-		authorizationManager, err := rf.NewAuthorizationManager(ctx)
-		if err != nil {
-			return fmt.Errorf("failed to NewAuthorizationManager: %w", err)
-		}
-		rbacAllUserRolesObject := domain.NewRBACAllUserRolesObjectFromOrganization(operator.GetOrganizationID())
-
-		// Can "operator" "CreateOwner" "*" ?
-		ok, err := authorizationManager.CheckAuthorization(ctx, operator, service.CreateOwnerAction, rbacAllUserRolesObject)
-		if err != nil {
-			return fmt.Errorf("CheckAuthorization: %w", err)
-		} else if !ok {
-			return libdomain.ErrPermissionDenied
-		}
-		return nil
-	}
-	if err := libservice.Do0(ctx, u.txManager, fn1); err != nil {
-		return err //nolint:wrapcheck
-	}
+	// system-owner can create owner
 	return nil
 }
 
@@ -91,7 +72,7 @@ func (u *CreateFirstOwnerCommand) Execute(ctx context.Context, operator domain.S
 		}
 		return firstOwnerID, nil
 	}
-	firstOwnerID, err := libservice.Do1(ctx, u.nonTxManager, fn2)
+	firstOwnerID, err := libservice.Do1(ctx, u.txManager, fn2)
 	if err != nil {
 		return nil, err //nolint:wrapcheck
 	}

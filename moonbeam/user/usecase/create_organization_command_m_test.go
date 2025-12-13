@@ -42,9 +42,10 @@ func TestCreateOrganizationCommand_Execute_shouldProvisionOrganizationResources_
 				return gateway.NewRepositoryFactory(ctx, dialect, dialect.Name(), txDB, time.UTC)
 			})
 			require.NoError(t, err)
-			nonTxManager, err := libgateway.NewNonTransactionManagerT[service.RepositoryFactory](rf)
+			nonTxManager, err := libgateway.NewNonTransactionManagerT(rf)
 			require.NoError(t, err)
 
+			// when
 			cmd := usecase.NewCreateOrganizationCommand(ctx, txManager, nonTxManager)
 
 			orgName := fmt.Sprintf("org-%s", randString(10))
