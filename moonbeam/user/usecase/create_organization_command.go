@@ -30,11 +30,13 @@ func (u *CreateOrganizationCommand) Execute(ctx context.Context, operator domain
 	fn := func(rf service.RepositoryFactory) (*domain.OrganizationID, error) {
 		userRepo := rf.NewUserRepository(ctx)
 
+		// system-admin creates organization and system-owner
 		organizationID, err := u.executeCreatingOrganizationProcessBySystemAdmin(ctx, operator, rf, organizationName)
 		if err != nil {
 			return nil, fmt.Errorf("executeCreatingOrganizationProcessBySystemAdmin: %w", err)
 		}
 
+		// system-owner creates organization resources
 		systemOwner, err := userRepo.FindSystemOwnerByOrganizationName(ctx, operator, organizationName)
 		if err != nil {
 			return nil, fmt.Errorf("FindSystemOwnerByOrganizationName: %w", err)
@@ -76,6 +78,7 @@ func (u *CreateOrganizationCommand) executeCreatingOrganizationProcessBySystemAd
 
 	return organizationID, nil
 }
+
 func (u *CreateOrganizationCommand) executeCreatingOrganizationProcessBySystemOwner(ctx context.Context, operator domain.SystemOwnerInterface, rf service.RepositoryFactory, organizationID *domain.OrganizationID) error {
 	userGroupRepo := rf.NewUserGroupRepository(ctx)
 	authorizationManager, err := rf.NewAuthorizationManager(ctx)
@@ -119,18 +122,18 @@ func (u *CreateOrganizationCommand) createSystemOwnerForOrganization(ctx context
 
 	// 3. attach policy to "system-owner" user
 	rbacSystemOwner := systemOwnerID.GetRBACSubject()
-	rbacAllUserRolesObject := domain.NewRBACAllUserRolesObjectFromOrganization(organizationID)
+	// rbacAllUserRolesObject := domain.NewRBACAllUserRolesObjectFromOrganization(organizationID)
 	for _, aoe := range []ActionObjectEffect{
-		{ // "system-owner" user "can" "set" "all-user-roles"
-			Action: service.RBACSetAction,
-			Object: rbacAllUserRolesObject,
+		{ // "system-owner" "can" "CreateUser" "*"
+			Action: service.CreateUserAction,
+			Object: service.AnyObject,
 			Effect: service.RBACAllowEffect,
 		},
-		{ //"system-owner" user "can" "unset" "all-user-roles"
-			Action: service.RBACUnsetAction,
-			Object: rbacAllUserRolesObject,
-			Effect: service.RBACAllowEffect,
-		},
+		// { //"system-owner" user "can" "unset" "all-user-roles"
+		// 	Action: service.RBACUnsetAction,
+		// 	Object: rbacAllUserRolesObject,
+		// 	Effect: service.RBACAllowEffect,
+		// },
 	} {
 		if err := authorizationManager.AttachPolicyToUserBySystemAdmin(ctx, operator, organizationID, rbacSystemOwner, aoe.Action, aoe.Object, aoe.Effect); err != nil {
 			return nil, fmt.Errorf("AttachPolicyToUserBySystemAdmin: %w", err)
@@ -150,19 +153,19 @@ func (u *CreateOrganizationCommand) createOwnerGroupForOrganization(ctx context.
 
 	// 5. attach policy to "owner" group
 	rbacOwnerGroup := domain.NewRBACRoleFromGroup(organizationID, ownerGroupID)
-	rbacAllUserRolesObject := domain.NewRBACAllUserRolesObjectFromOrganization(organizationID)
+	// rbacAllUserRolesObject := domain.NewRBACAllUserRolesObjectFromOrganization(organizationID)
 
 	for _, aoe := range []ActionObjectEffect{
-		{ // "owner" group "can" "set" "all-user-roles"
-			Action: service.RBACSetAction,
-			Object: rbacAllUserRolesObject,
+		{ // "owner" group "can" "CreateUser" "*"
+			Action: service.CreateUserAction,
+			Object: service.AnyObject,
 			Effect: service.RBACAllowEffect,
 		},
-		{ // "owner" group "can" "unset" "all-user-roles"
-			Action: service.RBACUnsetAction,
-			Object: rbacAllUserRolesObject,
-			Effect: service.RBACAllowEffect,
-		},
+		// { // "owner" group "can" "unset" "all-user-roles"
+		// 	Action: service.RBACUnsetAction,
+		// 	Object: rbacAllUserRolesObject,
+		// 	Effect: service.RBACAllowEffect,
+		// },
 	} {
 		if err := authorizationManager.AttachPolicyToUserBySystemOwner(ctx, operator, rbacOwnerGroup, aoe.Action, aoe.Object, aoe.Effect); err != nil {
 			return nil, fmt.Errorf("AttachPolicyToUserBySystemOwner: %w", err)

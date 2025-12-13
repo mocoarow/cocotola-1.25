@@ -4,6 +4,7 @@ load("//bazel:go_test.bzl", "smart_go_test")
 go_library(
     name = "usecase",
     srcs = [
+        "create_first_owner_command.go",
         "create_organization_command.go",
         "verify_password_command.go",
     ],
@@ -20,6 +21,7 @@ go_library(
 smart_go_test(
     name = "usecase_test",
     srcs = [
+        "create_first_owner_command_m_test.go",
         "create_organization_command_m_test.go",
         "verify_password_command_s_test.go",
     ],

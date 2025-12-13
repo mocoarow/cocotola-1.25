@@ -6,8 +6,10 @@ import (
 	"github.com/mocoarow/cocotola-1.25/moonbeam/user/domain"
 )
 
-var RBACSetAction = domain.NewRBACAction("Set")
-var RBACUnsetAction = domain.NewRBACAction("Unset")
+// var RBACSetAction = domain.NewRBACAction("Set")
+// var RBACUnsetAction = domain.NewRBACAction("Unset")
+
+var AnyObject = domain.NewRBACObject("*")
 
 var RBACAllowEffect = domain.NewRBACEffect("allow")
 var RBACDenyEffect = domain.NewRBACEffect("deny")
