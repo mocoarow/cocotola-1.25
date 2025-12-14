@@ -6,6 +6,7 @@ vars:
     - hello-world
     - third-party-library
     - moonbeam
+    - cocotola-auth
     - cocotola-empty
     - cocotola-lib
   GO_APPS:

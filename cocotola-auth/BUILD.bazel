@@ -1,0 +1,21 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "cocotola-auth_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//cocotola-lib/config",
+        "//cocotola-lib/controller/gin",
+        "//cocotola-lib/domain",
+        "//cocotola-lib/gateway",
+        "@com_github_gin_gonic_gin//:gin",
+    ],
+)
+
+go_binary(
+    name = "cocotola-auth",
+    embed = [":cocotola-auth_lib"],
+    visibility = ["//visibility:public"],
+)
