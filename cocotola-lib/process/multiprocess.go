@@ -12,43 +12,43 @@ import (
 	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
 )
 
-type Process func() error
+type RunProcess func() error
 
-type ProcessFunc func(ctx context.Context) Process
+type RunProcessFunc func(ctx context.Context) RunProcess
 
-func WithAppServerProcess(router http.Handler, port int, readHeaderTimeout, shutdownTime time.Duration) ProcessFunc {
-	return func(ctx context.Context) Process {
+func WithAppServerProcess(router http.Handler, port int, readHeaderTimeout, shutdownTime time.Duration) RunProcessFunc {
+	return func(ctx context.Context) RunProcess {
 		return func() error {
 			return libcontroller.AppServerProcess(ctx, router, port, readHeaderTimeout, shutdownTime)
 		}
 	}
 }
-func WithMetricsServerProcess(port int, shutdownTime int) ProcessFunc {
-	return func(ctx context.Context) Process {
+func WithMetricsServerProcess(port int, shutdownTime int) RunProcessFunc {
+	return func(ctx context.Context) RunProcess {
 		return func() error {
 			return MetricsServerProcess(ctx, port, shutdownTime)
 		}
 	}
 }
 
-func WithSignalWatchProcess() ProcessFunc {
-	return func(ctx context.Context) Process {
+func WithSignalWatchProcess() RunProcessFunc {
+	return func(ctx context.Context) RunProcess {
 		return func() error {
 			return SignalWatchProcess(ctx)
 		}
 	}
 }
 
-func Run(ctx context.Context, processFuncs ...ProcessFunc) int {
+func Run(ctx context.Context, runFuncs ...RunProcessFunc) int {
 	var eg *errgroup.Group
 	eg, ctx = errgroup.WithContext(ctx)
 
 	errMu := &sync.Mutex{}
 	var nonCanceledErr error
 
-	for _, pf := range processFuncs {
+	for _, rf := range runFuncs {
 		eg.Go(func() error {
-			err := pf(ctx)()
+			err := rf(ctx)()
 			if err != nil && !errors.Is(err, context.Canceled) {
 				errMu.Lock()
 				if nonCanceledErr == nil {

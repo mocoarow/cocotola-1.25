@@ -11,7 +11,7 @@ go_library(
         "//cocotola-lib/config",
         "//cocotola-lib/controller/gin",
         "//cocotola-lib/domain",
-        "//cocotola-lib/gateway",
+        "//cocotola-lib/process",
         "@com_github_gin_gonic_gin//:gin",
     ],
 )

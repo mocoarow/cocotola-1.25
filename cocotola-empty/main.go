@@ -15,7 +15,7 @@ import (
 	libconfig "github.com/mocoarow/cocotola-1.25/cocotola-lib/config"
 	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
-	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
+	libprocess "github.com/mocoarow/cocotola-1.25/cocotola-lib/process"
 )
 
 type ServerConfig struct {
@@ -88,6 +88,7 @@ func run() (int, error) {
 		},
 	}
 
+	// init log
 	shutdownlog, err := libconfig.InitLog(ctx, cfg.Log, AppName)
 	if err != nil {
 		return 0, fmt.Errorf("init log: %w", err)
@@ -102,10 +103,26 @@ func run() (int, error) {
 	}
 	defer shutdownTrace()
 
-	router := libcontroller.InitRootRouterGroup(ctx, cfg.CORS, cfg.Log, cfg.Debug, AppName)
+	// init gin
+	logConfig := libcontroller.LogConfig{
+		Enabled: map[string]bool{
+			"accessLog":             true,
+			"accessLogRequestBody":  true,
+			"accessLogResponseBody": true,
+		},
+	}
+	ginConfig := libcontroller.GinConfig{
+		CORS: libconfig.InitCORS(cfg.CORS),
+		Log:  logConfig,
+		Debug: libcontroller.DebugConfig{
+			Gin:  cfg.Debug.Gin,
+			Wait: cfg.Debug.Wait,
+		},
+	}
+	router := libcontroller.InitRootRouterGroup(ctx, &ginConfig, AppName)
 
 	// api
-	api := libcontroller.InitAPIRouterGroup(ctx, router, AppName, cfg.Log)
+	api := libcontroller.InitAPIRouterGroup(ctx, router, AppName, &logConfig)
 	// v1
 	v1 := api.Group("v1")
 	// public router
@@ -135,10 +152,10 @@ func run() (int, error) {
 
 	readHeaderTimeout := time.Duration(cfg.Server.ReadHeaderTimeoutSec) * time.Second
 	shutdownTime := time.Duration(cfg.Shutdown.TimeSec1) * time.Second
-	result := libgateway.Run(ctx,
-		libgateway.WithAppServerProcess(router, cfg.Server.HTTPPort, readHeaderTimeout, shutdownTime),
-		libgateway.WithSignalWatchProcess(),
-		libgateway.WithMetricsServerProcess(cfg.Server.MetricsPort, cfg.Shutdown.TimeSec1),
+	result := libprocess.Run(ctx,
+		libprocess.WithAppServerProcess(router, cfg.Server.HTTPPort, readHeaderTimeout, shutdownTime),
+		libprocess.WithSignalWatchProcess(),
+		libprocess.WithMetricsServerProcess(cfg.Server.MetricsPort, cfg.Shutdown.TimeSec1),
 	)
 
 	gracefulShutdownTime2 := time.Duration(cfg.Shutdown.TimeSec2) * time.Second

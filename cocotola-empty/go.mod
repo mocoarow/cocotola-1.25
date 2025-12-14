@@ -4,7 +4,7 @@ go 1.25.4
 
 require (
 	github.com/gin-gonic/gin v1.11.0
-	github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251214050853-82db858f4c03
+	github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251214123357-3ba88f85f019
 )
 
 require (
@@ -62,7 +62,6 @@ require (
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mocoarow/cocotola-1.25/moonbeam v0.0.0-20251214050853-82db858f4c03 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect

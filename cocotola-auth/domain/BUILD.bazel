@@ -11,6 +11,7 @@ go_library(
         "space.go",
         "system_admin.go",
         "system_owner.go",
+        "system_token.go",
         "user.go",
         "user_group.go",
     ],
