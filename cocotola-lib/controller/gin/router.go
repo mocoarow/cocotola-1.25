@@ -11,15 +11,13 @@ import (
 	sloggin "github.com/samber/slog-gin"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 
-	mblibconfig "github.com/mocoarow/cocotola-1.25/moonbeam/lib/config"
-
 	libconfig "github.com/mocoarow/cocotola-1.25/cocotola-lib/config"
 	libmiddleware "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin/middleware"
 )
 
 type InitRouterGroupFunc func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc)
 
-func InitRootRouterGroup(_ context.Context, corsConfig *mblibconfig.CORSConfig, logConfig *mblibconfig.LogConfig, debugConfig *libconfig.DebugConfig, appName string) *gin.Engine {
+func InitRootRouterGroup(_ context.Context, corsConfig *libconfig.CORSConfig, logConfig *libconfig.LogConfig, debugConfig *libconfig.DebugConfig, appName string) *gin.Engine {
 	if !debugConfig.Gin {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -27,7 +25,7 @@ func InitRootRouterGroup(_ context.Context, corsConfig *mblibconfig.CORSConfig, 
 	router := gin.New()
 
 	// cors
-	ginCorsConfig := mblibconfig.InitCORS(corsConfig)
+	ginCorsConfig := libconfig.InitCORS(corsConfig)
 
 	router.Use(gin.Recovery())
 	router.Use(cors.New(ginCorsConfig))
@@ -67,7 +65,7 @@ func InitRootRouterGroup(_ context.Context, corsConfig *mblibconfig.CORSConfig, 
 	return router
 }
 
-func InitAPIRouterGroup(_ context.Context, parentRouterGroup gin.IRouter, appName string, logConfig *mblibconfig.LogConfig) *gin.RouterGroup {
+func InitAPIRouterGroup(_ context.Context, parentRouterGroup gin.IRouter, appName string, logConfig *libconfig.LogConfig) *gin.RouterGroup {
 	api := parentRouterGroup.Group("api")
 	api.Use(otelgin.Middleware(appName))
 	if value, ok := logConfig.Enabled["accessLog"]; ok && value {

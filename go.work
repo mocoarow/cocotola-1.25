@@ -2,8 +2,8 @@ go 1.25.4
 
 use (
 	.
-	./hello-world
 	./moonbeam
+	./hello-world
 	./third-party-library
 	./cocotola-lib
 	./cocotola-empty
