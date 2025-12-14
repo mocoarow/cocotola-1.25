@@ -1,0 +1,24 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "service",
+    srcs = [
+        "authorization_manager.go",
+        "init.go",
+        "organization_repository.go",
+        "pair_of_user_and_group_repository.go",
+        "rbac_repository.go",
+        "repository_factory.go",
+        "space_manager.go",
+        "space_repository.go",
+        "user_group_repository.go",
+        "user_repository.go",
+    ],
+    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth/service",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-auth/domain",
+        "//cocotola-lib/domain",
+        "//cocotola-lib/service",
+    ],
+)

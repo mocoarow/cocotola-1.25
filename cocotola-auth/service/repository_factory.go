@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	libservice "github.com/mocoarow/cocotola-1.25/moonbeam/lib/service"
+	libservice "github.com/mocoarow/cocotola-1.25/cocotola-lib/service"
 )
 
 type RepositoryFactory interface {

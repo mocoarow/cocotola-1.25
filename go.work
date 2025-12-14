@@ -5,6 +5,7 @@ use (
 	./moonbeam
 	./hello-world
 	./third-party-library
+	./cocotola-auth
 	./cocotola-lib
 	./cocotola-empty
 )

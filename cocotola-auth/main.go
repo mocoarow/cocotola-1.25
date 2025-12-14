@@ -14,8 +14,8 @@ import (
 
 	libconfig "github.com/mocoarow/cocotola-1.25/cocotola-lib/config"
 	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
-	libdomain "github.com/mocoarow/cocotola-1.25/moonbeam/lib/domain"
 )
 
 type ServerConfig struct {
@@ -33,7 +33,7 @@ type Config struct {
 	Debug    *libconfig.DebugConfig    `yaml:"debug"`
 }
 
-const AppName = "cocotola-empty"
+const AppName = "cocotola-auth"
 
 func main() {
 	exitCode, err := run()
@@ -88,6 +88,7 @@ func run() (int, error) {
 		},
 	}
 
+	// init log
 	shutdownlog, err := libconfig.InitLog(ctx, cfg.Log, AppName)
 	if err != nil {
 		return 0, fmt.Errorf("init log: %w", err)
