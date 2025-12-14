@@ -8,6 +8,7 @@ go_library(
         "config_db.go",
         "config_db_mysql.go",
         "config_db_sqlite3.go",
+        "config_env.go",
         "config_log.go",
         "config_log_otlp.go",
         "config_log_uptrace.go",

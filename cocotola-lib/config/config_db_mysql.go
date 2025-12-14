@@ -14,6 +14,7 @@ import (
 	"gorm.io/plugin/opentelemetry/tracing"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
+	"github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 )
 
 type MySQLConfig struct {
@@ -24,22 +25,23 @@ type MySQLConfig struct {
 	Database string `yaml:"database" validate:"required"`
 }
 
-func initDBMySQL(ctx context.Context, cfg *DBConfig, logLevel slog.Level, appName string) (*gorm.DB, *sql.DB, error) {
+func initDBMySQL(ctx context.Context, cfg *DBConfig, logLevel slog.Level, appName string) (gateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
 	db, err := OpenMySQL(cfg.MySQL, logLevel, appName)
 	if err != nil {
-		return nil, nil, fmt.Errorf("OpenMySQL: %w", err)
+		return nil, nil, nil, fmt.Errorf("OpenMySQL: %w", err)
 	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
-		return nil, nil, fmt.Errorf("DB: %w", err)
+		return nil, nil, nil, fmt.Errorf("DB: %w", err)
 	}
 
 	if err := sqlDB.PingContext(ctx); err != nil {
-		return nil, nil, fmt.Errorf("ping: %w", err)
+		return nil, nil, nil, fmt.Errorf("ping: %w", err)
 	}
 
-	return db, sqlDB, nil
+	dialect := gateway.DialectMySQL{}
+	return &dialect, db, sqlDB, nil
 }
 
 func OpenMySQLWithDSN(dsn string, logLevel slog.Level, appName string) (*gorm.DB, error) {
