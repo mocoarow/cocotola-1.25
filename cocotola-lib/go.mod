@@ -11,7 +11,6 @@ require (
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/hashicorp/go-multierror v1.1.1
-	github.com/mocoarow/cocotola-1.25/moonbeam v0.0.0-20251214032330-1eef9d45ebc7
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/remychantenay/slog-otel v1.3.4

@@ -162,10 +162,10 @@ github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWE
 github.com/mattn/go-isatty v0.0.20/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
 github.com/mattn/go-sqlite3 v1.14.22 h1:2gZY6PC6kBnID23Tichd1K+Z0oS6nE/XwU+Vz/5o4kU=
 github.com/mattn/go-sqlite3 v1.14.22/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
-github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251214032330-1eef9d45ebc7 h1:68VKo8bEkrt5hxLZLM+3/HFc0d9uSiic6HjKPwSApsM=
-github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251214032330-1eef9d45ebc7/go.mod h1:oV8Y38qLTB1UxG2UaPVEsJLHfO6CY4Dv3wEoja5QbZU=
-github.com/mocoarow/cocotola-1.25/moonbeam v0.0.0-20251214032330-1eef9d45ebc7 h1:8Bj2z2i4cNyISbbLgtg5a5qugPUAY/xZUoqSog77He4=
-github.com/mocoarow/cocotola-1.25/moonbeam v0.0.0-20251214032330-1eef9d45ebc7/go.mod h1:NcejJFE3Kv+b87NmdAtbjpaJ60qQs+EswEhpvAd3Jfg=
+github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251214050853-82db858f4c03 h1:fytYPJXmLR3W+XrsovuqRgHqO+ggkHTf5rJdPAoKk4M=
+github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251214050853-82db858f4c03/go.mod h1:/wVjMkCQUhvvo/VR9hV/BgALoMv820LX9OaOAyHq3ZA=
+github.com/mocoarow/cocotola-1.25/moonbeam v0.0.0-20251214050853-82db858f4c03 h1:OxYnqGKtATkuXFKI37SeA1pSgncAFpLNyNrkEoQ27JQ=
+github.com/mocoarow/cocotola-1.25/moonbeam v0.0.0-20251214050853-82db858f4c03/go.mod h1:tT8nnksUhf2pmHBsT9+FINn81n/4uSo0hkC0P5PBLwY=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd h1:TRLaZ9cD/w8PVh93nsPXa1VrQ6jlwL5oN8l14QlcNfg=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=

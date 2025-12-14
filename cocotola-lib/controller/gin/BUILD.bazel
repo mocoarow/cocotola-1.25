@@ -11,7 +11,7 @@ go_library(
     deps = [
         "//cocotola-lib/config",
         "//cocotola-lib/controller/gin/middleware",
-        "//moonbeam/lib/domain",
+        "//cocotola-lib/domain",
         "@com_github_gin_contrib_cors//:cors",
         "@com_github_gin_gonic_gin//:gin",
         "@com_github_samber_slog_gin//:slog-gin",

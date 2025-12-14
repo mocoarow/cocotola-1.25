@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mocoarow/cocotola-1.25/moonbeam/lib/domain"
+	"github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 )
 
 func AppServerProcess(ctx context.Context, router http.Handler, port int, readHeaderTimeout time.Duration, shutdownTime time.Duration) error {

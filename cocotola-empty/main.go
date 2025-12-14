@@ -14,8 +14,8 @@ import (
 
 	libconfig "github.com/mocoarow/cocotola-1.25/cocotola-lib/config"
 	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
-	libdomain "github.com/mocoarow/cocotola-1.25/moonbeam/lib/domain"
 )
 
 type ServerConfig struct {
