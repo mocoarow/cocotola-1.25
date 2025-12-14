@@ -29,9 +29,9 @@ type ServerConfig struct {
 type Config struct {
 	Server   *ServerConfig             `yaml:"server" validate:"required"`
 	Trace    *mblibconfig.TraceConfig  `yaml:"trace" validate:"required"`
-	CORS     *mblibconfig.CORSConfig   `yaml:"cors" validate:"required"`
+	CORS     *libconfig.CORSConfig     `yaml:"cors" validate:"required"`
 	Shutdown *libconfig.ShutdownConfig `yaml:"shutdown" validate:"required"`
-	Log      *mblibconfig.LogConfig    `yaml:"log" validate:"required"`
+	Log      *libconfig.LogConfig      `yaml:"log" validate:"required"`
 	Debug    *libconfig.DebugConfig    `yaml:"debug"`
 }
 
@@ -66,7 +66,7 @@ func run() (int, error) {
 				ProjectID: "mocoarow-25-08",
 			},
 		},
-		CORS: &mblibconfig.CORSConfig{
+		CORS: &libconfig.CORSConfig{
 			AllowOrigins: []string{"*"},
 			AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 			AllowHeaders: []string{"Content-Type"},
@@ -75,7 +75,7 @@ func run() (int, error) {
 			TimeSec1: 10,
 			TimeSec2: 10,
 		},
-		Log: &mblibconfig.LogConfig{
+		Log: &libconfig.LogConfig{
 			Level:    "info",
 			Platform: "gcp",
 			Levels:   nil,
@@ -91,7 +91,17 @@ func run() (int, error) {
 	}
 
 	// init log
-	shutdownlog, err := mblibconfig.InitLog(ctx, cfg.Log, AppName)
+	logConfig := mblibconfig.LogConfig{
+		Level:    "info",
+		Platform: "gcp",
+		Levels:   nil,
+		Enabled:  nil,
+		Exporter: "none",
+		OTLP:     nil,
+		Uptrace:  nil,
+	}
+
+	shutdownlog, err := mblibconfig.InitLog(ctx, &logConfig, AppName)
 	if err != nil {
 		return 0, fmt.Errorf("init log: %w", err)
 	}
