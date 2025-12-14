@@ -5,7 +5,6 @@ vars:
   GO_PROJECTS:
     - hello-world
     - third-party-library
-    - moonbeam
     - cocotola-auth
     - cocotola-empty
     - cocotola-lib
@@ -168,7 +167,3 @@ tasks:
   build-cocotola-empty-remote:
     cmds:
       - bazelisk run --config=remote //cocotola-empty:load
-
-  mockery:
-    cmds:
-      - cd moonbeam && mockery --config .mockery.yaml
