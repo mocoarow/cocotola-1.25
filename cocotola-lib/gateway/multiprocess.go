@@ -9,8 +9,6 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	mblibgateway "github.com/mocoarow/cocotola-1.25/moonbeam/lib/gateway"
-
 	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
 )
 
@@ -28,7 +26,7 @@ func WithAppServerProcess(router http.Handler, port int, readHeaderTimeout, shut
 func WithMetricsServerProcess(port int, shutdownTime int) ProcessFunc {
 	return func(ctx context.Context) Process {
 		return func() error {
-			return mblibgateway.MetricsServerProcess(ctx, port, shutdownTime)
+			return MetricsServerProcess(ctx, port, shutdownTime)
 		}
 	}
 }
@@ -36,7 +34,7 @@ func WithMetricsServerProcess(port int, shutdownTime int) ProcessFunc {
 func WithSignalWatchProcess() ProcessFunc {
 	return func(ctx context.Context) Process {
 		return func() error {
-			return mblibgateway.SignalWatchProcess(ctx)
+			return SignalWatchProcess(ctx)
 		}
 	}
 }

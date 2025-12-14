@@ -7,6 +7,7 @@ vars:
     - third-party-library
     - moonbeam
     - cocotola-empty
+    - cocotola-lib
   GO_APPS:
     - cocotola-empty
 
