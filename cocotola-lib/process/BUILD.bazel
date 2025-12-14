@@ -1,0 +1,19 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "process",
+    srcs = [
+        "metrics_server.go",
+        "multiprocess.go",
+        "signal_watch.go",
+    ],
+    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-lib/process",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-lib/controller/gin",
+        "//cocotola-lib/domain",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_prometheus_client_golang//prometheus/promhttp",
+        "@org_golang_x_sync//errgroup",
+    ],
+)

@@ -49,6 +49,7 @@ use_repo(
     "com_github_casbin_casbin_v2",
     "com_github_casbin_gorm_adapter_v3",
     "com_github_pkg_errors",
+    "in_yaml_go_yaml_v4",
 )
 
 # pkg

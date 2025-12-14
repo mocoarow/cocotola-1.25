@@ -1,0 +1,88 @@
+package config
+
+import (
+	"embed"
+	"fmt"
+	"os"
+
+	"go.yaml.in/yaml/v4"
+
+	mblibdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
+
+	libconfig "github.com/mocoarow/cocotola-1.25/cocotola-lib/config"
+)
+
+type ServerConfig struct {
+	HTTPPort             int `yaml:"httpPort" validate:"required"`
+	MetricsPort          int `yaml:"metricsPort" validate:"required"`
+	ReadHeaderTimeoutSec int `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
+}
+
+type CoreAPIClientConfig struct {
+	Endpoint   string `yaml:"endpoint" validate:"required"`
+	Username   string `yaml:"username" validate:"required"`
+	Password   string `yaml:"password" validate:"required"`
+	TimeoutSec int    `yaml:"timeoutSec" validate:"gte=1"`
+}
+
+type AuthAPIClientConfig struct {
+	Endpoint   string `yaml:"endpoint" validate:"required"`
+	Username   string `yaml:"username" validate:"required"`
+	Password   string `yaml:"password" validate:"required"`
+	TimeoutSec int    `yaml:"timeoutSec" validate:"gte=1"`
+}
+
+type AuthAPIServerConfig struct {
+	Username string `yaml:"username" validate:"required"`
+	Password string `yaml:"password" validate:"required"`
+}
+
+type AuthConfig struct {
+	CoreAPIClient       *CoreAPIClientConfig `yaml:"coreApiClient" validate:"required"`
+	AuthAPIClient       *AuthAPIClientConfig `yaml:"authApiClient" validate:"required"`
+	AuthAPIServer       *AuthAPIServerConfig `yaml:"authApiServer" validate:"required"`
+	SigningKey          string               `yaml:"signingKey" validate:"required"`
+	AccessTokenTTLMin   int                  `yaml:"accessTokenTtlMin" validate:"gte=1"`
+	RefreshTokenTTLHour int                  `yaml:"refreshTokenTtlHour" validate:"gte=1"`
+	GoogleProjectID     string               `yaml:"googleProjectId" validate:"required"`
+	GoogleCallbackURL   string               `yaml:"googleCallbackUrl" validate:"required"`
+	GoogleClientID      string               `yaml:"googleClientId" validate:"required"`
+	GoogleClientSecret  string               `yaml:"googleClientSecret" validate:"required"`
+	GoogleAPITimeoutSec int                  `yaml:"googleApiTimeoutSec" validate:"gte=1"`
+	OwnerLoginID        string               `yaml:"ownerLoginId" validate:"required"`
+	OwnerPassword       string               `yaml:"ownerPassword" validate:"required"`
+}
+
+type Config struct {
+	App      *AuthConfig               `yaml:"app" validate:"required"`
+	Server   *ServerConfig             `yaml:"server" validate:"required"`
+	DB       *libconfig.DBConfig       `yaml:"db" validate:"required"`
+	Trace    *libconfig.TraceConfig    `yaml:"trace" validate:"required"`
+	CORS     *libconfig.CORSConfig     `yaml:"cors" validate:"required"`
+	Shutdown *libconfig.ShutdownConfig `yaml:"shutdown" validate:"required"`
+	Log      *libconfig.LogConfig      `yaml:"log" validate:"required"`
+	Debug    *libconfig.DebugConfig    `yaml:"debug"`
+}
+
+//go:embed config.yml
+var config embed.FS
+
+func LoadConfig() (*Config, error) {
+	filename := "config.yml"
+	confContent, err := config.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("config.ReadFile. filename: %s, err: %w", filename, err)
+	}
+
+	confContent = []byte(os.Expand(string(confContent), libconfig.ExpandEnvWithDefaults))
+	var conf Config
+	if err := yaml.Unmarshal(confContent, &conf); err != nil {
+		return nil, fmt.Errorf("yaml.Unmarshal. filename: %s, err: %w", filename, err)
+	}
+
+	if err := mblibdomain.Validator.Struct(&conf); err != nil {
+		return nil, fmt.Errorf("Validator.Struct. filename: %s, err: %w", filename, err)
+	}
+
+	return &conf, nil
+}

@@ -6,10 +6,11 @@ require (
 	github.com/casbin/casbin/v2 v2.135.0
 	github.com/casbin/gorm-adapter/v3 v3.39.0
 	github.com/gin-gonic/gin v1.11.0
-	github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251214050853-82db858f4c03
+	github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251214123357-3ba88f85f019
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/otel v1.39.0
+	go.yaml.in/yaml/v4 v4.0.0-rc.3
 	golang.org/x/crypto v0.46.0
 	gorm.io/gorm v1.31.1
 )
@@ -75,7 +76,6 @@ require (
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/microsoft/go-mssqldb v1.9.5 // indirect
-	github.com/mocoarow/cocotola-1.25/moonbeam v0.0.0-20251214050853-82db858f4c03 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
