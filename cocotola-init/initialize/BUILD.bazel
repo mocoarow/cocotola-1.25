@@ -1,0 +1,27 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "initialize",
+    srcs = [
+        "helper.go",
+        "init.go",
+        "initialize.go",
+        "initialize_guest.go",
+        "initialize_organization.go",
+    ],
+    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-init/initialize",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-auth/domain",
+        "//cocotola-auth/gateway",
+        "//cocotola-auth/service",
+        "//cocotola-init/config",
+        "//cocotola-init/usecase",
+        "//cocotola-lib/config",
+        "//cocotola-lib/domain",
+        "//cocotola-lib/gateway",
+        "//cocotola-lib/service",
+        "@io_gorm_gorm//:gorm",
+        "@io_opentelemetry_go_otel//:otel",
+    ],
+)

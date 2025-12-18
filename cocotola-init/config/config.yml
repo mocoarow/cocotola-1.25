@@ -1,0 +1,30 @@
+---
+app:
+  ownerLoginId: ${OWNER_LOGIN_ID}
+  ownerPassword: ${OWNER_PASSWORD}
+db:
+  driverName: ${INIT_DB_DRIVER_NAME:-sqlite3}
+  migration: ${INIT_DB_MIGRATION:}
+  sqlite3:
+    file: ${INIT_SQLITE3_FILE:-auth.db}
+  mysql:
+    username: ${INIT_MYSQL_USERNAME}
+    password: ${INIT_MYSQL_PASSWORD}
+    host: ${INIT_MYSQL_HOST:-127.0.0.1}
+    port: ${INIT_MYSQL_PORT:-3306}
+    database: ${INIT_MYSQL_DATABASE:}
+  postgres:
+    username: ${INIT_POSTGRES_USERNAME}
+    password: ${INIT_POSTGRES_PASSWORD}
+    host: ${INIT_POSTGRES_HOST:-127.0.0.1}
+    port: ${INIT_POSTGRES_PORT:-5432}
+    database: ${INIT_POSTGRES_DATABASE:-postgres}
+trace:
+  exporter: ${TRACE_EXPORTER:-none}
+  otlp:
+    endpoint: ${TRACE_OTLP_ENDPOINT}
+    insecure: ${TRACE_OTLP_INSECURE:-true}
+    useGoogleAuth: ${TRACE_OTLP_USE_GOOGLE_AUTH:-false}
+    googleAuthAudienceUrl: ${TRACE_OTLP_GOOGLE_AUTH_AUDIENCE_URL:-https://cloudtrace.googleapis.com/}
+log:
+  level: ${INIT_LOG_LEVEL:-info}
