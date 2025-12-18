@@ -108,7 +108,7 @@ func (r *rbacEffect) Effect() string {
 	return r.value
 }
 
-type RBACActionObjectEffect struct {
+type ActionObjectEffect struct {
 	Action RBACAction
 	Object RBACObject
 	Effect RBACEffect

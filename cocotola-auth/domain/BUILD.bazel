@@ -4,6 +4,7 @@ load("//bazel:go_test.bzl", "smart_go_test")
 go_library(
     name = "domain",
     srcs = [
+        "guest.go",
         "init.go",
         "organization.go",
         "owner.go",
@@ -23,6 +24,7 @@ go_library(
 smart_go_test(
     name = "domain_test",
     srcs = [
+        "init_test.go",
         "organization_s_test.go",
         "owner_s_test.go",
         "space_s_test.go",

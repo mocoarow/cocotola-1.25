@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/gateway"
 )
 
@@ -19,11 +18,10 @@ func Test_organizationRepository_CreateOrganization(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testResource) {
 		t.Helper()
-		sysAd := domain.NewSystemAdmin()
 		orgName := RandString(orgNameLength)
 
 		orgRepo := gateway.NewOrganizationRepository(ctx, ts.db)
-		_, err := orgRepo.CreateOrganization(ctx, sysAd, orgName)
+		_, err := orgRepo.CreateOrganization(ctx, systemAdmin, orgName)
 		require.NoError(t, err)
 	}
 	testDB(t, fn)
@@ -33,13 +31,12 @@ func Test_organizationRepository_FindOrganizationByID(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testResource) {
 		t.Helper()
-		sysAd := domain.NewSystemAdmin()
 		orgName := RandString(orgNameLength)
 
 		orgRepo := gateway.NewOrganizationRepository(ctx, ts.db)
-		orgID, err := orgRepo.CreateOrganization(ctx, sysAd, orgName)
+		orgID, err := orgRepo.CreateOrganization(ctx, systemAdmin, orgName)
 		require.NoError(t, err)
-		org, err := orgRepo.FindOrganizationByID(ctx, sysAd, orgID)
+		org, err := orgRepo.FindOrganizationByID(ctx, systemAdmin, orgID)
 		require.NoError(t, err)
 		assert.Equal(t, orgName, org.Name)
 	}
@@ -50,13 +47,12 @@ func Test_organizationRepository_FindOrganizationByName(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testResource) {
 		t.Helper()
-		sysAd := domain.NewSystemAdmin()
 		orgName := RandString(orgNameLength)
 
 		orgRepo := gateway.NewOrganizationRepository(ctx, ts.db)
-		_, err := orgRepo.CreateOrganization(ctx, sysAd, orgName)
+		_, err := orgRepo.CreateOrganization(ctx, systemAdmin, orgName)
 		require.NoError(t, err)
-		org, err := orgRepo.FindOrganizationByName(ctx, sysAd, orgName)
+		org, err := orgRepo.FindOrganizationByName(ctx, systemAdmin, orgName)
 		require.NoError(t, err)
 		assert.Equal(t, orgName, org.Name)
 	}

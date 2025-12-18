@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/gateway"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
@@ -37,15 +36,14 @@ func TestUserRepository_CreateAndFindUser_shouldReturnUser_whenOwnerCreates(t *t
 		require.NoError(t, err)
 		assert.Equal(t, user.GetUserID().Int(), userByLogin.GetUserID().Int())
 
-		sysAdmin := domain.NewSystemAdmin()
-		sysOwnerByID, err := userRepo.FindSystemOwnerByOrganizationID(ctx, sysAdmin, orgID)
+		sysOwnerByID, err := userRepo.FindSystemOwnerByOrganizationID(ctx, systemAdmin, orgID)
 		require.NoError(t, err)
 		assert.Equal(t, service.SystemOwnerLoginID, sysOwnerByID.LoginID)
 
 		orgRepo := gateway.NewOrganizationRepository(ctx, tr.db)
 		org, err := orgRepo.GetOrganization(ctx, owner)
 		require.NoError(t, err)
-		sysOwnerByName, err := userRepo.FindSystemOwnerByOrganizationName(ctx, sysAdmin, org.Name)
+		sysOwnerByName, err := userRepo.FindSystemOwnerByOrganizationName(ctx, systemAdmin, org.Name)
 		require.NoError(t, err)
 		assert.Equal(t, sysOwnerByID.GetUserID().Int(), sysOwnerByName.GetUserID().Int())
 	}

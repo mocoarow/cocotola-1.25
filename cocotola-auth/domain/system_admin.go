@@ -4,7 +4,7 @@ type SystemAdmin struct {
 	UserID *UserID
 }
 
-func NewSystemAdmin() *SystemAdmin {
+func NewSystemAdmin(_ SystemToken) *SystemAdmin {
 	return &SystemAdmin{
 		UserID: SystemAdminID,
 	}

@@ -7,14 +7,10 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	userdomain "github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 )
 
 func TestNewSystemAdmin_shouldReturnSystemAdmin_whenCalled(t *testing.T) {
 	t.Parallel()
-
-	systemAdmin := userdomain.NewSystemAdmin()
 
 	require.NotNil(t, systemAdmin)
 	assert.NotNil(t, systemAdmin.UserID)
@@ -26,8 +22,6 @@ func TestNewSystemAdmin_shouldReturnSystemAdmin_whenCalled(t *testing.T) {
 func TestSystemAdmin_IsSystemAdmin_shouldReturnTrue_whenCalled(t *testing.T) {
 	t.Parallel()
 
-	systemAdmin := userdomain.NewSystemAdmin()
-
 	result := systemAdmin.IsSystemAdmin()
 
 	assert.True(t, result)
@@ -35,8 +29,6 @@ func TestSystemAdmin_IsSystemAdmin_shouldReturnTrue_whenCalled(t *testing.T) {
 
 func TestSystemAdmin_GetUserID_shouldReturnUserID_whenCalled(t *testing.T) {
 	t.Parallel()
-
-	systemAdmin := userdomain.NewSystemAdmin()
 
 	userID := systemAdmin.GetUserID()
 
