@@ -4,11 +4,11 @@ go 1.25.4
 
 require (
 	github.com/gin-gonic/gin v1.11.0
-	github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251214123357-3ba88f85f019
+	github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251214133757-7c31f68d781b
 )
 
 require (
-	cloud.google.com/go/auth v0.17.0 // indirect
+	cloud.google.com/go/auth v0.18.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
 	cloud.google.com/go/trace v1.11.7 // indirect
@@ -41,7 +41,7 @@ require (
 	github.com/go-playground/validator/v10 v10.29.0 // indirect
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
-	github.com/goccy/go-yaml v1.19.0 // indirect
+	github.com/goccy/go-yaml v1.19.1 // indirect
 	github.com/golang-migrate/migrate/v4 v4.19.1 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
@@ -69,7 +69,7 @@ require (
 	github.com/orandin/slog-gorm v1.4.0 // indirect
 	github.com/paulmach/orb v0.12.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
-	github.com/pierrec/lz4/v4 v4.1.22 // indirect
+	github.com/pierrec/lz4/v4 v4.1.23 // indirect
 	github.com/prometheus/client_golang v1.23.2 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.67.4 // indirect

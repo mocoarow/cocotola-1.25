@@ -5,6 +5,7 @@ use (
 	./hello-world
 	./third-party-library
 	./cocotola-auth
+	./cocotola-init
 	./cocotola-lib
 	./cocotola-empty
 )
