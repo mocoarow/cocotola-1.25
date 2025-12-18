@@ -41,6 +41,7 @@ smart_go_test(
         "gateway_m_test.go",
         "helper_test.go",
         "init_m_test.go",
+        "init_test.go",
         "organization_repository_m_test.go",
         "pair_of_user_and_group_repository_m_test.go",
         "rbac_repository_m_test.go",

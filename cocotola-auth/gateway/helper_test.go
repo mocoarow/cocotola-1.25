@@ -17,16 +17,15 @@ func setupTestOrganization(ctx context.Context, t *testing.T, tr testResource) (
 	t.Helper()
 	orgRepo := gateway.NewOrganizationRepository(ctx, tr.db)
 	userRepo := tr.rf.NewUserRepository(ctx)
-	sysAdmin := domain.NewSystemAdmin()
 
 	orgName := fmt.Sprintf("org-%s", RandString(8))
-	orgID, err := orgRepo.CreateOrganization(ctx, sysAdmin, orgName)
+	orgID, err := orgRepo.CreateOrganization(ctx, systemAdmin, orgName)
 	require.NoError(t, err)
 
-	_, err = userRepo.CreateSystemOwner(ctx, sysAdmin, orgID)
+	_, err = userRepo.CreateSystemOwner(ctx, systemAdmin, orgID)
 	require.NoError(t, err)
 
-	sysOwner, err := userRepo.FindSystemOwnerByOrganizationID(ctx, sysAdmin, orgID)
+	sysOwner, err := userRepo.FindSystemOwnerByOrganizationID(ctx, systemAdmin, orgID)
 	require.NoError(t, err)
 
 	ownerParam := testNewCreateUserParameter(t, fmt.Sprintf("owner_%s", RandString(6)), fmt.Sprintf("Owner %s", RandString(6)), "password-owner")

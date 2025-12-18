@@ -7,7 +7,7 @@ import (
 
 	"go.yaml.in/yaml/v4"
 
-	mblibdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
+	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 
 	libconfig "github.com/mocoarow/cocotola-1.25/cocotola-lib/config"
 )
@@ -49,8 +49,8 @@ type AuthConfig struct {
 	GoogleClientID      string               `yaml:"googleClientId" validate:"required"`
 	GoogleClientSecret  string               `yaml:"googleClientSecret" validate:"required"`
 	GoogleAPITimeoutSec int                  `yaml:"googleApiTimeoutSec" validate:"gte=1"`
-	OwnerLoginID        string               `yaml:"ownerLoginId" validate:"required"`
-	OwnerPassword       string               `yaml:"ownerPassword" validate:"required"`
+	// OwnerLoginID        string               `yaml:"ownerLoginId" validate:"required"`
+	// OwnerPassword       string               `yaml:"ownerPassword" validate:"required"`
 }
 
 type Config struct {
@@ -80,7 +80,7 @@ func LoadConfig() (*Config, error) {
 		return nil, fmt.Errorf("yaml.Unmarshal. filename: %s, err: %w", filename, err)
 	}
 
-	if err := mblibdomain.Validator.Struct(&conf); err != nil {
+	if err := libdomain.Validator.Struct(&conf); err != nil {
 		return nil, fmt.Errorf("Validator.Struct. filename: %s, err: %w", filename, err)
 	}
 

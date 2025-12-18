@@ -3,11 +3,7 @@ load("//bazel:go_test.bzl", "smart_go_test")
 
 go_library(
     name = "usecase",
-    srcs = [
-        "create_first_owner_command.go",
-        "create_organization_command.go",
-        "verify_password_command.go",
-    ],
+    srcs = ["verify_password_command.go"],
     importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase",
     visibility = ["//visibility:public"],
     deps = [
@@ -20,22 +16,14 @@ go_library(
 
 smart_go_test(
     name = "usecase_test",
-    srcs = [
-        "create_first_owner_command_m_test.go",
-        "create_organization_command_m_test.go",
-        "verify_password_command_s_test.go",
-    ],
+    srcs = ["verify_password_command_s_test.go"],
     deps = [
         ":usecase",
         "//cocotola-auth/domain",
-        "//cocotola-auth/gateway",
         "//cocotola-auth/service",
         "//cocotola-auth/service/mocks",
         "//cocotola-lib/domain",
-        "//cocotola-lib/gateway",
-        "//cocotola-lib/testlib/gateway",
         "@com_github_stretchr_testify//mock",
         "@com_github_stretchr_testify//require",
-        "@io_gorm_gorm//:gorm",
     ],
 )
