@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
-	libconfig "github.com/mocoarow/cocotola-1.25/cocotola-lib/config"
 	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 
@@ -111,7 +110,7 @@ import (
 // 	}
 // }
 
-func Initialize(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, appName string, dbConn *libconfig.DBConnection, logConfig *libcontroller.LogConfig, authConfig *config.AuthConfig) error {
+func Initialize(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, appName string, dbConn *libgateway.DBConnection, logConfig *libcontroller.LogConfig, authConfig *config.AuthConfig) error {
 	ctx, span := tracer.Start(ctx, "Initialize")
 	defer span.End()
 
@@ -122,7 +121,7 @@ func Initialize(ctx context.Context, systemToken domain.SystemToken, parent gin.
 	return nil
 }
 
-func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, appName string, dbConn *libconfig.DBConnection, logConfig *libcontroller.LogConfig, authConfig *config.AuthConfig) error {
+func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, appName string, dbConn *libgateway.DBConnection, logConfig *libcontroller.LogConfig, authConfig *config.AuthConfig) error {
 	// logger := slog.Default().With(slog.String(mbliblog.LoggerNameKey, domain.AppName+"initApp"))
 
 	// cocotolaAuthCallbackClient := initCocotolaAuthCallbackClient(authConfig)

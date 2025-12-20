@@ -10,10 +10,23 @@ import (
 	"time"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
+	"github.com/mocoarow/cocotola-1.25/cocotola-lib/process"
 )
 
-func AppServerProcess(ctx context.Context, router http.Handler, port int, readHeaderTimeout time.Duration, shutdownTime time.Duration) error {
-	logger := slog.Default().With(slog.String(domain.LoggerNameKey, "AppServerProcess"))
+type ShutdownConfig struct {
+	TimeSec1 int `yaml:"timeSec1" validate:"gte=1"`
+	TimeSec2 int `yaml:"timeSec2" validate:"gte=1"`
+}
+
+func WithWebServerProcess(router http.Handler, port int, readHeaderTimeout, shutdownTime time.Duration) process.RunProcessFunc {
+	return func(ctx context.Context) process.RunProcess {
+		return func() error {
+			return WebServerProcess(ctx, router, port, readHeaderTimeout, shutdownTime)
+		}
+	}
+}
+func WebServerProcess(ctx context.Context, router http.Handler, port int, readHeaderTimeout time.Duration, shutdownTime time.Duration) error {
+	logger := slog.Default().With(slog.String(domain.LoggerNameKey, "WebServerProcess"))
 
 	httpServer := http.Server{ //nolint:exhaustruct
 		Addr:              ":" + strconv.Itoa(port),

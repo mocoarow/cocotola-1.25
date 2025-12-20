@@ -4,7 +4,6 @@ app:
   ownerPassword: ${OWNER_PASSWORD}
 db:
   driverName: ${INIT_DB_DRIVER_NAME:-sqlite3}
-  migration: ${INIT_DB_MIGRATION:}
   sqlite3:
     file: ${INIT_SQLITE3_FILE:-auth.db}
   mysql:
@@ -12,7 +11,7 @@ db:
     password: ${INIT_MYSQL_PASSWORD}
     host: ${INIT_MYSQL_HOST:-127.0.0.1}
     port: ${INIT_MYSQL_PORT:-3306}
-    database: ${INIT_MYSQL_DATABASE:}
+    database: ${INIT_MYSQL_DATABASE}
   postgres:
     username: ${INIT_POSTGRES_USERNAME}
     password: ${INIT_POSTGRES_PASSWORD}
@@ -28,3 +27,4 @@ trace:
     googleAuthAudienceUrl: ${TRACE_OTLP_GOOGLE_AUTH_AUDIENCE_URL:-https://cloudtrace.googleapis.com/}
 log:
   level: ${INIT_LOG_LEVEL:-info}
+  exporter: ${INIT_LOG_EXPORTER:-none}

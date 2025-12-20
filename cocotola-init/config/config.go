@@ -7,9 +7,9 @@ import (
 
 	"go.yaml.in/yaml/v4"
 
-	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
-
 	libconfig "github.com/mocoarow/cocotola-1.25/cocotola-lib/config"
+	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
+	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 )
 
 type InitConfig struct {
@@ -18,10 +18,10 @@ type InitConfig struct {
 }
 
 type Config struct {
-	App   *InitConfig            `yaml:"app" validate:"required"`
-	DB    *libconfig.DBConfig    `yaml:"db" validate:"required"`
-	Trace *libconfig.TraceConfig `yaml:"trace" validate:"required"`
-	Log   *libconfig.LogConfig   `yaml:"log" validate:"required"`
+	App   *InitConfig             `yaml:"app" validate:"required"`
+	DB    *libgateway.DBConfig    `yaml:"db" validate:"required"`
+	Trace *libgateway.TraceConfig `yaml:"trace" validate:"required"`
+	Log   *libgateway.LogConfig   `yaml:"log" validate:"required"`
 }
 
 //go:embed config.yml

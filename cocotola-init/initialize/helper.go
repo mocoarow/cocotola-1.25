@@ -8,7 +8,6 @@ import (
 	"gorm.io/gorm"
 
 	authdomain "github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
-	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 	authservice "github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 	libservice "github.com/mocoarow/cocotola-1.25/cocotola-lib/service"
@@ -34,22 +33,22 @@ func findOrganizationByName(ctx context.Context, systemAdmin authdomain.SystemAd
 	return org, nil
 }
 
-func findSystemOwnerByOrganizationID(ctx context.Context, systemAdmin authdomain.SystemAdminInterface, mbNonTxManager authservice.TransactionManager, organizationID *authdomain.OrganizationID) (*authdomain.SystemOwner, error) {
-	fn := func(rf authservice.RepositoryFactory) (*authdomain.SystemOwner, error) {
-		userRepo := rf.NewUserRepository(ctx)
-		sysOwner, err := userRepo.FindSystemOwnerByOrganizationID(ctx, systemAdmin, organizationID)
-		if err != nil {
-			return nil, fmt.Errorf("find system owner by organization id(%d): %w", organizationID.Int(), err)
-		}
+// func findSystemOwnerByOrganizationID(ctx context.Context, systemAdmin authdomain.SystemAdminInterface, mbNonTxManager authservice.TransactionManager, organizationID *authdomain.OrganizationID) (*authdomain.SystemOwner, error) {
+// 	fn := func(rf authservice.RepositoryFactory) (*authdomain.SystemOwner, error) {
+// 		userRepo := rf.NewUserRepository(ctx)
+// 		sysOwner, err := userRepo.FindSystemOwnerByOrganizationID(ctx, systemAdmin, organizationID)
+// 		if err != nil {
+// 			return nil, fmt.Errorf("find system owner by organization id(%d): %w", organizationID.Int(), err)
+// 		}
 
-		return sysOwner, nil
-	}
-	sysOwner, err := libservice.Do1(ctx, mbNonTxManager, fn)
-	if err != nil {
-		return nil, err //nolint:wrapcheck
-	}
-	return sysOwner, nil
-}
+// 		return sysOwner, nil
+// 	}
+// 	sysOwner, err := libservice.Do1(ctx, mbNonTxManager, fn)
+// 	if err != nil {
+// 		return nil, err //nolint:wrapcheck
+// 	}
+// 	return sysOwner, nil
+// }
 
 func findSystemOwnerByOrganizationName(ctx context.Context, systemAdmin authdomain.SystemAdminInterface, mbNonTxManager authservice.TransactionManager, organizationName string) (*authdomain.SystemOwner, error) {
 	fn := func(rf authservice.RepositoryFactory) (*authdomain.SystemOwner, error) {
@@ -102,7 +101,7 @@ func findUserByLoginID(ctx context.Context, systemOwner authdomain.SystemOwnerIn
 	return user, nil
 }
 
-func initTransactionManager(db *gorm.DB, rff func(ctx context.Context, db *gorm.DB) (service.RepositoryFactory, error)) (service.TransactionManager, error) {
+func initTransactionManager(db *gorm.DB, rff func(ctx context.Context, db *gorm.DB) (authservice.RepositoryFactory, error)) (authservice.TransactionManager, error) {
 	txManager, err := libgateway.NewTransactionManagerT(db, rff)
 	if err != nil {
 		return nil, fmt.Errorf("NewTransactionManagerT: %w", err)
@@ -110,7 +109,7 @@ func initTransactionManager(db *gorm.DB, rff func(ctx context.Context, db *gorm.
 	return txManager, nil
 }
 
-func initNonTransactionManager(rf service.RepositoryFactory) (service.TransactionManager, error) {
+func initNonTransactionManager(rf authservice.RepositoryFactory) (authservice.TransactionManager, error) {
 	nonTxManager, err := libgateway.NewNonTransactionManagerT(rf)
 	if err != nil {
 		return nil, fmt.Errorf("NewNonTransactionManagerT: %w", err)

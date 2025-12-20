@@ -50,10 +50,9 @@ func initGuest(ctx context.Context, systemToken authdomain.SystemToken, mbTxMana
 	return nil
 }
 
-func createGuestUser(ctx context.Context, mbTxManager, mbNonTxManager authservice.TransactionManager, systemOwner authdomain.SystemOwnerInterface, guestLoginID, guestUserName string, spaceID *authdomain.SpaceID) error {
+func createGuestUser(ctx context.Context, mbTxManager, mbNonTxManager authservice.TransactionManager, systemOwner authdomain.SystemOwnerInterface, guestLoginID, guestUserName string, _ *authdomain.SpaceID) error {
 	// allowEffect := authservice.RBACAllowEffect
 	// spaceObject := spaceID.GetRBACObject()
-
 	aoeList := []authdomain.ActionObjectEffect{
 		// guest can list decks in the "public" space
 		// {Action: coreservice.ListDecksAction, Object: spaceObject, Effect: allowEffect},
@@ -68,7 +67,7 @@ func createGuestUser(ctx context.Context, mbTxManager, mbNonTxManager authservic
 	}
 
 	if _, err := addGuestCommand.Execute(ctx, systemOwner, addUserParam, aoeList); err != nil {
-		return fmt.Errorf("Execute: %w", err)
+		return fmt.Errorf("execute addGuestCommand: %w", err)
 	}
 
 	return nil

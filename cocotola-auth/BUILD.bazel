@@ -9,9 +9,10 @@ go_library(
         "//cocotola-auth/config",
         "//cocotola-auth/domain",
         "//cocotola-auth/initialize",
-        "//cocotola-lib/config",
+        "//cocotola-lib/controller",
         "//cocotola-lib/controller/gin",
         "//cocotola-lib/domain",
+        "//cocotola-lib/gateway",
         "//cocotola-lib/process",
     ],
 )

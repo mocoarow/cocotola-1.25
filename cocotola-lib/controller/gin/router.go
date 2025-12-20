@@ -1,4 +1,4 @@
-package controller
+package gin
 
 import (
 	"context"
@@ -15,17 +15,20 @@ import (
 )
 
 type LogConfig struct {
-	Enabled map[string]bool `yaml:"enabled"`
+	AccessLog             bool `yaml:"accessLog"`
+	AccessLogRequestBody  bool `yaml:"accessLogRequestBody"`
+	AccessLogResponseBody bool `yaml:"accessLogResponseBody"`
 }
 type DebugConfig struct {
 	Gin  bool `yaml:"gin"`
 	Wait bool `yaml:"wait"`
 }
 type GinConfig struct {
-	CORS  cors.Config
-	Log   LogConfig
-	Debug DebugConfig
+	CORS  *CORSConfig  `yaml:"cors"`
+	Log   *LogConfig   `yaml:"log"`
+	Debug *DebugConfig `yaml:"debug"`
 }
+
 type InitRouterGroupFunc func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc)
 
 func InitRootRouterGroup(_ context.Context, ginConfig *GinConfig, appName string) *gin.Engine {
@@ -33,23 +36,24 @@ func InitRootRouterGroup(_ context.Context, ginConfig *GinConfig, appName string
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	router := gin.New()
+	corsConfig := InitCORS(ginConfig.CORS)
 
+	router := gin.New()
 	router.Use(gin.Recovery())
-	router.Use(cors.New(ginConfig.CORS))
+	router.Use(cors.New(corsConfig))
 	router.Use(middleware.PrometheusMiddleware())
 	router.Use(otelgin.Middleware(appName, otelgin.WithFilter(func(req *http.Request) bool {
 		return req.URL.Path != "/"
 	})))
 
-	if value, ok := ginConfig.Log.Enabled["accessLog"]; ok && value {
+	if ginConfig.Log.AccessLog {
 		withRequestBody := false
-		if value, ok := ginConfig.Log.Enabled["accessLogRequestBody"]; ok && value {
+		if ginConfig.Log.AccessLogRequestBody {
 			withRequestBody = true
 		}
 		withResponseBody := false
-		if value, ok := ginConfig.Log.Enabled["accessLogResponseBody"]; ok && value {
-			withResponseBody = value
+		if ginConfig.Log.AccessLogResponseBody {
+			withResponseBody = true
 		}
 		router.Use(sloggin.NewWithConfig(slog.Default(), sloggin.Config{ //nolint:exhaustruct
 			DefaultLevel:     slog.LevelInfo,
@@ -73,12 +77,12 @@ func InitRootRouterGroup(_ context.Context, ginConfig *GinConfig, appName string
 	return router
 }
 
-func InitAPIRouterGroup(_ context.Context, parentRouterGroup gin.IRouter, appName string, logConfig *LogConfig) *gin.RouterGroup {
+func InitAPIRouterGroup(_ context.Context, parentRouterGroup gin.IRouter, appName string, _ *LogConfig) *gin.RouterGroup {
 	api := parentRouterGroup.Group("api")
 	api.Use(otelgin.Middleware(appName))
-	if value, ok := logConfig.Enabled["accessLog"]; ok && value {
-		api.Use(sloggin.New(slog.Default()))
-	}
+	// if logConfig.AccessLog {
+	// 	api.Use(sloggin.New(slog.Default()))
+	// }
 
 	// if value, ok := logConfig.Enabled["traceLog"]; ok && value {
 	// 	api.Use(middleware.NewTraceLogMiddleware(appName, true))

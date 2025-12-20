@@ -17,7 +17,6 @@ go_library(
         "//cocotola-auth/service",
         "//cocotola-init/config",
         "//cocotola-init/usecase",
-        "//cocotola-lib/config",
         "//cocotola-lib/domain",
         "//cocotola-lib/gateway",
         "//cocotola-lib/service",

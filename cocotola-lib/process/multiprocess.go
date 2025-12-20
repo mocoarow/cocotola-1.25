@@ -3,41 +3,14 @@ package process
 import (
 	"context"
 	"errors"
-	"net/http"
 	"sync"
-	"time"
 
 	"golang.org/x/sync/errgroup"
-
-	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
 )
 
 type RunProcess func() error
 
 type RunProcessFunc func(ctx context.Context) RunProcess
-
-func WithAppServerProcess(router http.Handler, port int, readHeaderTimeout, shutdownTime time.Duration) RunProcessFunc {
-	return func(ctx context.Context) RunProcess {
-		return func() error {
-			return libcontroller.AppServerProcess(ctx, router, port, readHeaderTimeout, shutdownTime)
-		}
-	}
-}
-func WithMetricsServerProcess(port int, shutdownTime int) RunProcessFunc {
-	return func(ctx context.Context) RunProcess {
-		return func() error {
-			return MetricsServerProcess(ctx, port, shutdownTime)
-		}
-	}
-}
-
-func WithSignalWatchProcess() RunProcessFunc {
-	return func(ctx context.Context) RunProcess {
-		return func() error {
-			return SignalWatchProcess(ctx)
-		}
-	}
-}
 
 func Run(ctx context.Context, runFuncs ...RunProcessFunc) int {
 	var eg *errgroup.Group

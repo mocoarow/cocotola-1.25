@@ -1,6 +1,8 @@
 ---
 version: "3"
 
+dotenv: ['.env', '{{.ENV}}/.env', '{{.HOME}}/.env']
+
 vars:
   GO_PROJECTS:
     - hello-world
@@ -147,6 +149,10 @@ tasks:
   run-cocotola-empty-remote:
     cmds:
       - bazelisk run --config=remote //cocotola-empty:cocotola-empty
+
+  run-cocotola-init:
+    cmds:
+      - bazelisk run //cocotola-init:cocotola-init
 
   build-hello-world:
     cmds:

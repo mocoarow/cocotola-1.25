@@ -1,4 +1,4 @@
-package process
+package controller
 
 import (
 	"context"
@@ -13,9 +13,18 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
+	"github.com/mocoarow/cocotola-1.25/cocotola-lib/process"
 )
 
 const readHeaderTimeout = time.Duration(30) * time.Second
+
+func WithMetricsServerProcess(port int, shutdownTime int) process.RunProcessFunc {
+	return func(ctx context.Context) process.RunProcess {
+		return func() error {
+			return MetricsServerProcess(ctx, port, shutdownTime)
+		}
+	}
+}
 
 func MetricsServerProcess(ctx context.Context, port int, gracefulShutdownTimeSec int) error {
 	logger := slog.Default().With(slog.String(domain.LoggerNameKey, "MetricsServer"))

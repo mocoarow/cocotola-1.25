@@ -9,6 +9,7 @@ go_library(
     deps = [
         "//cocotola-lib/config",
         "//cocotola-lib/domain",
+        "//cocotola-lib/gateway",
         "@in_yaml_go_yaml_v4//:yaml",
     ],
 )
