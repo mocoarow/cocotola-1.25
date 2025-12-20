@@ -1,0 +1,34 @@
+---
+name: Check OpenAPI
+
+on:
+  pull_request:
+    paths:
+      - openapi/openapi.yaml
+
+permissions: {}
+jobs:
+  spectral-lint:
+    permissions:
+      checks: write
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: install spectral
+        run: npm install -g @stoplight/spectral-cli
+
+      - name: setup reviewdog
+        uses: reviewdog/action-setup@v1
+
+      - name: spectral lint
+        run: |
+          spectral lint openapi/openapi.yaml --ruleset .spectral.yaml -f text | reviewdog -efm="%f:%l:%c %t%*[^ ] %m" -name="spectral" -filter-mode=diff_context -reporter=github-pr-review
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}

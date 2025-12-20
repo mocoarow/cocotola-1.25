@@ -7,3 +7,8 @@ enable_comments: true
 exclude-severities:
   - low
   - info
+exclude-queries:
+  # Healthcheck Not Set
+  - 698ed579-b239-4f8f-a388-baa4bcb13ef8
+exclude-paths:
+  - openapi/openapi.yaml

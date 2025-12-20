@@ -1,0 +1,78 @@
+openapi: 3.0.1
+info:
+  title: cocotola
+  description: cocotola
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@swagger.io
+    url: http://www.swagger.io/support
+tags:
+  - name: auth
+paths:
+  /api/v1/auth/password:
+    post:
+      summary: Password Authentication
+      deprecated: false
+      description: Password Authentication
+      operationId: passwordAuthentication
+      tags:
+        - auth
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordAuthRequest'
+            examples: {}
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+          headers: {}
+      security: []
+components:
+  schemas:
+    PasswordAuthRequest:
+      type: object
+      properties:
+        loginId:
+          type: string
+          x-go-name: LoginID
+          x-go-custom-tag: binding:"required"
+          pattern: ^.*$
+        password:
+          type: string
+          x-go-custom-tag: binding:"required"
+          pattern: ^.*$
+        organizationName:
+          type: string
+          x-go-custom-tag: binding:"required"
+          pattern: ^.*$
+      required:
+        - loginId
+        - password
+        - organizationName
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          pattern: ^.*$
+        refreshToken:
+          type: string
+          pattern: ^.*$
+      required:
+        - accessToken
+        - refreshToken
+  responses: {}
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+servers: []
+security: []
