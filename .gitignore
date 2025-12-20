@@ -36,3 +36,4 @@ AGENTS.md
 .mise.toml
 DESIGN.md
 *.txt
+openapi-generated/**
