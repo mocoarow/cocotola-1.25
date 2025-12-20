@@ -1,4 +1,4 @@
-package process
+package gateway
 
 import (
 	"context"
@@ -9,7 +9,16 @@ import (
 	"syscall"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
+	"github.com/mocoarow/cocotola-1.25/cocotola-lib/process"
 )
+
+func WithSignalWatchProcess() process.RunProcessFunc {
+	return func(ctx context.Context) process.RunProcess {
+		return func() error {
+			return SignalWatchProcess(ctx)
+		}
+	}
+}
 
 func SignalWatchProcess(ctx context.Context) error {
 	logger := slog.Default().With(slog.String(domain.LoggerNameKey, "SignalWatch"))

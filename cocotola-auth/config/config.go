@@ -7,15 +7,19 @@ import (
 
 	"go.yaml.in/yaml/v4"
 
-	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
-
 	libconfig "github.com/mocoarow/cocotola-1.25/cocotola-lib/config"
+	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller"
+	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
+	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 )
 
 type ServerConfig struct {
-	HTTPPort             int `yaml:"httpPort" validate:"required"`
-	MetricsPort          int `yaml:"metricsPort" validate:"required"`
-	ReadHeaderTimeoutSec int `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
+	HTTPPort             int                           `yaml:"httpPort" validate:"required"`
+	MetricsPort          int                           `yaml:"metricsPort" validate:"required"`
+	ReadHeaderTimeoutSec int                           `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
+	Gin                  *libgin.GinConfig             `yaml:"gin" validate:"required"`
+	Shutdown             *libcontroller.ShutdownConfig `yaml:"shutdown" validate:"required"`
 }
 
 type CoreAPIClientConfig struct {
@@ -54,14 +58,11 @@ type AuthConfig struct {
 }
 
 type Config struct {
-	App      *AuthConfig               `yaml:"app" validate:"required"`
-	Server   *ServerConfig             `yaml:"server" validate:"required"`
-	DB       *libconfig.DBConfig       `yaml:"db" validate:"required"`
-	Trace    *libconfig.TraceConfig    `yaml:"trace" validate:"required"`
-	CORS     *libconfig.CORSConfig     `yaml:"cors" validate:"required"`
-	Shutdown *libconfig.ShutdownConfig `yaml:"shutdown" validate:"required"`
-	Log      *libconfig.LogConfig      `yaml:"log" validate:"required"`
-	Debug    *libconfig.DebugConfig    `yaml:"debug"`
+	App    *AuthConfig             `yaml:"app" validate:"required"`
+	Server *ServerConfig           `yaml:"server" validate:"required"`
+	DB     *libgateway.DBConfig    `yaml:"db" validate:"required"`
+	Trace  *libgateway.TraceConfig `yaml:"trace" validate:"required"`
+	Log    *libgateway.LogConfig   `yaml:"log" validate:"required"`
 }
 
 //go:embed config.yml

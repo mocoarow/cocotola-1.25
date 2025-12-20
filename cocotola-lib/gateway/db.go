@@ -1,9 +1,11 @@
 package gateway
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
+	"log/slog"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
@@ -11,6 +13,43 @@ import (
 	"github.com/golang-migrate/migrate/v4/source"
 	"gorm.io/gorm"
 )
+
+type DBConfig struct {
+	DriverName string         `yaml:"driverName"`
+	MySQL      *MySQLConfig   `yaml:"mysql"`
+	SQLite3    *SQLite3Config `yaml:"sqlite3"`
+}
+type DBConnection struct {
+	DriverName string
+	Dialect    DialectRDBMS
+	DB         *gorm.DB
+}
+
+func InitDB(ctx context.Context, dbConfig *DBConfig, logConfig *LogConfig, appName string) (*DBConnection, func(), error) {
+	initDBFunc, ok := initDBs[dbConfig.DriverName]
+	if !ok {
+		return nil, nil, fmt.Errorf("invalid database driver: %s", dbConfig.DriverName)
+	}
+	dbLogLevel := slog.LevelWarn
+	if level, ok := logConfig.Levels["db"]; ok {
+		dbLogLevel = stringToLogLevel(level)
+	}
+
+	dialect, db, sqlDB, err := initDBFunc(ctx, dbConfig, dbLogLevel, appName)
+	if err != nil {
+		return nil, nil, fmt.Errorf("init DB: %w", err)
+	}
+
+	dbConn := DBConnection{
+		DriverName: dbConfig.DriverName,
+		Dialect:    dialect,
+		DB:         db,
+	}
+
+	return &dbConn, func() {
+		sqlDB.Close()
+	}, nil
+}
 
 type DialectRDBMS interface {
 	Name() string

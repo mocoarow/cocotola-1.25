@@ -8,9 +8,10 @@ import (
 	"os"
 	"time"
 
-	libconfig "github.com/mocoarow/cocotola-1.25/cocotola-lib/config"
-	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller"
+	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
+	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 	libprocess "github.com/mocoarow/cocotola-1.25/cocotola-lib/process"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/config"
@@ -41,7 +42,7 @@ func run() (int, error) {
 	systemToken := domain.NewSystemToken()
 
 	// init log
-	shutdownlog, err := libconfig.InitLog(ctx, cfg.Log, AppName)
+	shutdownlog, err := libgateway.InitLog(ctx, cfg.Log, AppName)
 	if err != nil {
 		return 0, fmt.Errorf("init log: %w", err)
 	}
@@ -49,51 +50,36 @@ func run() (int, error) {
 	logger := slog.Default().With(slog.String(libdomain.LoggerNameKey, AppName+"-main"))
 
 	// init tracer
-	shutdownTrace, err := libconfig.InitTracerProvider(ctx, cfg.Trace, AppName)
+	shutdownTrace, err := libgateway.InitTracerProvider(ctx, cfg.Trace, AppName)
 	if err != nil {
 		return 0, fmt.Errorf("init trace: %w", err)
 	}
 	defer shutdownTrace()
 
 	// init db
-	dbConn, shutdownDB, err := libconfig.InitDB(ctx, cfg.DB, cfg.Log, AppName)
+	dbConn, shutdownDB, err := libgateway.InitDB(ctx, cfg.DB, cfg.Log, AppName)
 	if err != nil {
 		return 0, fmt.Errorf("init db: %w", err)
 	}
 	defer shutdownDB()
 
 	// init gin
-	logConfig := libcontroller.LogConfig{
-		Enabled: map[string]bool{
-			"accessLog":             true,
-			"accessLogRequestBody":  false,
-			"accessLogResponseBody": false,
-		},
-	}
-	ginConfig := libcontroller.GinConfig{
-		CORS: libconfig.InitCORS(cfg.CORS),
-		Log:  logConfig,
-		Debug: libcontroller.DebugConfig{
-			Gin:  cfg.Debug.Gin,
-			Wait: cfg.Debug.Wait,
-		},
-	}
-	router := libcontroller.InitRootRouterGroup(ctx, &ginConfig, AppName)
+	router := libgin.InitRootRouterGroup(ctx, cfg.Server.Gin, AppName)
 
-	if err := initialize.Initialize(ctx, systemToken, router, AppName, dbConn, &logConfig, cfg.App); err != nil {
+	if err := initialize.Initialize(ctx, systemToken, router, AppName, dbConn, cfg.Server.Gin.Log, cfg.App); err != nil {
 		return 0, fmt.Errorf("initialize: %w", err)
 	}
 
 	// run
 	readHeaderTimeout := time.Duration(cfg.Server.ReadHeaderTimeoutSec) * time.Second
-	shutdownTime := time.Duration(cfg.Shutdown.TimeSec1) * time.Second
+	shutdownTime := time.Duration(cfg.Server.Shutdown.TimeSec1) * time.Second
 	result := libprocess.Run(ctx,
-		libprocess.WithAppServerProcess(router, cfg.Server.HTTPPort, readHeaderTimeout, shutdownTime),
-		libprocess.WithSignalWatchProcess(),
-		libprocess.WithMetricsServerProcess(cfg.Server.MetricsPort, cfg.Shutdown.TimeSec1),
+		libcontroller.WithWebServerProcess(router, cfg.Server.HTTPPort, readHeaderTimeout, shutdownTime),
+		libcontroller.WithMetricsServerProcess(cfg.Server.MetricsPort, cfg.Server.Shutdown.TimeSec1),
+		libgateway.WithSignalWatchProcess(),
 	)
 
-	gracefulShutdownTime2 := time.Duration(cfg.Shutdown.TimeSec2) * time.Second
+	gracefulShutdownTime2 := time.Duration(cfg.Server.Shutdown.TimeSec2) * time.Second
 	time.Sleep(gracefulShutdownTime2)
 	logger.InfoContext(ctx, "exited")
 

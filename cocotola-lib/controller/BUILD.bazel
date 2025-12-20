@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "controller",
+    srcs = [
+        "metrics_server.go",
+        "web_server.go",
+    ],
+    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-lib/domain",
+        "//cocotola-lib/process",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_prometheus_client_golang//prometheus/promhttp",
+    ],
+)

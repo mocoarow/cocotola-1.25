@@ -12,25 +12,25 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	libconfig "github.com/mocoarow/cocotola-1.25/cocotola-lib/config"
-	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller"
+	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
+	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 	libprocess "github.com/mocoarow/cocotola-1.25/cocotola-lib/process"
 )
 
 type ServerConfig struct {
-	HTTPPort             int `yaml:"httpPort" validate:"required"`
-	MetricsPort          int `yaml:"metricsPort" validate:"required"`
-	ReadHeaderTimeoutSec int `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
+	HTTPPort             int                           `yaml:"httpPort" validate:"required"`
+	MetricsPort          int                           `yaml:"metricsPort" validate:"required"`
+	ReadHeaderTimeoutSec int                           `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
+	Gin                  *libgin.GinConfig             `yaml:"gin" validate:"required"`
+	Shutdown             *libcontroller.ShutdownConfig `yaml:"shutdown" validate:"required"`
 }
 
 type Config struct {
-	Server   *ServerConfig             `yaml:"server" validate:"required"`
-	Trace    *libconfig.TraceConfig    `yaml:"trace" validate:"required"`
-	CORS     *libconfig.CORSConfig     `yaml:"cors" validate:"required"`
-	Shutdown *libconfig.ShutdownConfig `yaml:"shutdown" validate:"required"`
-	Log      *libconfig.LogConfig      `yaml:"log" validate:"required"`
-	Debug    *libconfig.DebugConfig    `yaml:"debug"`
+	Server *ServerConfig           `yaml:"server" validate:"required"`
+	Trace  *libgateway.TraceConfig `yaml:"trace" validate:"required"`
+	Log    *libgateway.LogConfig   `yaml:"log" validate:"required"`
 }
 
 const AppName = "cocotola-empty"
@@ -54,42 +54,48 @@ func run() (int, error) {
 			HTTPPort:             8080,
 			MetricsPort:          8081,
 			ReadHeaderTimeoutSec: 10,
+			Gin: &libgin.GinConfig{
+				CORS: &libgin.CORSConfig{
+					AllowOrigins: []string{"*"},
+					AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+					AllowHeaders: []string{"Content-Type"},
+				},
+				Log: &libgin.LogConfig{
+					AccessLog:             true,
+					AccessLogRequestBody:  true,
+					AccessLogResponseBody: true,
+				},
+				Debug: &libgin.DebugConfig{
+					Gin:  false,
+					Wait: false,
+				},
+			},
+			Shutdown: &libcontroller.ShutdownConfig{
+				TimeSec1: 10,
+				TimeSec2: 10,
+			},
 		},
-		Trace: &libconfig.TraceConfig{
+		Trace: &libgateway.TraceConfig{
 			Exporter:           "google",
 			SamplingPercentage: 100,
 			OTLP:               nil,
 			Uptrace:            nil,
-			Google: &libconfig.GoogleTraceConfig{
+			Google: &libgateway.GoogleTraceConfig{
 				ProjectID: "mocoarow-25-08",
 			},
 		},
-		CORS: &libconfig.CORSConfig{
-			AllowOrigins: []string{"*"},
-			AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-			AllowHeaders: []string{"Content-Type"},
-		},
-		Shutdown: &libconfig.ShutdownConfig{
-			TimeSec1: 10,
-			TimeSec2: 10,
-		},
-		Log: &libconfig.LogConfig{
+		Log: &libgateway.LogConfig{
 			Level:    "info",
 			Platform: "gcp",
 			Levels:   nil,
-			Enabled:  nil,
 			Exporter: "none",
 			OTLP:     nil,
 			Uptrace:  nil,
 		},
-		Debug: &libconfig.DebugConfig{
-			Gin:  false,
-			Wait: false,
-		},
 	}
 
 	// init log
-	shutdownlog, err := libconfig.InitLog(ctx, cfg.Log, AppName)
+	shutdownlog, err := libgateway.InitLog(ctx, cfg.Log, AppName)
 	if err != nil {
 		return 0, fmt.Errorf("init log: %w", err)
 	}
@@ -97,36 +103,21 @@ func run() (int, error) {
 	logger := slog.Default().With(slog.String(libdomain.LoggerNameKey, AppName+"-main"))
 
 	// init tracer
-	shutdownTrace, err := libconfig.InitTracerProvider(ctx, cfg.Trace, AppName)
+	shutdownTrace, err := libgateway.InitTracerProvider(ctx, cfg.Trace, AppName)
 	if err != nil {
 		return 0, fmt.Errorf("init trace: %w", err)
 	}
 	defer shutdownTrace()
 
 	// init gin
-	logConfig := libcontroller.LogConfig{
-		Enabled: map[string]bool{
-			"accessLog":             true,
-			"accessLogRequestBody":  true,
-			"accessLogResponseBody": true,
-		},
-	}
-	ginConfig := libcontroller.GinConfig{
-		CORS: libconfig.InitCORS(cfg.CORS),
-		Log:  logConfig,
-		Debug: libcontroller.DebugConfig{
-			Gin:  cfg.Debug.Gin,
-			Wait: cfg.Debug.Wait,
-		},
-	}
-	router := libcontroller.InitRootRouterGroup(ctx, &ginConfig, AppName)
+	router := libgin.InitRootRouterGroup(ctx, cfg.Server.Gin, AppName)
 
 	// api
-	api := libcontroller.InitAPIRouterGroup(ctx, router, AppName, &logConfig)
+	api := libgin.InitAPIRouterGroup(ctx, router, AppName, cfg.Server.Gin.Log)
 	// v1
 	v1 := api.Group("v1")
 	// public router
-	libcontroller.InitPublicAPIRouterGroup(ctx, v1, []libcontroller.InitRouterGroupFunc{
+	libgin.InitPublicAPIRouterGroup(ctx, v1, []libgin.InitRouterGroupFunc{
 		func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
 			test := parentRouterGroup.Group("test")
 			for _, m := range middleware {
@@ -151,14 +142,14 @@ func run() (int, error) {
 	})
 
 	readHeaderTimeout := time.Duration(cfg.Server.ReadHeaderTimeoutSec) * time.Second
-	shutdownTime := time.Duration(cfg.Shutdown.TimeSec1) * time.Second
+	shutdownTime := time.Duration(cfg.Server.Shutdown.TimeSec1) * time.Second
 	result := libprocess.Run(ctx,
-		libprocess.WithAppServerProcess(router, cfg.Server.HTTPPort, readHeaderTimeout, shutdownTime),
-		libprocess.WithSignalWatchProcess(),
-		libprocess.WithMetricsServerProcess(cfg.Server.MetricsPort, cfg.Shutdown.TimeSec1),
+		libcontroller.WithWebServerProcess(router, cfg.Server.HTTPPort, readHeaderTimeout, shutdownTime),
+		libcontroller.WithMetricsServerProcess(cfg.Server.MetricsPort, cfg.Server.Shutdown.TimeSec1),
+		libgateway.WithSignalWatchProcess(),
 	)
 
-	gracefulShutdownTime2 := time.Duration(cfg.Shutdown.TimeSec2) * time.Second
+	gracefulShutdownTime2 := time.Duration(cfg.Server.Shutdown.TimeSec2) * time.Second
 	time.Sleep(gracefulShutdownTime2)
 	logger.InfoContext(ctx, "exited")
 

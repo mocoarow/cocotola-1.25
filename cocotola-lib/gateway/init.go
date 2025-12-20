@@ -1,4 +1,4 @@
-package config
+package gateway
 
 import (
 	"context"
@@ -8,8 +8,6 @@ import (
 	sdklog "go.opentelemetry.io/otel/sdk/log"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"gorm.io/gorm"
-
-	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 )
 
 type InitTracerExporterFunc func(ctx context.Context, traceConfig *TraceConfig) (sdktrace.SpanExporter, error)
@@ -18,7 +16,7 @@ type InitLogExporterFunc func(ctx context.Context, logConfig *LogConfig) (sdklog
 var initTracerExporters map[string]InitTracerExporterFunc
 var initLogExporters map[string]InitLogExporterFunc
 
-type InitDBFunc func(context.Context, *DBConfig, slog.Level, string) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error)
+type InitDBFunc func(context.Context, *DBConfig, slog.Level, string) (DialectRDBMS, *gorm.DB, *sql.DB, error)
 
 var initDBs map[string]InitDBFunc
 

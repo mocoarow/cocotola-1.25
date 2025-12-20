@@ -5,6 +5,12 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/mocoarow/cocotola-1.25/cocotola-init",
     visibility = ["//visibility:private"],
+    deps = [
+        "//cocotola-auth/domain",
+        "//cocotola-init/config",
+        "//cocotola-init/initialize",
+        "//cocotola-lib/gateway",
+    ],
 )
 
 go_binary(

@@ -1,4 +1,4 @@
-package config
+package gateway
 
 import (
 	"context"
@@ -30,7 +30,6 @@ type LogConfig struct {
 	Level    string            `yaml:"level"`
 	Platform string            `yaml:"platform"`
 	Levels   map[string]string `yaml:"levels"`
-	Enabled  map[string]bool   `yaml:"enabled"`
 	Exporter string            `yaml:"exporter" validate:"oneof=none otlphttp uptracehttp"`
 	OTLP     *OTLPLogConfig    `yaml:"otlp"`
 	Uptrace  *UptraceLogConfig `yaml:"uptrace"`

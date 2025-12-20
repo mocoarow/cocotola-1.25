@@ -8,9 +8,10 @@ go_library(
     importpath = "github.com/mocoarow/cocotola-1.25/cocotola-empty",
     visibility = ["//visibility:private"],
     deps = [
-        "//cocotola-lib/config",
+        "//cocotola-lib/controller",
         "//cocotola-lib/controller/gin",
         "//cocotola-lib/domain",
+        "//cocotola-lib/gateway",
         "//cocotola-lib/process",
         "@com_github_gin_gonic_gin//:gin",
     ],
