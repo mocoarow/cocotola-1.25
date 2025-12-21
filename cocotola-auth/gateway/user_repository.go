@@ -153,6 +153,13 @@ func (r *userRepository) FindSystemOwnerByOrganizationName(ctx context.Context, 
 	return userE.toSystemOwner(ctx, r.rf, userGroups)
 }
 
+func (r *userRepository) GetUser(ctx context.Context, operator domain.UserInterface) (*domain.User, error) {
+	_, span := tracer.Start(ctx, "userRepository.GetUser")
+	defer span.End()
+
+	return r.findUserByID(ctx, operator.GetOrganizationID(), operator.GetUserID())
+}
+
 func (r *userRepository) FindUserByID(ctx context.Context, operator domain.UserInterface, id *domain.UserID) (*domain.User, error) {
 	_, span := tracer.Start(ctx, "userRepository.FindUserByID")
 	defer span.End()

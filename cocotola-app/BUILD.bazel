@@ -14,7 +14,6 @@ go_library(
         "//cocotola-lib/domain",
         "//cocotola-lib/gateway",
         "//cocotola-lib/process",
-        "@io_opentelemetry_go_otel//:otel",
     ],
 )
 

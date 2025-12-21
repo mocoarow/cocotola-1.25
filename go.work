@@ -2,11 +2,11 @@ go 1.25.4
 
 use (
 	.
-	./hello-world
-	./third-party-library
-	./cocotola-auth
 	./cocotola-app
+	./cocotola-auth
+	./cocotola-empty
 	./cocotola-init
 	./cocotola-lib
-	./cocotola-empty
+	./hello-world
+	./third-party-library
 )
