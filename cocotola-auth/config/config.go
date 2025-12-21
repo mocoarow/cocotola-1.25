@@ -42,17 +42,17 @@ type AuthAPIServerConfig struct {
 }
 
 type AuthConfig struct {
-	CoreAPIClient       *CoreAPIClientConfig `yaml:"coreApiClient" validate:"required"`
-	AuthAPIClient       *AuthAPIClientConfig `yaml:"authApiClient" validate:"required"`
-	AuthAPIServer       *AuthAPIServerConfig `yaml:"authApiServer" validate:"required"`
-	SigningKey          string               `yaml:"signingKey" validate:"required"`
-	AccessTokenTTLMin   int                  `yaml:"accessTokenTtlMin" validate:"gte=1"`
-	RefreshTokenTTLHour int                  `yaml:"refreshTokenTtlHour" validate:"gte=1"`
-	GoogleProjectID     string               `yaml:"googleProjectId" validate:"required"`
-	GoogleCallbackURL   string               `yaml:"googleCallbackUrl" validate:"required"`
-	GoogleClientID      string               `yaml:"googleClientId" validate:"required"`
-	GoogleClientSecret  string               `yaml:"googleClientSecret" validate:"required"`
-	GoogleAPITimeoutSec int                  `yaml:"googleApiTimeoutSec" validate:"gte=1"`
+	// CoreAPIClient       *CoreAPIClientConfig `yaml:"coreApiClient" validate:"required"`
+	// AuthAPIClient       *AuthAPIClientConfig `yaml:"authApiClient" validate:"required"`
+	// AuthAPIServer       *AuthAPIServerConfig `yaml:"authApiServer" validate:"required"`
+	SigningKey          string `yaml:"signingKey" validate:"required"`
+	AccessTokenTTLMin   int    `yaml:"accessTokenTtlMin" validate:"gte=1"`
+	RefreshTokenTTLHour int    `yaml:"refreshTokenTtlHour" validate:"gte=1"`
+	// GoogleProjectID     string               `yaml:"googleProjectId" validate:"required"`
+	// GoogleCallbackURL   string               `yaml:"googleCallbackUrl" validate:"required"`
+	// GoogleClientID      string               `yaml:"googleClientId" validate:"required"`
+	// GoogleClientSecret  string               `yaml:"googleClientSecret" validate:"required"`
+	// GoogleAPITimeoutSec int                  `yaml:"googleApiTimeoutSec" validate:"gte=1"`
 	// OwnerLoginID        string               `yaml:"ownerLoginId" validate:"required"`
 	// OwnerPassword       string               `yaml:"ownerPassword" validate:"required"`
 }

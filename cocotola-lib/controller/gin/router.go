@@ -25,9 +25,9 @@ type DebugConfig struct {
 }
 
 type Config struct {
-	CORS  *CORSConfig  `yaml:"cors"`
-	Log   *LogConfig   `yaml:"log"`
-	Debug *DebugConfig `yaml:"debug"`
+	CORS  *CORSConfig  `yaml:"cors" validate:"required"`
+	Log   *LogConfig   `yaml:"log" validate:"required"`
+	Debug *DebugConfig `yaml:"debug" validate:"required"`
 }
 
 type InitRouterGroupFunc func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc)

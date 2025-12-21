@@ -1,0 +1,25 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "cocotola-app_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-app",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//cocotola-app/config",
+        "//cocotola-auth/domain",
+        "//cocotola-auth/initialize",
+        "//cocotola-lib/controller",
+        "//cocotola-lib/controller/gin",
+        "//cocotola-lib/domain",
+        "//cocotola-lib/gateway",
+        "//cocotola-lib/process",
+        "@io_opentelemetry_go_otel//:otel",
+    ],
+)
+
+go_binary(
+    name = "cocotola-app",
+    embed = [":cocotola-app_lib"],
+    visibility = ["//visibility:public"],
+)
