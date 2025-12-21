@@ -42,7 +42,7 @@ func (u *PasswordUsecae) Authenticate(ctx context.Context, loginID, password, or
 }
 
 func (u *PasswordUsecae) findSystemOwnerByOrganizationName(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.SystemOwner, error) {
-	systemOwner, err := libservice.Do1(ctx, u.nonTxManager, func(rf service.RepositoryFactory) (*domain.SystemOwner, error) { //nolint:domain
+	systemOwner, err := libservice.Do1(ctx, u.nonTxManager, func(rf service.RepositoryFactory) (*domain.SystemOwner, error) {
 		return service.FindSystemOwnerByOrganizationName(ctx, rf, operator, organizationName)
 	})
 	if err != nil {

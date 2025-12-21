@@ -169,7 +169,7 @@ func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRo
 	if err != nil {
 		return fmt.Errorf("GetPublicRouterGroupFuncs: %w", err)
 	}
-	// bearerTokenRouterGroupFuncs := controller.GetBearerTokenRouterGroupFuncs(ctx, systemToken, authTokenManager, mbrf)
+	bearerTokenRouterGroupFuncs := ctrlgin.GetBearerTokenRouterGroupFuncs(ctx, systemToken, txManager, nonTxManager, authTokenManager, rf)
 	// basicPrivateRouterGroupFuncs := controller.GetBasicPrivateRouterGroupFuncs(ctx, systemToken, cocotolaCoreCallbackClient)
 
 	// api
@@ -181,8 +181,12 @@ func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRo
 	// public router
 	libcontroller.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs)
 
+	bearerTokenAuthMiddleware, err := ctrlgin.InitBearerTokenAuthMiddleware(systemToken, authTokenManager, nonTxManager, rf)
+	if err != nil {
+		return fmt.Errorf("InitBearerTokenAuthMiddleware: %w", err)
+	}
 	// private router
-	// libcontroller.InitPrivateAPIRouterGroup(ctx, v1, bearerTokenAuthMiddleware, bearerTokenRouterGroupFuncs)
+	libcontroller.InitPrivateAPIRouterGroup(ctx, v1, bearerTokenAuthMiddleware, bearerTokenRouterGroupFuncs)
 
 	// libcontroller.InitPrivateAPIRouterGroup(ctx, v1, basicAuthMiddleware, basicPrivateRouterGroupFuncs)
 
