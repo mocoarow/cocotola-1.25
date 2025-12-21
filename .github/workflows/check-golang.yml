@@ -17,6 +17,7 @@ jobs:
     strategy:
       matrix:
         workdir:
+          - cocotola-app
           - cocotola-auth
           - cocotola-lib
           - cocotola-empty

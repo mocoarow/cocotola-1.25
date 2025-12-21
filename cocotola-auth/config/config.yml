@@ -1,21 +1,20 @@
 ---
 app:
-  auth:
-    coreApiClient:
-      baseUrl: ${CORE_API_BASE_URL:-http://localhost:8000}
-      username: ${CORE_API_KEY}
-      password: ${CORE_API_KEY_HEADER:-X-API-KEY}
-      timeoutSec: ${AUTH_CORE_API_TIMEOUT_SEC:-5}
-    signingKey: ${AUTH_SIGNING_KEY}
-    accessTokenTtlMin: ${AUTH_ACCESS_TOKEN_TTL_MIN:-5}
-    refreshTokenTtlHour: ${AUTH_REFRESH_TOKEN_TTL_HOUR:-720}
-    googleProjectId: ${AUTH_GOOGLE_PROJECT_ID}
-    googleCallbackUrl: ${AUTH_GOOGLE_CALLBACK_URL:-http://localhost:5173/app/auth/callback}
-    googleClientId: ${GOOGLE_CLIENT_ID}
-    googleClientSecret: ${GOOGLE_CLIENT_SECRET}
-    apiTimeoutSec: ${AUTH_API_TIMEOUT_SEC:-5}
-  ownerLoginId: ${OWNER_LOGIN_ID}
-  ownerPassword: ${OWNER_PASSWORD}
+  signingKey: ${AUTH_SIGNING_KEY}
+  accessTokenTtlMin: ${AUTH_ACCESS_TOKEN_TTL_MIN:-5}
+  refreshTokenTtlHour: ${AUTH_REFRESH_TOKEN_TTL_HOUR:-720}
+  #   coreApiClient:
+  #     baseUrl: ${CORE_API_BASE_URL:-http://localhost:8000}
+  #     username: ${CORE_API_KEY}
+  #     password: ${CORE_API_KEY_HEADER:-X-API-KEY}
+  #     timeoutSec: ${AUTH_CORE_API_TIMEOUT_SEC:-5}
+  #   googleProjectId: ${AUTH_GOOGLE_PROJECT_ID}
+  #   googleCallbackUrl: ${AUTH_GOOGLE_CALLBACK_URL:-http://localhost:5173/app/auth/callback}
+  #   googleClientId: ${GOOGLE_CLIENT_ID}
+  #   googleClientSecret: ${GOOGLE_CLIENT_SECRET}
+  #   apiTimeoutSec: ${AUTH_API_TIMEOUT_SEC:-5}
+  # ownerLoginId: ${OWNER_LOGIN_ID}
+  # ownerPassword: ${OWNER_PASSWORD}
 server:
   httpPort: ${AUTH_HTTP_PORT:-8010}
   metricsPort: ${AUTH_METRICS_PORT:-8011}
@@ -37,7 +36,6 @@ server:
     timeSec2: ${AUTH_SHUTDOWN_TIME_SEC2:-1}
 db:
   driverName: ${AUTH_DB_DRIVER_NAME:-sqlite3}
-  migration: ${AUTH_DB_MIGRATION:}
   sqlite3:
     file: ${AUTH_SQLITE3_FILE:-auth.db}
   mysql:
@@ -45,7 +43,7 @@ db:
     password: ${AUTH_MYSQL_PASSWORD}
     host: ${AUTH_MYSQL_HOST:-127.0.0.1}
     port: ${AUTH_MYSQL_PORT:-3306}
-    database: ${AUTH_MYSQL_DATABASE:}
+    database: ${AUTH_MYSQL_DATABASE:-local}
   postgres:
     username: ${AUTH_POSTGRES_USERNAME}
     password: ${AUTH_POSTGRES_PASSWORD}
@@ -61,3 +59,4 @@ trace:
     googleAuthAudienceUrl: ${TRACE_OTLP_GOOGLE_AUTH_AUDIENCE_URL:-https://cloudtrace.googleapis.com/}
 log:
   level: ${AUTH_LOG_LEVEL:-info}
+  exporter: ${AUTH_LOG_EXPORTER:-none}

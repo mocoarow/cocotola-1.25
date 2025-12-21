@@ -7,6 +7,7 @@ vars:
   GO_PROJECTS:
     - hello-world
     - third-party-library
+    - cocotola-app
     - cocotola-auth
     - cocotola-init
     - cocotola-empty
@@ -154,6 +155,16 @@ tasks:
     cmds:
       - docker compose -f compose.local.jaeger.yml up -d --wait
       - bazelisk run //cocotola-init:cocotola-init
+
+  run-cocotola-auth:
+    cmds:
+      - docker compose -f compose.local.jaeger.yml up -d --wait
+      - bazelisk run //cocotola-auth:cocotola-auth
+
+  run-cocotola-app:
+    cmds:
+      - docker compose -f compose.local.jaeger.yml up -d --wait
+      - bazelisk run //cocotola-app:cocotola-app
 
   build-hello-world:
     cmds:
