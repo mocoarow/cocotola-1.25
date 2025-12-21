@@ -15,8 +15,6 @@ var ErrUserAlreadyExists = errors.New("user already exists")
 
 var ErrSystemOwnerNotFound = errors.New("system owner not found")
 
-var ErrUnauthenticated = errors.New("unauthenticated")
-
 var CreateUserAction = domain.NewRBACAction("CreateUser")
 var ListUsersAction = domain.NewRBACAction("ListUsers")
 var GetUserAction = domain.NewRBACAction("GetUser")

@@ -24,7 +24,7 @@ func Initialize(ctx context.Context, systemToken authdomain.SystemToken, dbConn 
 		return fmt.Errorf("initApp: %w", err)
 	}
 
-	if err := initOrganization(ctx, systemToken, txManager, nonTxManager, "cocotola", initConfig.OwnerLoginID, initConfig.OwnerPassword, appName); err != nil {
+	if err := initOrganization(ctx, systemToken, txManager, nonTxManager, "cocotola", initConfig.OwnerLoginID, initConfig.OwnerPassword); err != nil {
 		return fmt.Errorf("initOrganization: %w", err)
 	}
 

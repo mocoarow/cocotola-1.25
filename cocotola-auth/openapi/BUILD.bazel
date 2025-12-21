@@ -1,0 +1,11 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "openapi",
+    srcs = [
+        "model_auth_response.go",
+        "model_password_auth_request.go",
+    ],
+    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth/openapi",
+    visibility = ["//visibility:public"],
+)

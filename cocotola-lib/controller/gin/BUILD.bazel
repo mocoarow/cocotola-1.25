@@ -1,10 +1,12 @@
 load("@rules_go//go:def.bzl", "go_library")
+load("//bazel:go_test.bzl", "smart_go_test")
 
 go_library(
     name = "gin",
     srcs = [
         "cors.go",
         "router.go",
+        "stringutil.go",
     ],
     importpath = "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin",
     visibility = ["//visibility:public"],
@@ -15,4 +17,10 @@ go_library(
         "@com_github_samber_slog_gin//:slog-gin",
         "@io_opentelemetry_go_contrib_instrumentation_github_com_gin_gonic_gin_otelgin//:otelgin",
     ],
+)
+
+smart_go_test(
+    name = "gin_test",
+    srcs = ["stringutil_test.go"],
+    deps = [":gin"],
 )

@@ -63,3 +63,9 @@ func (m *User) GetUserID() *UserID {
 func (m *User) GetOrganizationID() *OrganizationID {
 	return m.OrganizationID
 }
+func (m *User) GetLoginID() string {
+	return m.LoginID
+}
+func (m *User) GetUsername() string {
+	return m.Username
+}

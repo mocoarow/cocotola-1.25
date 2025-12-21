@@ -126,3 +126,4 @@ formatters:
       - third_party$
       - builtin$
       - examples$
+      - cocotola-auth/openapi/model_.*\.go$

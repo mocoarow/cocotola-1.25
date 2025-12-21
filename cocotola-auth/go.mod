@@ -6,7 +6,8 @@ require (
 	github.com/casbin/casbin/v2 v2.135.0
 	github.com/casbin/gorm-adapter/v3 v3.39.0
 	github.com/gin-gonic/gin v1.11.0
-	github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251214133757-7c31f68d781b
+	github.com/golang-jwt/jwt/v5 v5.3.0
+	github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251220052912-9f38d8bcc140
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/otel v1.39.0

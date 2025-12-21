@@ -226,8 +226,8 @@ github.com/mattn/go-sqlite3 v1.14.22/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxU
 github.com/microsoft/go-mssqldb v1.8.2/go.mod h1:vp38dT33FGfVotRiTmDo3bFyaHq+p3LektQrjTULowo=
 github.com/microsoft/go-mssqldb v1.9.5 h1:orwya0X/5bsL1o+KasupTkk2eNTNFkTQG0BEe/HxCn0=
 github.com/microsoft/go-mssqldb v1.9.5/go.mod h1:VCP2a0KEZZtGLRHd1PsLavLFYy/3xX2yJUPycv3Sr2Q=
-github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251214133757-7c31f68d781b h1:XsMD3vAE1WDEdCsY6G1xI/Kewmg7/3YQOMwZMfm4LFE=
-github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251214133757-7c31f68d781b/go.mod h1:oV8Y38qLTB1UxG2UaPVEsJLHfO6CY4Dv3wEoja5QbZU=
+github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251220052912-9f38d8bcc140 h1:GqE57Ao4Q+IPLyVZw0cGBAGWmQBfGJA4ZrQVjCYWwJk=
+github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20251220052912-9f38d8bcc140/go.mod h1:UuNiYiETlAFX4tfMFM6KxeNlNzHW/L0NgT97CkJ6rMI=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd h1:TRLaZ9cD/w8PVh93nsPXa1VrQ6jlwL5oN8l14QlcNfg=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=

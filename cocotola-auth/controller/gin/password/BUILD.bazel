@@ -1,17 +1,16 @@
 load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "gin",
-    srcs = ["app_router.go"],
-    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/gin",
+    name = "password",
+    srcs = ["password_handler.go"],
+    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/gin/password",
     visibility = ["//visibility:public"],
     deps = [
-        "//cocotola-auth/config",
-        "//cocotola-auth/controller/gin/password",
         "//cocotola-auth/domain",
+        "//cocotola-auth/openapi",
         "//cocotola-auth/service",
-        "//cocotola-auth/usecase",
         "//cocotola-lib/controller/gin",
+        "//cocotola-lib/domain",
         "@com_github_gin_gonic_gin//:gin",
     ],
 )

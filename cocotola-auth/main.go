@@ -19,8 +19,6 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/initialize"
 )
 
-const AppName = "cocotola-auth"
-
 func main() {
 	exitCode, err := run()
 	if err != nil {
@@ -42,31 +40,31 @@ func run() (int, error) {
 	systemToken := domain.NewSystemToken()
 
 	// init log
-	shutdownlog, err := libgateway.InitLog(ctx, cfg.Log, AppName)
+	shutdownlog, err := libgateway.InitLog(ctx, cfg.Log, domain.AppName)
 	if err != nil {
 		return 0, fmt.Errorf("init log: %w", err)
 	}
 	defer shutdownlog()
-	logger := slog.Default().With(slog.String(libdomain.LoggerNameKey, AppName+"-main"))
+	logger := slog.Default().With(slog.String(libdomain.LoggerNameKey, domain.AppName+"-main"))
 
 	// init tracer
-	shutdownTrace, err := libgateway.InitTracerProvider(ctx, cfg.Trace, AppName)
+	shutdownTrace, err := libgateway.InitTracerProvider(ctx, cfg.Trace, domain.AppName)
 	if err != nil {
 		return 0, fmt.Errorf("init trace: %w", err)
 	}
 	defer shutdownTrace()
 
 	// init db
-	dbConn, shutdownDB, err := libgateway.InitDB(ctx, cfg.DB, cfg.Log, AppName)
+	dbConn, shutdownDB, err := libgateway.InitDB(ctx, cfg.DB, cfg.Log, domain.AppName)
 	if err != nil {
 		return 0, fmt.Errorf("init db: %w", err)
 	}
 	defer shutdownDB()
 
 	// init gin
-	router := libgin.InitRootRouterGroup(ctx, cfg.Server.Gin, AppName)
+	router := libgin.InitRootRouterGroup(ctx, cfg.Server.Gin, domain.AppName)
 
-	if err := initialize.Initialize(ctx, systemToken, router, AppName, dbConn, cfg.Server.Gin.Log, cfg.App); err != nil {
+	if err := initialize.Initialize(ctx, systemToken, router, dbConn, cfg.Server.Gin.Log, cfg.App); err != nil {
 		return 0, fmt.Errorf("initialize: %w", err)
 	}
 

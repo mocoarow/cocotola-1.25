@@ -3,7 +3,9 @@ load("@rules_go//go:def.bzl", "go_library")
 go_library(
     name = "service",
     srcs = [
+        "auth_token_manager.go",
         "authorization_manager.go",
+        "helper.go",
         "init.go",
         "organization_repository.go",
         "pair_of_user_and_group_repository.go",

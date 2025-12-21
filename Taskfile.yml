@@ -152,6 +152,7 @@ tasks:
 
   run-cocotola-init:
     cmds:
+      - docker compose -f compose.local.jaeger.yml up -d --wait
       - bazelisk run //cocotola-init:cocotola-init
 
   build-hello-world:
@@ -174,3 +175,34 @@ tasks:
   build-cocotola-empty-remote:
     cmds:
       - bazelisk run --config=remote //cocotola-empty:load
+
+  download-openapi-yaml:
+    desc: "Download openapi.yaml from Apidog"
+    cmds:
+      - scripts/download-openapi-yaml.sh
+      - mv openapi.yaml openapi/openapi.yaml
+      - echo "✅ openapi.yaml downloaded to openapi/openapi.yaml"
+
+  generate-openapi:
+    desc: "Generate OpenAPI models with custom templates and copy to openapi package"
+    cmds:
+      - rm -rf cocotola-auth/openapi/model_*.go || true
+      - rm -rf openapi-generated/model_*.go || true
+      - |
+        docker run --rm \
+          -v {{.ROOT_DIR}}/openapi:/openapi \
+          -v {{.ROOT_DIR}}/openapi-templates:/templates \
+          -v {{.ROOT_DIR}}/openapi-generated:/generated \
+          openapitools/openapi-generator-cli generate \
+          -i /openapi/openapi.yaml \
+          -g go-gin-server \
+          -o /generated/openapi \
+          -t /templates \
+          --package-name openapi
+      - go fmt openapi-generated/openapi/go/model_*.go || true
+      - cp openapi-generated/openapi/go/model_*.go cocotola-auth/openapi/
+      - echo "✅ Models generated and copied to openapi/ package"
+
+  kics:
+    cmds:
+      - docker run -t -v ./:/path checkmarx/kics scan -p /path --config /path/.github/kics.yml

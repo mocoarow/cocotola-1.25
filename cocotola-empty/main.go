@@ -23,7 +23,7 @@ type ServerConfig struct {
 	HTTPPort             int                           `yaml:"httpPort" validate:"required"`
 	MetricsPort          int                           `yaml:"metricsPort" validate:"required"`
 	ReadHeaderTimeoutSec int                           `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
-	Gin                  *libgin.GinConfig             `yaml:"gin" validate:"required"`
+	Gin                  *libgin.Config                `yaml:"gin" validate:"required"`
 	Shutdown             *libcontroller.ShutdownConfig `yaml:"shutdown" validate:"required"`
 }
 
@@ -54,11 +54,11 @@ func run() (int, error) {
 			HTTPPort:             8080,
 			MetricsPort:          8081,
 			ReadHeaderTimeoutSec: 10,
-			Gin: &libgin.GinConfig{
+			Gin: &libgin.Config{
 				CORS: &libgin.CORSConfig{
-					AllowOrigins: []string{"*"},
-					AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-					AllowHeaders: []string{"Content-Type"},
+					AllowOrigins: "*",
+					AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
+					AllowHeaders: "Content-Type",
 				},
 				Log: &libgin.LogConfig{
 					AccessLog:             true,
@@ -113,7 +113,7 @@ func run() (int, error) {
 	router := libgin.InitRootRouterGroup(ctx, cfg.Server.Gin, AppName)
 
 	// api
-	api := libgin.InitAPIRouterGroup(ctx, router, AppName, cfg.Server.Gin.Log)
+	api := libgin.InitAPIRouterGroup(ctx, router, cfg.Server.Gin.Log, AppName)
 	// v1
 	v1 := api.Group("v1")
 	// public router

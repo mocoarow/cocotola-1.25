@@ -6,10 +6,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
+	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
+
+	authdomain "github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 	"github.com/mocoarow/cocotola-1.25/cocotola-init/config"
 	"github.com/mocoarow/cocotola-1.25/cocotola-init/initialize"
-	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 )
 
 const AppName = "cocotola-init"
@@ -32,7 +33,7 @@ func run() (int, error) {
 		return 0, fmt.Errorf("LoadConfig: %w", err)
 	}
 
-	systemToken := domain.NewSystemToken()
+	systemToken := authdomain.NewSystemToken()
 
 	// init log
 	shutdownlog, err := libgateway.InitLog(ctx, cfg.Log, AppName)
