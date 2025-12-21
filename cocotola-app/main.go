@@ -8,8 +8,6 @@ import (
 	"os"
 	"time"
 
-	"go.opentelemetry.io/otel"
-
 	authdomain "github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 	authinit "github.com/mocoarow/cocotola-1.25/cocotola-auth/initialize"
 
@@ -23,8 +21,6 @@ import (
 )
 
 const AppName = "cocotola-app"
-
-var tracer = otel.Tracer("github.com/mocoarow/cocotola-1.25/cocotola-app")
 
 func main() {
 	exitCode, err := run()

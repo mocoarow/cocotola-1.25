@@ -9,6 +9,7 @@ import (
 	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/config"
+	"github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/gin/middleware"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase"
@@ -78,19 +79,19 @@ func GetPublicRouterGroupFuncs(_ context.Context, systemToken domain.SystemToken
 // 	}
 // }
 
-// func GetBearerTokenRouterGroupFuncs(_ context.Context, systemToken libdomain.SystemToken, mbTxManager, mbNonTxManager mbuserservice.TransactionManager, authTokenManager service.AuthTokenManager, mbrf mbuserservice.RepositoryFactory) []libcontroller.InitRouterGroupFunc {
-// 	// - user
-// 	userUsecase := usecase.NewUserUsecase(systemToken, mbTxManager, mbNonTxManager, authTokenManager)
-// 	spaceUsecase := usecase.NewSpaceUsecase(mbrf)
-// 	profileUsecase := usecase.NewProfileUsecase(mbNonTxManager)
-// 	return []libcontroller.InitRouterGroupFunc{
-// 		public.NewInitUserRouterFunc(userUsecase),
-// 		private.NewInitSpaceRouterFunc(spaceUsecase),
-// 		private.NewInitProfileRouterFunc(profileUsecase),
-// 		// NewInitRBACRouterFunc(rbacUsecase),
-// 	}
-// }
+func GetBearerTokenRouterGroupFuncs(_ context.Context, _ domain.SystemToken, _, mbNonTxManager service.TransactionManager, _ service.AuthTokenManager, _ service.RepositoryFactory) []libgin.InitRouterGroupFunc {
+	// - user
+	// userUsecase := usecase.NewUserUsecase(systemToken, mbTxManager, mbNonTxManager, authTokenManager)
+	// spaceUsecase := usecase.NewSpaceUsecase(mbrf)
+	profileUsecase := usecase.NewProfileUsecase(mbNonTxManager)
+	return []libgin.InitRouterGroupFunc{
+		// public.NewInitUserRouterFunc(userUsecase),
+		// private.NewInitSpaceRouterFunc(spaceUsecase),
+		NewInitProfileRouterFunc(profileUsecase),
+		// NewInitRBACRouterFunc(rbacUsecase),
+	}
+}
 
-// func InitBearerTokenAuthMiddleware(systemToken libdomain.SystemToken, authTokenManager service.AuthTokenManager, mbNonTxManager mbuserservice.TransactionManager, mbrf mbuserservice.RepositoryFactory) (gin.HandlerFunc, error) {
-// 	return middleware.NewAuthMiddleware(systemToken, authTokenManager, mbNonTxManager, mbrf), nil
-// }
+func InitBearerTokenAuthMiddleware(systemToken domain.SystemToken, authTokenManager service.AuthTokenManager, mbNonTxManager service.TransactionManager, mbrf service.RepositoryFactory) (gin.HandlerFunc, error) {
+	return middleware.NewBearerTokenAuthMiddleware(systemToken, authTokenManager, mbNonTxManager, mbrf), nil
+}

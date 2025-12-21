@@ -444,6 +444,65 @@ func (_c *MockUserRepository_FindUserByLoginID_Call) RunAndReturn(run func(conte
 	return _c
 }
 
+// GetUser provides a mock function with given fields: ctx, operator
+func (_m *MockUserRepository) GetUser(ctx context.Context, operator domain.UserInterface) (*domain.User, error) {
+	ret := _m.Called(ctx, operator)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUser")
+	}
+
+	var r0 *domain.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, domain.UserInterface) (*domain.User, error)); ok {
+		return rf(ctx, operator)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, domain.UserInterface) *domain.User); ok {
+		r0 = rf(ctx, operator)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, domain.UserInterface) error); ok {
+		r1 = rf(ctx, operator)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockUserRepository_GetUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUser'
+type MockUserRepository_GetUser_Call struct {
+	*mock.Call
+}
+
+// GetUser is a helper method to define mock.On call
+//   - ctx context.Context
+//   - operator domain.UserInterface
+func (_e *MockUserRepository_Expecter) GetUser(ctx interface{}, operator interface{}) *MockUserRepository_GetUser_Call {
+	return &MockUserRepository_GetUser_Call{Call: _e.mock.On("GetUser", ctx, operator)}
+}
+
+func (_c *MockUserRepository_GetUser_Call) Run(run func(ctx context.Context, operator domain.UserInterface)) *MockUserRepository_GetUser_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(domain.UserInterface))
+	})
+	return _c
+}
+
+func (_c *MockUserRepository_GetUser_Call) Return(_a0 *domain.User, _a1 error) *MockUserRepository_GetUser_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockUserRepository_GetUser_Call) RunAndReturn(run func(context.Context, domain.UserInterface) (*domain.User, error)) *MockUserRepository_GetUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // VerifyPassword provides a mock function with given fields: ctx, operator, loginID, password
 func (_m *MockUserRepository) VerifyPassword(ctx context.Context, operator domain.SystemOwnerInterface, loginID string, password string) (bool, error) {
 	ret := _m.Called(ctx, operator, loginID, password)

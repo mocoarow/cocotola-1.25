@@ -55,6 +55,8 @@ type UserRepository interface {
 
 	FindSystemOwnerByOrganizationName(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.SystemOwner, error)
 
+	GetUser(ctx context.Context, operator domain.UserInterface) (*domain.User, error)
+
 	FindUserByID(ctx context.Context, operator domain.UserInterface, id *domain.UserID) (*domain.User, error)
 
 	FindUserByLoginID(ctx context.Context, operator domain.UserInterface, loginID string) (*domain.User, error)

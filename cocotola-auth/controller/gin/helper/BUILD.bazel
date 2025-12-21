@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "helper",
+    srcs = ["auth_helper.go"],
+    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/gin/helper",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-auth/domain",
+        "//cocotola-lib/controller",
+        "//cocotola-lib/domain",
+        "@com_github_gin_gonic_gin//:gin",
+    ],
+)
