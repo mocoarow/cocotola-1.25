@@ -1,4 +1,4 @@
-package password
+package gin
 
 import (
 	"context"
@@ -17,23 +17,23 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-type Usecase interface {
+type PasswordUsecase interface {
 	Authenticate(ctx context.Context, loginID, password, organizationName string) (*service.AuthTokenSet, error)
 }
 
-type Handler struct {
-	passwordUsecase Usecase
+type PasswordHandler struct {
+	passwordUsecase PasswordUsecase
 	logger          *slog.Logger
 }
 
-func NewHandler(passwordUsecase Usecase) *Handler {
-	return &Handler{
+func NewPasswordHandler(passwordUsecase PasswordUsecase) *PasswordHandler {
+	return &PasswordHandler{
 		passwordUsecase: passwordUsecase,
 		logger:          slog.Default().With(slog.String(libdomain.LoggerNameKey, domain.AppName+"-PasswordAuthHandler")),
 	}
 }
 
-func (h *Handler) Authorize(c *gin.Context) {
+func (h *PasswordHandler) Authorize(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	var passwordAuthRequest openapi.PasswordAuthRequest
@@ -67,14 +67,14 @@ func (h *Handler) Authorize(c *gin.Context) {
 	})
 }
 
-func NewInitPasswordRouterFunc(password Usecase) libgin.InitRouterGroupFunc {
+func NewInitPasswordRouterFunc(password PasswordUsecase) libgin.InitRouterGroupFunc {
 	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
 		auth := parentRouterGroup.Group("password")
 		for _, m := range middleware {
 			auth.Use(m)
 		}
 
-		passwordHandler := NewHandler(password)
+		passwordHandler := NewPasswordHandler(password)
 		auth.POST("authenticate", passwordHandler.Authorize)
 	}
 }

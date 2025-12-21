@@ -9,7 +9,6 @@ import (
 	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/config"
-	"github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/gin/password"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase"
@@ -61,7 +60,7 @@ func GetPublicRouterGroupFuncs(_ context.Context, systemToken domain.SystemToken
 		NewInitTestRouterFunc(),
 		// public.NewInitAuthRouterFunc(authenticationUsecase),
 		// public.NewInitGoogleRouterFunc(googleUserUsecase),
-		password.NewInitPasswordRouterFunc(passwordUsecase),
+		NewInitPasswordRouterFunc(passwordUsecase),
 		// public.NewInitGuestRouterFunc(guestUsecase),
 	}, nil
 }
