@@ -35,6 +35,24 @@ paths:
                 $ref: '#/components/schemas/AuthResponse'
           headers: {}
       security: []
+    get:
+      summary: Get My Profile
+      deprecated: false
+      description: Get my profile
+      operationId: getMyProfile
+      tags:
+        - auth
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMyProfileResponse'
+          headers: {}
+      security:
+        - BearerAuth: []
 components:
   schemas:
     PasswordAuthRequest:
@@ -69,6 +87,30 @@ components:
       required:
         - accessToken
         - refreshToken
+    GetMyProfileResponse:
+      type: object
+      properties:
+        loginId:
+          type: string
+          x-go-name: LoginID
+        username:
+          type: string
+        organizationId:
+          type: integer
+          x-go-name: OrganizationID
+          format: int32
+        organizationName:
+          type: string
+        privateSpaceId:
+          type: integer
+          format: int32
+          x-go-name: PrivateSpaceID
+      required:
+        - loginId
+        - username
+        - organizationId
+        - organizationName
+        - privateSpaceId
   responses: {}
   securitySchemes:
     BearerAuth:
