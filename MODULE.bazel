@@ -44,6 +44,7 @@ use_repo(
     "io_opentelemetry_go_otel_sdk_log",
     "io_opentelemetry_go_otel_sdk",
     "io_opentelemetry_go_otel",
+    "io_opentelemetry_go_otel_trace",
     "org_golang_x_sync",
     "org_uber_go_atomic",
     "com_github_casbin_casbin_v2",
