@@ -6,13 +6,14 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
 
 	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/config"
-	controller "github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/gin"
+	ctrlgin "github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/gin"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/gateway"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
@@ -110,18 +111,18 @@ import (
 // 	}
 // }
 
-func Initialize(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, appName string, dbConn *libgateway.DBConnection, logConfig *libcontroller.LogConfig, authConfig *config.AuthConfig) error {
+func Initialize(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, dbConn *libgateway.DBConnection, logConfig *libcontroller.LogConfig, authConfig *config.AuthConfig) error {
 	ctx, span := tracer.Start(ctx, "Initialize")
 	defer span.End()
 
-	if err := initApp(ctx, systemToken, parent, appName, dbConn, logConfig, authConfig); err != nil {
+	if err := initApp(ctx, systemToken, parent, dbConn, logConfig, authConfig); err != nil {
 		return fmt.Errorf("initApp: %w", err)
 	}
 
 	return nil
 }
 
-func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, appName string, dbConn *libgateway.DBConnection, logConfig *libcontroller.LogConfig, authConfig *config.AuthConfig) error {
+func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, dbConn *libgateway.DBConnection, logConfig *libcontroller.LogConfig, authConfig *config.AuthConfig) error {
 	// logger := slog.Default().With(slog.String(mbliblog.LoggerNameKey, domain.AppName+"initApp"))
 
 	// cocotolaAuthCallbackClient := initCocotolaAuthCallbackClient(authConfig)
@@ -155,8 +156,16 @@ func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRo
 		return fmt.Errorf("initNonTransactionManager: %w", err)
 	}
 
+	// init auth token manager
+	signingKey := []byte(authConfig.SigningKey)
+	signingMethod := jwt.SigningMethodHS256
+	authTokenManager := gateway.NewAuthTokenManager(ctx, signingKey, signingMethod, time.Duration(authConfig.AccessTokenTTLMin)*time.Minute, time.Duration(authConfig.RefreshTokenTTLHour)*time.Hour)
+	if err != nil {
+		return fmt.Errorf("NewAuthTokenManager: %w", err)
+	}
+
 	// init public and private router group functions
-	publicRouterGroupFuncs, err := controller.GetPublicRouterGroupFuncs(ctx, systemToken, authConfig, txManager, nonTxManager)
+	publicRouterGroupFuncs, err := ctrlgin.GetPublicRouterGroupFuncs(ctx, systemToken, authConfig, txManager, nonTxManager, authTokenManager)
 	if err != nil {
 		return fmt.Errorf("GetPublicRouterGroupFuncs: %w", err)
 	}
@@ -164,7 +173,7 @@ func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRo
 	// basicPrivateRouterGroupFuncs := controller.GetBasicPrivateRouterGroupFuncs(ctx, systemToken, cocotolaCoreCallbackClient)
 
 	// api
-	api := libcontroller.InitAPIRouterGroup(ctx, parent, appName, logConfig)
+	api := libcontroller.InitAPIRouterGroup(ctx, parent, logConfig, domain.AppName)
 
 	// v1
 	v1 := api.Group("v1")

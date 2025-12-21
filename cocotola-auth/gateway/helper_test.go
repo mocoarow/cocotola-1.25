@@ -1,42 +1,45 @@
-//go:build medium
-
 package gateway_test
 
 import (
-	"context"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
-	"github.com/mocoarow/cocotola-1.25/cocotola-auth/gateway"
 )
 
-func setupTestOrganization(ctx context.Context, t *testing.T, tr testResource) (*domain.OrganizationID, domain.SystemOwnerInterface, domain.OwnerInterface) {
+func organizationID(t *testing.T, organizationID int) *domain.OrganizationID {
 	t.Helper()
-	orgRepo := gateway.NewOrganizationRepository(ctx, tr.db)
-	userRepo := tr.rf.NewUserRepository(ctx)
-
-	orgName := fmt.Sprintf("org-%s", RandString(8))
-	orgID, err := orgRepo.CreateOrganization(ctx, systemAdmin, orgName)
+	id, err := domain.NewOrganizationID(organizationID)
 	require.NoError(t, err)
+	return id
+}
 
-	_, err = userRepo.CreateSystemOwner(ctx, systemAdmin, orgID)
+func userID(t *testing.T, userID int) *domain.UserID {
+	t.Helper()
+	id, err := domain.NewUserID(userID)
 	require.NoError(t, err)
+	return id
+}
 
-	sysOwner, err := userRepo.FindSystemOwnerByOrganizationID(ctx, systemAdmin, orgID)
-	require.NoError(t, err)
+type user struct {
+	userID         *domain.UserID
+	organizationID *domain.OrganizationID
+	loginID        string
+	username       string
+}
 
-	ownerParam := testNewCreateUserParameter(t, fmt.Sprintf("owner_%s", RandString(6)), fmt.Sprintf("Owner %s", RandString(6)), "password-owner")
-	ownerID, err := userRepo.CreateUser(ctx, sysOwner, ownerParam)
-	require.NoError(t, err)
+var _ domain.UserInterface = (*user)(nil)
 
-	ownerUser, err := userRepo.FindUserByID(ctx, sysOwner, ownerID)
-	require.NoError(t, err)
-
-	owner, err := domain.NewOwner(ownerUser)
-	require.NoError(t, err)
-
-	return orgID, sysOwner, owner
+func (m *user) GetUserID() *domain.UserID {
+	return m.userID
+}
+func (m *user) GetOrganizationID() *domain.OrganizationID {
+	return m.organizationID
+}
+func (m *user) GetUsername() string {
+	return m.username
+}
+func (m *user) GetLoginID() string {
+	return m.loginID
 }

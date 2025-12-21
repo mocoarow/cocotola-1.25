@@ -13,8 +13,8 @@ import (
 	usecase "github.com/mocoarow/cocotola-1.25/cocotola-init/usecase"
 )
 
-func initGuest(ctx context.Context, systemToken authdomain.SystemToken, mbTxManager, mbNonTxManager authservice.TransactionManager, organizationName, appName string) error {
-	logger := slog.Default().With(slog.String(libdomain.LoggerNameKey, appName+"InitGuest"))
+func initGuest(ctx context.Context, systemToken authdomain.SystemToken, mbTxManager, mbNonTxManager authservice.TransactionManager, organizationName string, appName string) error {
+	logger := slog.Default().With(slog.String(libdomain.LoggerNameKey, appName+"-InitGuest"))
 
 	sysAdmin := authdomain.NewSystemAdmin(systemToken)
 

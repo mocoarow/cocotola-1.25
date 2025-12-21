@@ -1,5 +1,7 @@
 package domain
 
+const AppName = "cocotola-auth"
+
 type SystemAdminInterface interface {
 	GetUserID() *UserID
 	IsSystemAdmin() bool
@@ -8,6 +10,8 @@ type SystemAdminInterface interface {
 type UserInterface interface {
 	GetUserID() *UserID
 	GetOrganizationID() *OrganizationID
+	GetLoginID() string
+	GetUsername() string
 }
 
 type OwnerInterface interface {

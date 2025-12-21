@@ -10,11 +10,12 @@ import (
 	authservice "github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 
-	usecase "github.com/mocoarow/cocotola-1.25/cocotola-init/usecase"
+	"github.com/mocoarow/cocotola-1.25/cocotola-init/domain"
+	"github.com/mocoarow/cocotola-1.25/cocotola-init/usecase"
 )
 
-func initOrganization(ctx context.Context, systemToken authdomain.SystemToken, mbTxManager, mbNonTxManager authservice.TransactionManager, organizationName, loginID, password, appName string) error {
-	logger := slog.Default().With(slog.String(libdomain.LoggerNameKey, appName+"InitApp1"))
+func initOrganization(ctx context.Context, systemToken authdomain.SystemToken, mbTxManager, mbNonTxManager authservice.TransactionManager, organizationName, loginID, password string) error {
+	logger := slog.Default().With(slog.String(libdomain.LoggerNameKey, domain.AppName+"InitApp1"))
 
 	sysAdmin := authdomain.NewSystemAdmin(systemToken)
 

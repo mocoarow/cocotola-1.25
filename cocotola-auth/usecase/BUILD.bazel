@@ -3,7 +3,12 @@ load("//bazel:go_test.bzl", "smart_go_test")
 
 go_library(
     name = "usecase",
-    srcs = ["verify_password_command.go"],
+    srcs = [
+        "helper.go",
+        "password_authenticate_command.go",
+        "password_usecase.go",
+        "verify_password_command.go",
+    ],
     importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase",
     visibility = ["//visibility:public"],
     deps = [

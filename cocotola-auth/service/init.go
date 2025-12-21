@@ -1,5 +1,11 @@
 package service
 
+import "errors"
+
+var (
+	ErrUnauthenticated = errors.New("unauthenticated")
+)
+
 const (
 	SystemAdminLoginID = "__system_admin"
 	SystemOwnerLoginID = "__system_owner"

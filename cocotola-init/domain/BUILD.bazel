@@ -1,0 +1,8 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "domain",
+    srcs = ["init.go"],
+    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-init/domain",
+    visibility = ["//visibility:public"],
+)

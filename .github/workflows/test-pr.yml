@@ -25,6 +25,17 @@ jobs:
         with:
           bazelisk-version: 1.x
 
+      - name: Cache bazel
+        id: bazel_cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/bazel
+            ~/.cache/bazelisk
+          key: ${{ runner.os }}-bazel-${{ matrix.go-version }}-${{ hashFiles('WORKSPACE*', 'MODULE.bazel', 'deps.bzl', '**/*.bzl', '**/BUILD.bazel') }}
+          restore-keys: |
+            ${{ runner.os }}-bazel-${{ matrix.go-version }}-
+
       - run: bazel info
 
       # https://github.com/arduino/setup-task/tree/v2.0.0

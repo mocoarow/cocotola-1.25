@@ -1,4 +1,4 @@
-package controller
+package gin
 
 import (
 	"context"
@@ -6,13 +6,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/config"
+	"github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/gin/password"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
-	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+	"github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase"
 )
 
-func NewInitTestRouterFunc() libcontroller.InitRouterGroupFunc {
+func NewInitTestRouterFunc() libgin.InitRouterGroupFunc {
 	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
 		test := parentRouterGroup.Group("test")
 		for _, m := range middleware {
@@ -36,7 +39,7 @@ func NewInitTestRouterFunc() libcontroller.InitRouterGroupFunc {
 // 	return authTokenManager, nil
 // }
 
-func GetPublicRouterGroupFuncs(_ context.Context, _ domain.SystemToken, _ *config.AuthConfig, _, _ service.TransactionManager) ([]libcontroller.InitRouterGroupFunc, error) {
+func GetPublicRouterGroupFuncs(_ context.Context, systemToken domain.SystemToken, _ *config.AuthConfig, txManager, nonTxManager service.TransactionManager, authTokenManager service.AuthTokenManager) ([]libgin.InitRouterGroupFunc, error) {
 	// // - google
 	// httpClient := http.Client{ //nolint:exhaustruct
 	// 	Timeout:   time.Duration(authConfig.GoogleAPITimeoutSec) * time.Second,
@@ -48,17 +51,17 @@ func GetPublicRouterGroupFuncs(_ context.Context, _ domain.SystemToken, _ *confi
 	// // - authentication
 	// authenticationUsecase := usecase.NewAuthentication(systemToken, mbTxManager, authTokenManager)
 	// // &systemOwnerByOrganizationName{})
-	// // - password
-	// passwordUsecase := usecase.NewPassword(systemToken, mbTxManager, mbNonTxManager, authTokenManager)
+	// - password
+	passwordUsecase := usecase.NewPassword(systemToken, txManager, nonTxManager, authTokenManager)
 	// // - guest
 	// guestUsecase := usecase.NewGuest(systemToken, mbTxManager, mbNonTxManager, authTokenManager)
 
 	// public router
-	return []libcontroller.InitRouterGroupFunc{
+	return []libgin.InitRouterGroupFunc{
 		NewInitTestRouterFunc(),
 		// public.NewInitAuthRouterFunc(authenticationUsecase),
 		// public.NewInitGoogleRouterFunc(googleUserUsecase),
-		// public.NewInitPasswordRouterFunc(passwordUsecase),
+		password.NewInitPasswordRouterFunc(passwordUsecase),
 		// public.NewInitGuestRouterFunc(guestUsecase),
 	}, nil
 }

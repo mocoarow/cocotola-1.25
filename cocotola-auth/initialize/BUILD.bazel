@@ -18,6 +18,7 @@ go_library(
         "//cocotola-lib/controller/gin",
         "//cocotola-lib/gateway",
         "@com_github_gin_gonic_gin//:gin",
+        "@com_github_golang_jwt_jwt_v5//:jwt",
         "@io_gorm_gorm//:gorm",
         "@io_opentelemetry_go_otel//:otel",
     ],

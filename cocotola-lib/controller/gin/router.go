@@ -23,7 +23,8 @@ type DebugConfig struct {
 	Gin  bool `yaml:"gin"`
 	Wait bool `yaml:"wait"`
 }
-type GinConfig struct {
+
+type Config struct {
 	CORS  *CORSConfig  `yaml:"cors"`
 	Log   *LogConfig   `yaml:"log"`
 	Debug *DebugConfig `yaml:"debug"`
@@ -31,7 +32,7 @@ type GinConfig struct {
 
 type InitRouterGroupFunc func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc)
 
-func InitRootRouterGroup(_ context.Context, ginConfig *GinConfig, appName string) *gin.Engine {
+func InitRootRouterGroup(_ context.Context, ginConfig *Config, appName string) *gin.Engine {
 	if !ginConfig.Debug.Gin {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -77,7 +78,7 @@ func InitRootRouterGroup(_ context.Context, ginConfig *GinConfig, appName string
 	return router
 }
 
-func InitAPIRouterGroup(_ context.Context, parentRouterGroup gin.IRouter, appName string, _ *LogConfig) *gin.RouterGroup {
+func InitAPIRouterGroup(_ context.Context, parentRouterGroup gin.IRouter, _ *LogConfig, appName string) *gin.RouterGroup {
 	api := parentRouterGroup.Group("api")
 	api.Use(otelgin.Middleware(appName))
 	// if logConfig.AccessLog {
