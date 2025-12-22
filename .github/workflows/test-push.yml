@@ -26,7 +26,7 @@ jobs:
           service_account: ${{ secrets.REGISTRY_SERVICE_ACCOUNT_EMAIL }}
 
       # https://github.com/google-github-actions/setup-gcloud/tree/v2.1.5
-      - uses: google-github-actions/setup-gcloud@6a7c903a70c8625ed6700fa299f5ddb4ca6022e9
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
 
       - uses: actions/setup-go@v6
         with:
