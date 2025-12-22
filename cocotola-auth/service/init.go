@@ -1,6 +1,9 @@
 package service
 
-import "errors"
+import (
+	"errors"
+	"strconv"
+)
 
 var (
 	ErrUnauthenticated = errors.New("unauthenticated")
@@ -20,3 +23,10 @@ const (
 	PublicGroupName        = "Public Group"
 	PublicDefaultSpaceName = "Public Default Space"
 )
+
+func NewPersonalSpaceKey(userID int) string {
+	return "__personal_space@@" + strconv.Itoa(userID)
+}
+func NewPersonalSpaceName(loginID string) string {
+	return "Personal Space(" + loginID + ")"
+}
