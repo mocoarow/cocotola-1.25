@@ -166,6 +166,10 @@ tasks:
       - docker compose -f compose.local.jaeger.yml up -d --wait
       - bazelisk run //cocotola-app:cocotola-app
 
+  clear-local-infra:
+    cmds:
+      - docker compose -f compose.local.jaeger.yml down
+
   build-hello-world:
     cmds:
       - bazelisk run //hello-world:load

@@ -95,10 +95,11 @@ func createFirstOwnerToOrganization(ctx context.Context, operator authdomain.Sys
 	if err != nil {
 		return nil, fmt.Errorf("new UserAddParameter: %w", err)
 	}
-	addFirstOwnerCommand := usecase.NewCreateFirstOwnerCommand(mbTxManager, mbNonTxManager)
-	firstOwnerID, err := addFirstOwnerCommand.Execute(ctx, operator, firstOwnerAddParam)
+	createFirstOwnerCommand := usecase.NewCreateFirstOwnerCommand(mbTxManager, mbNonTxManager)
+	firstOwnerID, err := createFirstOwnerCommand.Execute(ctx, operator, firstOwnerAddParam)
 	if err != nil {
-		return nil, fmt.Errorf("add first owner: %w", err)
+		return nil, fmt.Errorf("create first owner: %w", err)
 	}
+
 	return firstOwnerID, nil
 }
