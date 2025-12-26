@@ -10,15 +10,15 @@ import (
 	libservice "github.com/mocoarow/cocotola-1.25/cocotola-lib/service"
 )
 
-type PasswordUsecae struct {
+type PasswordUsecase struct {
 	systemToken      domain.SystemToken
 	txManager        service.TransactionManager
 	nonTxManager     service.TransactionManager
 	authTokenManager service.AuthTokenManager
 }
 
-func NewPassword(systemToken domain.SystemToken, txManager, nonTxManager service.TransactionManager, authTokenManager service.AuthTokenManager) *PasswordUsecae {
-	return &PasswordUsecae{
+func NewPassword(systemToken domain.SystemToken, txManager, nonTxManager service.TransactionManager, authTokenManager service.AuthTokenManager) *PasswordUsecase {
+	return &PasswordUsecase{
 		systemToken:      systemToken,
 		txManager:        txManager,
 		nonTxManager:     nonTxManager,
@@ -26,7 +26,7 @@ func NewPassword(systemToken domain.SystemToken, txManager, nonTxManager service
 	}
 }
 
-func (u *PasswordUsecae) Authenticate(ctx context.Context, loginID, password, organizationName string) (*service.AuthTokenSet, error) {
+func (u *PasswordUsecase) Authenticate(ctx context.Context, loginID, password, organizationName string) (*service.AuthTokenSet, error) {
 	sysAdmin := domain.NewSystemAdmin(u.systemToken)
 	sysOwner, err := u.findSystemOwnerByOrganizationName(ctx, sysAdmin, organizationName)
 	if err != nil {
@@ -41,7 +41,7 @@ func (u *PasswordUsecae) Authenticate(ctx context.Context, loginID, password, or
 	return tokenSet, nil
 }
 
-func (u *PasswordUsecae) findSystemOwnerByOrganizationName(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.SystemOwner, error) {
+func (u *PasswordUsecase) findSystemOwnerByOrganizationName(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.SystemOwner, error) {
 	systemOwner, err := libservice.Do1(ctx, u.nonTxManager, func(rf service.RepositoryFactory) (*domain.SystemOwner, error) {
 		return service.FindSystemOwnerByOrganizationName(ctx, rf, operator, organizationName)
 	})

@@ -10,7 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
+	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
+
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/gateway"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
@@ -34,19 +35,19 @@ func addPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRep
 		effect = service.RBACDenyEffect
 	}
 
-	err := rbacRepository.CreatePolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACUser(sub), domain.NewRBACAction(act), domain.NewRBACObject(obj), effect)
+	err := rbacRepository.CreatePolicy(ctx, libdomain.NewRBACDomain(dom), libdomain.NewRBACUser(sub), libdomain.NewRBACAction(act), libdomain.NewRBACObject(obj), effect)
 	require.NoError(t, err)
 }
 
 func addObjectGroupingPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRepository, dom, child, parent string) {
 	t.Helper()
-	err := rbacRepository.CreateObjectGroupingPolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACObject(child), domain.NewRBACObject(parent))
+	err := rbacRepository.CreateObjectGroupingPolicy(ctx, libdomain.NewRBACDomain(dom), libdomain.NewRBACObject(child), libdomain.NewRBACObject(parent))
 	require.NoError(t, err)
 }
 
 func addSubjectGroupingPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRepository, dom, sub, obj string) {
 	t.Helper()
-	err := rbacRepository.CreateSubjectGroupingPolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACUser(sub), domain.NewRBACRole(obj))
+	err := rbacRepository.CreateSubjectGroupingPolicy(ctx, libdomain.NewRBACDomain(dom), libdomain.NewRBACUser(sub), libdomain.NewRBACRole(obj))
 	require.NoError(t, err)
 }
 
@@ -71,7 +72,7 @@ func TestA(t *testing.T) { //nolint:paralleltest
 		// require.NoError(t, err)
 		addPolicy(t, ctx, rbacRepo, domainName, "alice", "read", fmt.Sprintf("domain:%d,data:1", domainID), true)
 		addPolicy(t, ctx, rbacRepo, domainName, "bob", "write", fmt.Sprintf("domain:%d,data:2", domainID), true)
-		// rbacRepo.AddPolicy(domain.NewRBACDomain("domain1"), domain.NewRBACUser("alice"), domain.NewRBACAction("write"), domain.NewRBACObject("data1"), service.RBACAllowEffect)
+		// rbacRepo.AddPolicy(libdomain.NewRBACDomain("domain1"), libdomain.NewRBACUser("alice"), libdomain.NewRBACAction("write"), libdomain.NewRBACObject("data1"), service.RBACAllowEffect)
 		addObjectGroupingPolicy(t, ctx, rbacRepo, domainName, fmt.Sprintf("domain:%d,child:1", domainID), fmt.Sprintf("domain:%d,data:1", domainID))
 
 		tests := []testSDOA{

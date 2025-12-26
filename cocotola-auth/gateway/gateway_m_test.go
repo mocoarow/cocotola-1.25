@@ -112,8 +112,8 @@ func testDB(t *testing.T, fn func(t *testing.T, ctx context.Context, tr testReso
 
 // 	// 3. add policy to "system-owner" user
 // 	t.Log(`add policy to "system-owner" user`)
-// 	rbacSysOwner := domain.NewRBACUserFromUser(sysOwnerID)
-// 	rbacAllUserRolesObject := domain.NewRBACAllUserRolesObjectFromOrganization(orgID)
+// 	rbacSysOwner := libdomain.NewRBACUserFromUser(sysOwnerID)
+// 	rbacAllUserRolesObject := libdomain.NewRBACAllUserRolesObjectFromOrganization(orgID)
 // 	// - "system-owner" "can" "set" "all-user-roles"
 // 	err = authorizationManager.AddPolicyToUserBySystemAdmin(ctx, sysAd, orgID, rbacSysOwner, service.RBACSetAction, rbacAllUserRolesObject, service.RBACAllowEffect)
 // 	require.NoError(t, err)
@@ -129,7 +129,7 @@ func testDB(t *testing.T, fn func(t *testing.T, ctx context.Context, tr testReso
 // 	require.NoError(t, err)
 
 // 	// 5. add policty to "owner" group
-// 	rbacOwnerGroup := domain.NewRBACRoleFromGroup(orgID, ownerGroupID)
+// 	rbacOwnerGroup := libdomain.NewRBACRoleFromGroup(orgID, ownerGroupID)
 // 	// - "owner" group "can" "set" "all-user-roles"
 // 	err = authorizationManager.AddPolicyToGroupBySystemAdmin(ctx, sysAd, orgID, rbacOwnerGroup, service.RBACSetAction, rbacAllUserRolesObject, service.RBACAllowEffect)
 // 	require.NoError(t, err)

@@ -27,7 +27,7 @@ func (v *UserID) Int() int {
 func (v *UserID) IsUserID() bool {
 	return true
 }
-func (v *UserID) GetRBACSubject() RBACSubject {
+func (v *UserID) GetRBACSubject() libdomain.RBACSubject {
 	return NewRBACUserFromUser(v)
 }
 

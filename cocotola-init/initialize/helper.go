@@ -67,23 +67,6 @@ func findSystemOwnerByOrganizationName(ctx context.Context, systemAdmin authdoma
 	return sysOwner, nil
 }
 
-func findPublicSpaceByKey(ctx context.Context, systemOwner authdomain.SystemOwnerInterface, nonTxManager authservice.TransactionManager, key string) (*authdomain.Space, error) {
-	fn := func(rf authservice.RepositoryFactory) (*authdomain.Space, error) {
-		spaceRepo := rf.NewSpaceRepository(ctx)
-		publicDefaultSpace, err := spaceRepo.FindPublicSpaceByKey(ctx, systemOwner, key)
-		if err != nil {
-			return nil, fmt.Errorf("find public default space by key(%s): %w", key, err)
-		}
-
-		return publicDefaultSpace, nil
-	}
-	publicDefaultSpace, err := libservice.Do1(ctx, nonTxManager, fn)
-	if err != nil {
-		return nil, err //nolint:wrapcheck
-	}
-	return publicDefaultSpace, nil
-}
-
 func findUserByLoginID(ctx context.Context, systemOwner authdomain.SystemOwnerInterface, mbNonTxManager authservice.TransactionManager, loginID string) (*authdomain.User, error) {
 	fn := func(mbrf authservice.RepositoryFactory) (*authdomain.User, error) {
 		userRepo := mbrf.NewUserRepository(ctx)

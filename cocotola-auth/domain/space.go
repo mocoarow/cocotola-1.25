@@ -2,6 +2,7 @@ package domain
 
 import (
 	"fmt"
+	"strconv"
 
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 )
@@ -25,6 +26,10 @@ func (v *SpaceID) Int() int {
 }
 func (v *SpaceID) IsSpaceID() bool {
 	return true
+}
+
+func (v *SpaceID) GetRBACObject() libdomain.RBACObject {
+	return libdomain.NewRBACObject("space:" + strconv.Itoa(v.Value))
 }
 
 type SpaceIDs []*SpaceID

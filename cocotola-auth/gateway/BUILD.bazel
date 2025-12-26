@@ -57,6 +57,7 @@ smart_go_test(
         ":gateway",
         "//cocotola-auth/domain",
         "//cocotola-auth/service",
+        "//cocotola-lib/domain",
         "//cocotola-lib/gateway",
         "//cocotola-lib/testlib/gateway",
         "@com_github_golang_jwt_jwt_v5//:jwt",

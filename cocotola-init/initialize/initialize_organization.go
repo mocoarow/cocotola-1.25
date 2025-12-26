@@ -51,7 +51,7 @@ func initOrganization(ctx context.Context, systemToken authdomain.SystemToken, m
 	logger.InfoContext(ctx, fmt.Sprintf("firstOwnerID: %d", firstOwnerID.Int()))
 
 	// 5. find public default space
-	if _, err := findPublicSpaceByKey(ctx, sysOwner, mbNonTxManager, authservice.PublicDefaultSpaceKey); err != nil {
+	if _, err := authservice.FindPublicSpaceByKey(ctx, sysOwner, mbNonTxManager, authservice.PublicDefaultSpaceKey); err != nil {
 		return fmt.Errorf("find public default space by key(%s): %w", authservice.PublicDefaultSpaceKey, err)
 	}
 
@@ -71,7 +71,7 @@ func findOrganizationAndSystemOwnerAndPublicDefaultSpace(ctx context.Context, sy
 		return false, fmt.Errorf("find system owner by organization name: %w", err)
 	}
 
-	if _, err := findPublicSpaceByKey(ctx, sysOwner, mbNonTxManager, authservice.PublicDefaultSpaceKey); err != nil {
+	if _, err := authservice.FindPublicSpaceByKey(ctx, sysOwner, mbNonTxManager, authservice.PublicDefaultSpaceKey); err != nil {
 		if !errors.Is(err, authservice.ErrSpaceNotFound) {
 			return false, fmt.Errorf("find public default space by key: %w", err)
 		}

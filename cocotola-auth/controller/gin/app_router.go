@@ -53,8 +53,8 @@ func GetPublicRouterGroupFuncs(_ context.Context, systemToken domain.SystemToken
 	// // &systemOwnerByOrganizationName{})
 	// - password
 	passwordUsecase := usecase.NewPassword(systemToken, txManager, nonTxManager, authTokenManager)
-	// // - guest
-	// guestUsecase := usecase.NewGuest(systemToken, mbTxManager, mbNonTxManager, authTokenManager)
+	// - guest
+	guestUsecase := usecase.NewGuest(systemToken, txManager, nonTxManager, authTokenManager)
 
 	// public router
 	return []libgin.InitRouterGroupFunc{
@@ -62,7 +62,7 @@ func GetPublicRouterGroupFuncs(_ context.Context, systemToken domain.SystemToken
 		// public.NewInitAuthRouterFunc(authenticationUsecase),
 		// public.NewInitGoogleRouterFunc(googleUserUsecase),
 		NewInitPasswordRouterFunc(passwordUsecase),
-		// public.NewInitGuestRouterFunc(guestUsecase),
+		NewInitGuestRouterFunc(guestUsecase),
 	}, nil
 }
 

@@ -53,6 +53,30 @@ paths:
           headers: {}
       security:
         - BearerAuth: []
+  /api/v1/guest/password:
+    post:
+      summary: Guest Authentication
+      deprecated: false
+      description: Guest Authentication
+      operationId: guestAuthentication
+      tags: []
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuestAuthRequest'
+            examples: {}
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+          headers: {}
+      security: []
 components:
   schemas:
     PasswordAuthRequest:
@@ -111,6 +135,15 @@ components:
         - organizationId
         - organizationName
         - privateSpaceId
+    GuestAuthRequest:
+      type: object
+      properties:
+        organizationName:
+          type: string
+          pattern: ^.*$
+          maxLength: 20
+      required:
+        - organizationName
   responses: {}
   securitySchemes:
     BearerAuth:
