@@ -20,5 +20,5 @@ type GetMyProfileResponse struct {
 
 	OrganizationName string `json:"organizationName"`
 
-	PrivateSpaceID int32 `json:"privateSpaceId"`
+	PersonalSpaceID *int32 `json:"personalSpaceId,omitempty"`
 }

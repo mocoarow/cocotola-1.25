@@ -59,7 +59,8 @@ paths:
       deprecated: false
       description: Guest Authentication
       operationId: guestAuthentication
-      tags: []
+      tags:
+        - auth
       parameters: []
       requestBody:
         content:
@@ -125,16 +126,16 @@ components:
           format: int32
         organizationName:
           type: string
-        privateSpaceId:
+        personalSpaceId:
           type: integer
           format: int32
-          x-go-name: PrivateSpaceID
+          x-go-name: PersonalSpaceID
+          nullable: true
       required:
         - loginId
         - username
         - organizationId
         - organizationName
-        - privateSpaceId
     GuestAuthRequest:
       type: object
       properties:

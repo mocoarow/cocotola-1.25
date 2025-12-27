@@ -11,16 +11,16 @@ type ProfileModel struct {
 	Username         string          `validate:"required"`
 	OrganizationID   *OrganizationID `validate:"required"`
 	OrganizationName string          `validate:"required"`
-	PrivateSpaceID   *SpaceID        `validate:"required"`
+	PersonalSpaceID  *SpaceID        // Guest user does not have personal space
 }
 
-func NewProfileModel(loginID string, username string, organizationID *OrganizationID, organizationName string, privateSpaceID *SpaceID) (*ProfileModel, error) {
+func NewProfileModel(loginID string, username string, organizationID *OrganizationID, organizationName string, personalSpaceID *SpaceID) (*ProfileModel, error) {
 	m := &ProfileModel{
 		LoginID:          loginID,
 		Username:         username,
 		OrganizationID:   organizationID,
 		OrganizationName: organizationName,
-		PrivateSpaceID:   privateSpaceID,
+		PersonalSpaceID:  personalSpaceID,
 	}
 
 	if err := libdomain.Validator.Struct(m); err != nil {

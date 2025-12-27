@@ -1,0 +1,30 @@
+---
+desc: ゲストのアクセストークンを発行
+runners:
+  req: http://localhost:8000
+steps:
+  createToken:
+    desc: アクセストークンを発行する
+    req:
+      /auth/api/v1/guest/authenticate:
+        post:
+          body:
+            application/json:
+              organizationName: "cocotola"
+    test: |
+      current.res.status == 200
+      && (current.res.body.accessToken startsWith "eyJ") == true
+    bind:
+      guestAccessToken: current.res.body.accessToken
+
+  userInfo:
+    desc: ユーザー情報を取得
+    req:
+      /auth/api/v1/profile/me:
+        get:
+          headers:
+            authorization: "Bearer {{ guestAccessToken }}"
+    test: |
+      current.res.status == 200
+      && current.res.body.loginId == "guest@@cocotola"
+      && current.res.body.username == "Guest(cocotola)"
