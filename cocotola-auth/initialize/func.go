@@ -70,20 +70,3 @@ package initialize
 // 	}
 // 	return user, nil
 // }
-
-// func findPublicSpaceByKey(ctx context.Context, systemOwner mbuserdomain.SystemOwnerInterface, mbNonTxManager mbuserservice.TransactionManager, key string) (*mbuserdomain.Space, error) {
-// 	fn := func(mbrf mbuserservice.RepositoryFactory) (*mbuserdomain.Space, error) {
-// 		spaceRepo := mbrf.NewSpaceRepository(ctx)
-// 		publicDefaultSpace, err := spaceRepo.FindPublicSpaceByKey(ctx, systemOwner, key)
-// 		if err != nil {
-// 			return nil, fmt.Errorf("find public default space by key(%s): %w", key, err)
-// 		}
-
-// 		return publicDefaultSpace, nil
-// 	}
-// 	publicDefaultSpace, err := mblibservice.Do1(ctx, mbNonTxManager, fn)
-// 	if err != nil {
-// 		return nil, err //nolint:wrapcheck
-// 	}
-// 	return publicDefaultSpace, nil
-// }

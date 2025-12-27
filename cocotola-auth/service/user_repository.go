@@ -15,13 +15,13 @@ var ErrUserAlreadyExists = errors.New("user already exists")
 
 var ErrSystemOwnerNotFound = errors.New("system owner not found")
 
-var CreateUserAction = domain.NewRBACAction("CreateUser")
-var ListUsersAction = domain.NewRBACAction("ListUsers")
-var GetUserAction = domain.NewRBACAction("GetUser")
-var UpdateUserAction = domain.NewRBACAction("UpdateUser")
-var DeleteUserAction = domain.NewRBACAction("DeleteUser")
+var CreateUserAction = libdomain.NewRBACAction("CreateUser")
+var ListUsersAction = libdomain.NewRBACAction("ListUsers")
+var GetUserAction = libdomain.NewRBACAction("GetUser")
+var UpdateUserAction = libdomain.NewRBACAction("UpdateUser")
+var DeleteUserAction = libdomain.NewRBACAction("DeleteUser")
 
-var CreateOwnerAction = domain.NewRBACAction("CreateOwner")
+var CreateOwnerAction = libdomain.NewRBACAction("CreateOwner")
 
 type CreateUserParameter struct {
 	LoginID              string `validate:"required,max=255"`

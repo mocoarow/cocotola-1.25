@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "model_auth_response.go",
         "model_get_my_profile_response.go",
+        "model_guest_auth_request.go",
         "model_password_auth_request.go",
     ],
     importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth/openapi",

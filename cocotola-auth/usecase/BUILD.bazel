@@ -5,6 +5,8 @@ go_library(
     name = "usecase",
     srcs = [
         "get_my_profile_query.go",
+        "guest_authenticate_command.go",
+        "guest_usecase.go",
         "helper.go",
         "init.go",
         "password_authenticate_command.go",

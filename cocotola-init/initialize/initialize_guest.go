@@ -37,7 +37,7 @@ func initGuest(ctx context.Context, systemToken authdomain.SystemToken, mbTxMana
 	}
 
 	// 2. find public default space
-	publicDefaultSpace, err := findPublicSpaceByKey(ctx, sysOwner, mbNonTxManager, authservice.PublicDefaultSpaceKey)
+	publicDefaultSpace, err := authservice.FindPublicSpaceByKey(ctx, sysOwner, mbNonTxManager, authservice.PublicDefaultSpaceKey)
 	if err != nil {
 		return fmt.Errorf("find public default space by key(%s): %w", authservice.PublicDefaultSpaceKey, err)
 	}
@@ -51,22 +51,13 @@ func initGuest(ctx context.Context, systemToken authdomain.SystemToken, mbTxMana
 }
 
 func createGuestUser(ctx context.Context, mbTxManager, mbNonTxManager authservice.TransactionManager, systemOwner authdomain.SystemOwnerInterface, guestLoginID, guestUserName string, _ *authdomain.SpaceID) error {
-	// allowEffect := authservice.RBACAllowEffect
-	// spaceObject := spaceID.GetRBACObject()
-	aoeList := []authdomain.ActionObjectEffect{
-		// guest can list decks in the "public" space
-		// {Action: coreservice.ListDecksAction, Object: spaceObject, Effect: allowEffect},
-		// // guest cat read all decks in the "public" space
-		// {Action: coreservice.ReadDeckAction, Object: spaceObject, Effect: allowEffect},
-	}
-
 	addGuestCommand := usecase.NewCreateGuestCommand(mbTxManager, mbNonTxManager)
 	addUserParam, err := authservice.NewCreateUserParameter(guestLoginID, guestUserName, "DUMMY_PASSWORD", "", "", "", "")
 	if err != nil {
 		return fmt.Errorf("NewCreateUserParameter: %w", err)
 	}
 
-	if _, err := addGuestCommand.Execute(ctx, systemOwner, addUserParam, aoeList); err != nil {
+	if _, err := addGuestCommand.Execute(ctx, systemOwner, addUserParam); err != nil {
 		return fmt.Errorf("execute addGuestCommand: %w", err)
 	}
 

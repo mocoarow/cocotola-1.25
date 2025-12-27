@@ -26,16 +26,32 @@ func NewCreateFirstOwnerCommand(txManager authservice.TransactionManager, nonTxM
 	}
 }
 
+func (u *CreateFirstOwnerCommand) Execute(ctx context.Context, operator authdomain.SystemOwnerInterface, param *authservice.CreateUserParameter) (*authdomain.UserID, error) {
+	// 1. Check authorization
+	if err := u.checkAuthorization(ctx, operator, param); err != nil {
+		return nil, fmt.Errorf("checkAuthorization: %w", err)
+	}
+
+	// 2. Execute
+	firstOwnerID, err := u.execute(ctx, operator, param)
+	if err != nil {
+		return nil, fmt.Errorf("execute: %w", err)
+	}
+
+	// 3. Callback
+	if err := u.callback(ctx, operator, firstOwnerID); err != nil {
+		return nil, fmt.Errorf("callback: %w", err)
+	}
+
+	return firstOwnerID, nil
+}
+
 func (u *CreateFirstOwnerCommand) checkAuthorization(_ context.Context, _ authdomain.SystemOwnerInterface, _ *authservice.CreateUserParameter) error {
 	// system-owner can create owner
 	return nil
 }
 
-func (u *CreateFirstOwnerCommand) Execute(ctx context.Context, operator authdomain.SystemOwnerInterface, param *authservice.CreateUserParameter) (*authdomain.UserID, error) {
-	if err := u.checkAuthorization(ctx, operator, param); err != nil {
-		return nil, fmt.Errorf("checkAuthorization: %w", err)
-	}
-
+func (u *CreateFirstOwnerCommand) execute(ctx context.Context, operator authdomain.SystemOwnerInterface, param *authservice.CreateUserParameter) (*authdomain.UserID, error) {
 	fn2 := func(rf authservice.RepositoryFactory) (*authdomain.UserID, error) {
 		userRepo := rf.NewUserRepository(ctx)
 		userGroupRepo := rf.NewUserGroupRepository(ctx)
@@ -83,12 +99,17 @@ func (u *CreateFirstOwnerCommand) Execute(ctx context.Context, operator authdoma
 
 		return firstOwner.UserID, nil
 	}
+
 	firstOwnerID, err := libservice.Do1(ctx, u.txManager, fn2)
 	if err != nil {
 		return nil, fmt.Errorf("Do1: %w", err)
 	}
 
 	return firstOwnerID, nil
+}
+
+func (u *CreateFirstOwnerCommand) callback(_ context.Context, _ authdomain.SystemOwnerInterface, _ *authdomain.UserID) error {
+	return nil
 }
 
 func (u *CreateFirstOwnerCommand) createFirstOwner(ctx context.Context, operator authdomain.SystemOwnerInterface, param *authservice.CreateUserParameter, userRepo authservice.UserRepository) (*authdomain.User, error) {

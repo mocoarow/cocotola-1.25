@@ -7,6 +7,7 @@ import (
 
 	"gorm.io/gorm"
 
+	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
@@ -117,7 +118,7 @@ func (r *pairOfUserAndGroupRepository) FindUserGroupsByUserID(ctx context.Contex
 	return result, nil
 }
 
-func (r *pairOfUserAndGroupRepository) addSubjectGroupingPolicy(ctx context.Context, rbacDomain domain.RBACDomain, child domain.RBACSubject, parent domain.RBACSubject) error {
+func (r *pairOfUserAndGroupRepository) addSubjectGroupingPolicy(ctx context.Context, rbacDomain libdomain.RBACDomain, child libdomain.RBACSubject, parent libdomain.RBACSubject) error {
 	roles, err := r.rbacRepo.GetGroupsForSubject(ctx, rbacDomain, child)
 	if err != nil {
 		return fmt.Errorf("rbacRepo.GetGroupsForSubject: %w", err)
@@ -136,7 +137,7 @@ func (r *pairOfUserAndGroupRepository) addSubjectGroupingPolicy(ctx context.Cont
 	return nil
 }
 
-func (r *pairOfUserAndGroupRepository) removeSubjectGroupingPolicy(ctx context.Context, rbacDomain domain.RBACDomain, child domain.RBACSubject, parent domain.RBACSubject) error {
+func (r *pairOfUserAndGroupRepository) removeSubjectGroupingPolicy(ctx context.Context, rbacDomain libdomain.RBACDomain, child libdomain.RBACSubject, parent libdomain.RBACSubject) error {
 	roles, err := r.rbacRepo.GetGroupsForSubject(ctx, rbacDomain, child)
 	if err != nil {
 		return fmt.Errorf("rbacRepo.GetGroupsForSubject: %w", err)

@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
+
 	authdomain "github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 	authservice "github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-func AddUser(ctx context.Context, operator authdomain.UserInterface, rf authservice.RepositoryFactory, param *authservice.CreateUserParameter, aoeList []authdomain.ActionObjectEffect) (*authdomain.UserID, error) {
+func AddUser(ctx context.Context, operator authdomain.UserInterface, rf authservice.RepositoryFactory, param *authservice.CreateUserParameter, aoeList []libdomain.ActionObjectEffect) (*authdomain.UserID, error) {
 	userRepo := rf.NewUserRepository(ctx)
 	userGroupRepo := rf.NewUserGroupRepository(ctx)
 	authorizationManager, err := rf.NewAuthorizationManager(ctx)

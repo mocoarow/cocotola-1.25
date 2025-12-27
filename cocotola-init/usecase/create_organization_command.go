@@ -8,17 +8,17 @@ import (
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 	libservice "github.com/mocoarow/cocotola-1.25/cocotola-lib/service"
 
-	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
-	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
+	authdomain "github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
+	authservice "github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
 type CreateOrganizationCommand struct {
-	txManager    service.TransactionManager
-	nonTxManager service.TransactionManager
+	txManager    authservice.TransactionManager
+	nonTxManager authservice.TransactionManager
 	logger       *slog.Logger
 }
 
-func NewCreateOrganizationCommand(_ context.Context, txManager, nonTxManager service.TransactionManager) *CreateOrganizationCommand {
+func NewCreateOrganizationCommand(_ context.Context, txManager, nonTxManager authservice.TransactionManager) *CreateOrganizationCommand {
 	return &CreateOrganizationCommand{
 		txManager:    txManager,
 		nonTxManager: nonTxManager,
@@ -26,8 +26,8 @@ func NewCreateOrganizationCommand(_ context.Context, txManager, nonTxManager ser
 	}
 }
 
-func (u *CreateOrganizationCommand) Execute(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.OrganizationID, error) {
-	fn := func(rf service.RepositoryFactory) (*domain.OrganizationID, error) {
+func (u *CreateOrganizationCommand) Execute(ctx context.Context, operator authdomain.SystemAdminInterface, organizationName string) (*authdomain.OrganizationID, error) {
+	fn := func(rf authservice.RepositoryFactory) (*authdomain.OrganizationID, error) {
 		userRepo := rf.NewUserRepository(ctx)
 
 		// system-admin creates organization and system-owner
@@ -54,7 +54,7 @@ func (u *CreateOrganizationCommand) Execute(ctx context.Context, operator domain
 	return organizationID, nil
 }
 
-func (u *CreateOrganizationCommand) executeCreatingOrganizationProcessBySystemAdmin(ctx context.Context, operator domain.SystemAdminInterface, rf service.RepositoryFactory, organizationName string) (*domain.OrganizationID, error) {
+func (u *CreateOrganizationCommand) executeCreatingOrganizationProcessBySystemAdmin(ctx context.Context, operator authdomain.SystemAdminInterface, rf authservice.RepositoryFactory, organizationName string) (*authdomain.OrganizationID, error) {
 	orgRepo := rf.NewOrganizationRepository(ctx)
 	userRepo := rf.NewUserRepository(ctx)
 	authorizationManager, err := rf.NewAuthorizationManager(ctx)
@@ -79,7 +79,7 @@ func (u *CreateOrganizationCommand) executeCreatingOrganizationProcessBySystemAd
 	return organizationID, nil
 }
 
-func (u *CreateOrganizationCommand) executeCreatingOrganizationProcessBySystemOwner(ctx context.Context, operator domain.SystemOwnerInterface, rf service.RepositoryFactory, organizationID *domain.OrganizationID) error {
+func (u *CreateOrganizationCommand) executeCreatingOrganizationProcessBySystemOwner(ctx context.Context, operator authdomain.SystemOwnerInterface, rf authservice.RepositoryFactory, organizationID *authdomain.OrganizationID) error {
 	userGroupRepo := rf.NewUserGroupRepository(ctx)
 	authorizationManager, err := rf.NewAuthorizationManager(ctx)
 	if err != nil {
@@ -103,12 +103,12 @@ func (u *CreateOrganizationCommand) executeCreatingOrganizationProcessBySystemOw
 
 	// 9. create public default space
 	if _, err := spaceManager.CreatePublicDefaultSpace(ctx, operator); err != nil {
-		return fmt.Errorf("create public space(%s): %w", service.PublicDefaultSpaceKey, err)
+		return fmt.Errorf("create public space(%s): %w", authservice.PublicDefaultSpaceKey, err)
 	}
 	return nil
 }
 
-func (u *CreateOrganizationCommand) createSystemOwnerForOrganization(ctx context.Context, operator domain.SystemAdminInterface, userRepo service.UserRepository, authorizationManager service.AuthorizationManager, organizationID *domain.OrganizationID) (*domain.UserID, error) {
+func (u *CreateOrganizationCommand) createSystemOwnerForOrganization(ctx context.Context, operator authdomain.SystemAdminInterface, userRepo authservice.UserRepository, authorizationManager authservice.AuthorizationManager, organizationID *authdomain.OrganizationID) (*authdomain.UserID, error) {
 	systemOwnerID, err := userRepo.CreateSystemOwner(ctx, operator, organizationID)
 	if err != nil {
 		return nil, fmt.Errorf("CreateSystemOwner: %w", err)
@@ -116,17 +116,17 @@ func (u *CreateOrganizationCommand) createSystemOwnerForOrganization(ctx context
 
 	// 3. attach policy to "system-owner" user
 	rbacSystemOwner := systemOwnerID.GetRBACSubject()
-	// rbacAllUserRolesObject := domain.NewRBACAllUserRolesObjectFromOrganization(organizationID)
-	for _, aoe := range []domain.ActionObjectEffect{
+	// rbacAllUserRolesObject := authdomain.NewRBACAllUserRolesObjectFromOrganization(organizationID)
+	for _, aoe := range []libdomain.ActionObjectEffect{
 		{ // "system-owner" "can" "CreateUser" "*"
-			Action: service.CreateUserAction,
-			Object: service.AnyObject,
-			Effect: service.RBACAllowEffect,
+			Action: authservice.CreateUserAction,
+			Object: authservice.AnyObject,
+			Effect: authservice.RBACAllowEffect,
 		},
 		// { //"system-owner" user "can" "unset" "all-user-roles"
-		// 	Action: service.RBACUnsetAction,
+		// 	Action: authservice.RBACUnsetAction,
 		// 	Object: rbacAllUserRolesObject,
-		// 	Effect: service.RBACAllowEffect,
+		// 	Effect: authservice.RBACAllowEffect,
 		// },
 	} {
 		if err := authorizationManager.AttachPolicyToUserBySystemAdmin(ctx, operator, organizationID, rbacSystemOwner, aoe.Action, aoe.Object, aoe.Effect); err != nil {
@@ -137,7 +137,7 @@ func (u *CreateOrganizationCommand) createSystemOwnerForOrganization(ctx context
 	return systemOwnerID, nil
 }
 
-func (u *CreateOrganizationCommand) createOwnerGroupForOrganization(ctx context.Context, operator domain.SystemOwnerInterface, userGroupRepo service.UserGroupRepository, authorizationManager service.AuthorizationManager, organizationID *domain.OrganizationID) (*domain.UserGroupID, error) {
+func (u *CreateOrganizationCommand) createOwnerGroupForOrganization(ctx context.Context, operator authdomain.SystemOwnerInterface, userGroupRepo authservice.UserGroupRepository, authorizationManager authservice.AuthorizationManager, organizationID *authdomain.OrganizationID) (*authdomain.UserGroupID, error) {
 	u.logger.InfoContext(ctx, "createOwnerGroupForOrganization", "organizationID", organizationID.Int())
 	// 4. create owner-group
 	ownerGroupID, err := userGroupRepo.CreateOwnerGroup(ctx, operator, organizationID)
@@ -146,19 +146,19 @@ func (u *CreateOrganizationCommand) createOwnerGroupForOrganization(ctx context.
 	}
 
 	// 5. attach policy to "owner" group
-	rbacOwnerGroup := domain.NewRBACRoleFromGroup(organizationID, ownerGroupID)
-	// rbacAllUserRolesObject := domain.NewRBACAllUserRolesObjectFromOrganization(organizationID)
+	rbacOwnerGroup := authdomain.NewRBACRoleFromGroup(organizationID, ownerGroupID)
+	// rbacAllUserRolesObject := authdomain.NewRBACAllUserRolesObjectFromOrganization(organizationID)
 
-	for _, aoe := range []domain.ActionObjectEffect{
+	for _, aoe := range []libdomain.ActionObjectEffect{
 		{ // "owner" group "can" "CreateUser" "*"
-			Action: service.CreateUserAction,
-			Object: service.AnyObject,
-			Effect: service.RBACAllowEffect,
+			Action: authservice.CreateUserAction,
+			Object: authservice.AnyObject,
+			Effect: authservice.RBACAllowEffect,
 		},
 		// { // "owner" group "can" "unset" "all-user-roles"
-		// 	Action: service.RBACUnsetAction,
+		// 	Action: authservice.RBACUnsetAction,
 		// 	Object: rbacAllUserRolesObject,
-		// 	Effect: service.RBACAllowEffect,
+		// 	Effect: authservice.RBACAllowEffect,
 		// },
 	} {
 		if err := authorizationManager.AttachPolicyToUserBySystemOwner(ctx, operator, rbacOwnerGroup, aoe.Action, aoe.Object, aoe.Effect); err != nil {

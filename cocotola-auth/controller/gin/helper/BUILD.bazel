@@ -8,7 +8,6 @@ go_library(
     deps = [
         "//cocotola-auth/domain",
         "//cocotola-lib/controller",
-        "//cocotola-lib/domain",
         "@com_github_gin_gonic_gin//:gin",
     ],
 )
