@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 	libservice "github.com/mocoarow/cocotola-1.25/cocotola-lib/service"
@@ -14,12 +15,14 @@ import (
 type CreateGuestCommand struct {
 	txManager    authservice.TransactionManager
 	nonTxManager authservice.TransactionManager
+	logger       *slog.Logger
 }
 
 func NewCreateGuestCommand(txManager authservice.TransactionManager, nonTxManager authservice.TransactionManager) *CreateGuestCommand {
 	return &CreateGuestCommand{
 		txManager:    txManager,
 		nonTxManager: nonTxManager,
+		logger:       slog.Default().With(slog.String(libdomain.LoggerNameKey, "CreateGuestCommand")),
 	}
 }
 

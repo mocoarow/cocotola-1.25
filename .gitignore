@@ -31,6 +31,8 @@ profile.cov
 # Editor/IDE
 .idea/
 .vscode/
+.claude/
+.github/skills/
 
 AGENTS.md
 .mise.toml

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 
@@ -40,9 +41,17 @@ func (u *GetMyProfileQuery) Execute(ctx context.Context, operator domain.UserInt
 		if err != nil {
 			return nil, fmt.Errorf("NewSpaceManager: %w", err)
 		}
-		privateSpace, err := spaceManager.GetPersonalSpace(ctx, operator)
+
+		var personalSpaceID *domain.SpaceID
+		personalSpace, err := spaceManager.GetPersonalSpace(ctx, operator)
 		if err != nil {
-			return nil, fmt.Errorf("GetPersonalSpace: %w", err)
+			if errors.Is(err, service.ErrSpaceNotFound) {
+				personalSpaceID = nil
+			} else {
+				return nil, fmt.Errorf("GetPersonalSpace: %w", err)
+			}
+		} else {
+			personalSpaceID = personalSpace.SpaceID
 		}
 
 		return &domain.ProfileModel{
@@ -50,7 +59,7 @@ func (u *GetMyProfileQuery) Execute(ctx context.Context, operator domain.UserInt
 			Username:         user.Username,
 			OrganizationID:   org.OrganizationID,
 			OrganizationName: org.Name,
-			PrivateSpaceID:   privateSpace.SpaceID,
+			PersonalSpaceID:  personalSpaceID,
 		}, nil
 	}
 	profileModel, err := libservice.Do1(ctx, u.nonTxManager, fn)

@@ -31,13 +31,17 @@ func (h *ProfileHandler) GetMyProfile(c *gin.Context) {
 		if err != nil {
 			return fmt.Errorf("GetMyProfile: %w", err)
 		}
-
+		var personalSpaceID *int32
+		if result.PersonalSpaceID != nil {
+			tmp := int32(result.PersonalSpaceID.Int())
+			personalSpaceID = &tmp
+		}
 		apiResp := openapi.GetMyProfileResponse{
 			LoginID:          result.LoginID,
 			Username:         result.Username,
 			OrganizationID:   int32(result.OrganizationID.Int()),
 			OrganizationName: result.OrganizationName,
-			PrivateSpaceID:   int32(result.PrivateSpaceID.Int()),
+			PersonalSpaceID:  personalSpaceID,
 		}
 		c.JSON(http.StatusOK, apiResp)
 

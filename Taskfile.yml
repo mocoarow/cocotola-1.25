@@ -163,6 +163,7 @@ tasks:
 
   run-cocotola-app:
     cmds:
+      - task: run-cocotola-init
       - docker compose -f compose.local.jaeger.yml up -d --wait
       - bazelisk run //cocotola-app:cocotola-app
 
