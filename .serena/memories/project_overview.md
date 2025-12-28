@@ -1,3 +1,14 @@
-- Purpose: Go 1.25 sample workspace demonstrating Bazel (rules_go, Gazelle, rules_pkg, rules_oci) setup plus a tiny `hello-world` binary.
-- Structure: Root Go module (`go.mod`) plus nested module `hello-world` with `main.go`; Bazel config via `WORKSPACE.bazel`, `MODULE.bazel`, `deps.bzl`, and per-target BUILD files.
-- Tooling: Uses Bazelisk to run Bazel targets; Gazelle handles BUILD file generation; Go workspaces (`go.work`) stitch modules together; Distroless OCI images vendored via rules_oci.
+- Purpose: Go 1.25.4 monorepo workspace (cocotola-1.25) demonstrating Bazel (rules_go, Gazelle, rules_pkg, rules_oci) setup with multiple Go applications and libraries.
+- Main Applications:
+  - cocotola-app: Main application server
+  - cocotola-auth: Authentication/authorization service with OpenAPI integration, guest authentication, and RBAC helpers
+  - cocotola-init: Initialization service
+  - cocotola-empty: Empty/template application
+  - hello-world: Sample binary for testing
+  - third-party-library: Third-party library demonstration
+- Libraries:
+  - cocotola-lib: Shared library with domain logic, gateways, services, controllers, config, process, and testlib modules
+- Structure: Root Go module plus nested modules per application; Bazel config via `MODULE.bazel`, `.bazelrc`, `.bazelignore`, and per-target BUILD files; Go workspaces (`go.work`) stitch modules together.
+- Infrastructure: Docker Compose setups for MySQL (test/local), Jaeger (local), OpenAPI spec management, and test coverage reporting.
+- Tooling: Uses Bazelisk for Bazel commands; Gazelle for BUILD file generation; Task for common operations; golangci-lint for code quality; pre-commit hooks for commit message validation (Conventional Commits); Docker for containerization; OpenAPI Generator for API model generation.
+- Recent Features: Personal/private space support, guest authentication, RBAC helpers, scenario testing framework.
