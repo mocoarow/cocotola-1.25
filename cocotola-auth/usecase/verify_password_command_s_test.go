@@ -13,7 +13,6 @@ import (
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
-	serviceMocks "github.com/mocoarow/cocotola-1.25/cocotola-auth/service/mocks"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase"
 )
 
@@ -23,9 +22,9 @@ func TestVerifyPasswordCommand_Execute_shouldReturnNil_whenPasswordMatches(t *te
 	ctx := context.Background()
 	operator := newSystemOwner(t)
 
-	txMock := serviceMocks.NewMockTransactionManager(t)
-	rfMock := serviceMocks.NewMockRepositoryFactory(t)
-	userRepoMock := serviceMocks.NewMockUserRepository(t)
+	txMock := service.NewMockTransactionManager(t)
+	rfMock := service.NewMockRepositoryFactory(t)
+	userRepoMock := service.NewMockUserRepository(t)
 
 	txMock.EXPECT().Do(mock.Anything, mock.Anything).RunAndReturn(
 		func(_ context.Context, fn func(service.RepositoryFactory) error) error {
@@ -47,9 +46,9 @@ func TestVerifyPasswordCommand_Execute_shouldReturnUnauthenticated_whenPasswordD
 	ctx := context.Background()
 	operator := newSystemOwner(t)
 
-	txMock := serviceMocks.NewMockTransactionManager(t)
-	rfMock := serviceMocks.NewMockRepositoryFactory(t)
-	userRepoMock := serviceMocks.NewMockUserRepository(t)
+	txMock := service.NewMockTransactionManager(t)
+	rfMock := service.NewMockRepositoryFactory(t)
+	userRepoMock := service.NewMockUserRepository(t)
 
 	txMock.EXPECT().Do(mock.Anything, mock.Anything).RunAndReturn(
 		func(_ context.Context, fn func(service.RepositoryFactory) error) error {
@@ -71,9 +70,9 @@ func TestVerifyPasswordCommand_Execute_shouldReturnError_whenRepositoryFails(t *
 	ctx := context.Background()
 	operator := newSystemOwner(t)
 
-	txMock := serviceMocks.NewMockTransactionManager(t)
-	rfMock := serviceMocks.NewMockRepositoryFactory(t)
-	userRepoMock := serviceMocks.NewMockUserRepository(t)
+	txMock := service.NewMockTransactionManager(t)
+	rfMock := service.NewMockRepositoryFactory(t)
+	userRepoMock := service.NewMockUserRepository(t)
 
 	txMock.EXPECT().Do(mock.Anything, mock.Anything).RunAndReturn(
 		func(_ context.Context, fn func(service.RepositoryFactory) error) error {

@@ -33,7 +33,6 @@ smart_go_test(
         ":usecase",
         "//cocotola-auth/domain",
         "//cocotola-auth/service",
-        "//cocotola-auth/service/mocks",
         "//cocotola-lib/domain",
         "@com_github_stretchr_testify//mock",
         "@com_github_stretchr_testify//require",

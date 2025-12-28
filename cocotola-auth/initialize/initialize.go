@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
 
-	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/config"
@@ -111,7 +111,7 @@ import (
 // 	}
 // }
 
-func Initialize(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, dbConn *libgateway.DBConnection, logConfig *libcontroller.LogConfig, authConfig *config.AuthConfig) error {
+func Initialize(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, dbConn *libgateway.DBConnection, logConfig *libgin.LogConfig, authConfig *config.AuthConfig) error {
 	ctx, span := tracer.Start(ctx, "Initialize")
 	defer span.End()
 
@@ -122,7 +122,7 @@ func Initialize(ctx context.Context, systemToken domain.SystemToken, parent gin.
 	return nil
 }
 
-func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, dbConn *libgateway.DBConnection, logConfig *libcontroller.LogConfig, authConfig *config.AuthConfig) error {
+func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, dbConn *libgateway.DBConnection, logConfig *libgin.LogConfig, authConfig *config.AuthConfig) error {
 	// logger := slog.Default().With(slog.String(mbliblog.LoggerNameKey, domain.AppName+"initApp"))
 
 	// cocotolaAuthCallbackClient := initCocotolaAuthCallbackClient(authConfig)
@@ -173,20 +173,20 @@ func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRo
 	// basicPrivateRouterGroupFuncs := controller.GetBasicPrivateRouterGroupFuncs(ctx, systemToken, cocotolaCoreCallbackClient)
 
 	// api
-	api := libcontroller.InitAPIRouterGroup(ctx, parent, logConfig, domain.AppName)
+	api := libgin.InitAPIRouterGroup(ctx, parent, logConfig, domain.AppName)
 
 	// v1
 	v1 := api.Group("v1")
 
 	// public router
-	libcontroller.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs)
+	libgin.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs)
 
 	bearerTokenAuthMiddleware, err := ctrlgin.InitBearerTokenAuthMiddleware(systemToken, authTokenManager, nonTxManager, rf)
 	if err != nil {
 		return fmt.Errorf("InitBearerTokenAuthMiddleware: %w", err)
 	}
 	// private router
-	libcontroller.InitPrivateAPIRouterGroup(ctx, v1, bearerTokenAuthMiddleware, bearerTokenRouterGroupFuncs)
+	libgin.InitPrivateAPIRouterGroup(ctx, v1, bearerTokenAuthMiddleware, bearerTokenRouterGroupFuncs)
 
 	// libcontroller.InitPrivateAPIRouterGroup(ctx, v1, basicAuthMiddleware, basicPrivateRouterGroupFuncs)
 

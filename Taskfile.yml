@@ -45,6 +45,22 @@ tasks:
         vars:
           GO_PROJECT: "{{ .ITEM }}"
 
+  gen-code-project:
+    cmds:
+      - |
+        cd {{ .GO_PROJECT }}
+        mockery
+    requires:
+      vars: [GO_PROJECT]
+
+  gen-code:
+    cmds:
+      - for:
+          var: GO_PROJECTS
+        task: gen-code-project
+        vars:
+          GO_PROJECT: "{{ .ITEM }}"
+
   push-project:
     cmds:
       - bazelisk run //{{ .PROJECT }}:push -- --tag {{ .TAG }}
@@ -200,24 +216,13 @@ tasks:
       - echo "✅ openapi.yaml downloaded to openapi/openapi.yaml"
 
   generate-openapi:
-    desc: "Generate OpenAPI models with custom templates and copy to openapi package"
+    desc: "Generate OpenAPI models using oapi-codegen"
     cmds:
-      - rm -rf cocotola-auth/openapi/model_*.go || true
-      - rm -rf openapi-generated/model_*.go || true
+      - rm -rf cocotola-auth/openapi/openapi.go || true
       - |
-        docker run --rm \
-          -v {{.ROOT_DIR}}/openapi:/openapi \
-          -v {{.ROOT_DIR}}/openapi-templates:/templates \
-          -v {{.ROOT_DIR}}/openapi-generated:/generated \
-          openapitools/openapi-generator-cli generate \
-          -i /openapi/openapi.yaml \
-          -g go-gin-server \
-          -o /generated/openapi \
-          -t /templates \
-          --package-name openapi
-      - go fmt openapi-generated/openapi/go/model_*.go || true
-      - cp openapi-generated/openapi/go/model_*.go cocotola-auth/openapi/
-      - echo "✅ Models generated and copied to openapi/ package"
+        oapi-codegen -package=openapi -generate=models -o=cocotola-auth/openapi/openapi.go openapi/openapi.yaml
+      - go fmt cocotola-auth/openapi/openapi.go || true
+      - echo "✅ Models generated"
 
   kics:
     cmds:

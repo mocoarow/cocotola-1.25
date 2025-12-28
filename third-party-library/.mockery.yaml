@@ -7,11 +7,6 @@ structname: '{{.Mock}}{{.InterfaceName}}'
 pkgname: '{{.SrcPackageName}}_test'
 recursive: false
 packages:
-  github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/gin:
+  github.com/mocoarow/cocotola-1.25/third-party-library:
     config:
       all: true
-  github.com/mocoarow/cocotola-1.25/cocotola-auth/service:
-    config:
-      all: true
-      filename: mocks.go
-      pkgname: service

@@ -7,6 +7,7 @@ go_library(
         "authorization_manager.go",
         "helper.go",
         "init.go",
+        "mocks.go",
         "organization_repository.go",
         "pair_of_user_and_group_repository.go",
         "rbac_repository.go",
@@ -22,5 +23,6 @@ go_library(
         "//cocotola-auth/domain",
         "//cocotola-lib/domain",
         "//cocotola-lib/service",
+        "@com_github_stretchr_testify//mock",
     ],
 )
