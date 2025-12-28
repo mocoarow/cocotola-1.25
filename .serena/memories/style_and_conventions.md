@@ -1,3 +1,10 @@
 - Go code sticks to standard Go module layout and naming; keep packages `package main` for binaries and rely on `gofmt` for formatting.
-- Bazel files follow rules_go/Gazelle conventions; prefer letting Gazelle manage BUILD targets (`bazelisk run //:gazelle`).
-- Keep dependencies declared in `MODULE.bazel` + `deps.bzl` and sync with `go.work` so Gazelle can mirror them.
+- Bazel files follow rules_go/Gazelle conventions; prefer letting Gazelle manage BUILD targets (`task gazelle` or `bazelisk run //:gazelle -- -build_tags=small,medium,large`).
+- Keep dependencies declared in `MODULE.bazel` and sync with `go.work` so Gazelle can mirror them.
+- Code quality: Use golangci-lint (configured via `.golangci.yml`) with 5-minute timeout for linting.
+- Commit messages: MUST follow Conventional Commits format enforced by pre-commit hooks and commitlint.
+  - Format: `<type>(<scope>): <subject>` where type is feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert
+  - Examples: `feat(auth): add guest authentication`, `fix: change privateSpaceId to personalSpaceId`
+- Tests: Tag with size attributes (small, medium, large) for Bazel filtering; use testlib for common test utilities.
+- OpenAPI: Models are generated from openapi.yaml using custom templates and copied to cocotola-auth/openapi/.
+- Docker images: Use distroless base images via rules_oci for minimal attack surface.
