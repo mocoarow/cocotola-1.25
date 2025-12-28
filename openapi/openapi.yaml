@@ -10,7 +10,7 @@ info:
 tags:
   - name: auth
 paths:
-  /api/v1/auth/password:
+  /auth/api/v1/password/authenticate:
     post:
       summary: Password Authentication
       deprecated: false
@@ -35,6 +35,7 @@ paths:
                 $ref: '#/components/schemas/AuthResponse'
           headers: {}
       security: []
+  /auth/api/v1/profile/me:
     get:
       summary: Get My Profile
       deprecated: false
@@ -53,7 +54,7 @@ paths:
           headers: {}
       security:
         - BearerAuth: []
-  /api/v1/guest/password:
+  /auth/api/v1/guest/authenticate:
     post:
       summary: Guest Authentication
       deprecated: false
@@ -76,6 +77,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
+          headers: {}
+      security: []
+  /auth/api/v1/user:
+    post:
+      summary: Create User
+      deprecated: false
+      description: Create a new user
+      operationId: createUser
+      tags:
+        - auth
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
           headers: {}
       security: []
 components:
@@ -141,10 +161,30 @@ components:
       properties:
         organizationName:
           type: string
-          pattern: ^.*$
+          pattern: ^[A-Za-z0-9-]{1,20}$
           maxLength: 20
+          x-oapi-codegen-extra-tags:
+            binding: required,min=1,max=20
+          minLength: 1
       required:
         - organizationName
+    CreateUserRequest:
+      type: object
+      properties:
+        loginId:
+          type: string
+          x-go-name: LoginID
+          x-go-custom-tag: binding:"required,email"
+        username:
+          type: string
+          pattern: ^.*$
+        password:
+          type: string
+          pattern: ^.*$
+      required:
+        - loginId
+        - username
+        - password
   responses: {}
   securitySchemes:
     BearerAuth:
