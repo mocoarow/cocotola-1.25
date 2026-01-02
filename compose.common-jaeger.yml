@@ -3,7 +3,7 @@
 # Note: ports and networks must be overridden in each backend's compose file
 services:
   local-jaeger-base:
-    image: cr.jaegertracing.io/jaegertracing/jaeger:2.11.0
+    image: cr.jaegertracing.io/jaegertracing/jaeger:2.13.0
     container_name: local-jaeger
     healthcheck:
       test: ["CMD", "wget", "-qO-", "localhost:13133/status"]
