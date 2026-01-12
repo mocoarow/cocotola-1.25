@@ -53,7 +53,7 @@ jobs:
       # - run: gcloud artifacts repositories describe --location us-west1 cocotola-synthesizer
 
       # https://github.com/bazel-contrib/setup-bazel/tree/0.15.0
-      - uses: bazel-contrib/setup-bazel@43d7d5ceab59a307da44fc7585faa2a2fff4f88d
+      - uses: bazel-contrib/setup-bazel@083175551ceeceebc757ebee2127fde78840ca77
         with:
           bazelisk-version: 1.x
 
