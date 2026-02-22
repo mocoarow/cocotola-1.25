@@ -13,7 +13,7 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/gateway"
 )
 
-func setupTestOrganization(ctx context.Context, t *testing.T, tr testResource) (*domain.OrganizationID, domain.SystemOwnerInterface, domain.OwnerInterface) {
+func setupTestOrganization(ctx context.Context, t *testing.T, tr testResource) (*domain.OrganizationID, *domain.SystemOwner, *domain.Owner) {
 	t.Helper()
 	orgRepo := gateway.NewOrganizationRepository(tr.dbc)
 	userRepo := gateway.NewUserRepository(tr.dbc)

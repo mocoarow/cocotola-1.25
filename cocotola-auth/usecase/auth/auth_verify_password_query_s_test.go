@@ -72,7 +72,7 @@ func TestVerifyPasswordCommand_Execute_shouldReturnError_whenRepositoryFails(t *
 	require.ErrorContains(t, err, "VerifyPassword")
 }
 
-func newSystemOwner(t *testing.T) domain.SystemOwnerInterface {
+func newSystemOwner(t *testing.T) *domain.SystemOwner {
 	t.Helper()
 
 	orgID, err := domain.NewOrganizationID(1)

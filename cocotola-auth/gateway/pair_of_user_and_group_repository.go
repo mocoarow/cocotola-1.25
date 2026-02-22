@@ -12,26 +12,26 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-type pairOfUserAndGroupRepository struct {
+type PairOfUserAndGroupRepository struct {
 	dbc      *libgateway.DBConnection
-	rbacRepo service.RBACRepository
+	rbacRepo *RBACRepository
 }
 
-var _ service.PairOfUserAndGroupRepository = (*pairOfUserAndGroupRepository)(nil)
+var _ service.PairOfUserAndGroupRepository = (*PairOfUserAndGroupRepository)(nil)
 
-func NewPairOfUserAndGroupRepository(ctx context.Context, dbc *libgateway.DBConnection) service.PairOfUserAndGroupRepository {
+func NewPairOfUserAndGroupRepository(ctx context.Context, dbc *libgateway.DBConnection) *PairOfUserAndGroupRepository {
 	rbacRepo, err := NewRBACRepository(ctx, dbc)
 	if err != nil {
 		panic(fmt.Errorf("new rbac repository: %w", err))
 	}
 
-	return &pairOfUserAndGroupRepository{
+	return &PairOfUserAndGroupRepository{
 		dbc:      dbc,
 		rbacRepo: rbacRepo,
 	}
 }
 
-func (r *pairOfUserAndGroupRepository) CreatePairOfUserAndGroupBySystemAdmin(ctx context.Context, _ domain.SystemAdminInterface, organizationID *domain.OrganizationID, userID *domain.UserID, userGroupID *domain.UserGroupID) error {
+func (r *PairOfUserAndGroupRepository) CreatePairOfUserAndGroupBySystemAdmin(ctx context.Context, _ domain.SystemAdminInterface, organizationID *domain.OrganizationID, userID *domain.UserID, userGroupID *domain.UserGroupID) error {
 	_, span := tracer.Start(ctx, "pairOfUserAndGroupRepository.CreatePairOfUserAndGroupBySystemAdmin")
 	defer span.End()
 
@@ -42,7 +42,7 @@ func (r *pairOfUserAndGroupRepository) CreatePairOfUserAndGroupBySystemAdmin(ctx
 	return r.addSubjectGroupingPolicy(ctx, rbacDomain, rbacUser, rbacRole)
 }
 
-func (r *pairOfUserAndGroupRepository) CreatePairOfUserAndGroup(ctx context.Context, operator domain.UserInterface, userID *domain.UserID, userGroupID *domain.UserGroupID) error {
+func (r *PairOfUserAndGroupRepository) CreatePairOfUserAndGroup(ctx context.Context, operator domain.UserInterface, userID *domain.UserID, userGroupID *domain.UserGroupID) error {
 	_, span := tracer.Start(ctx, "pairOfUserAndGroupRepository.CreatePairOfUserAndGroup")
 	defer span.End()
 
@@ -54,7 +54,7 @@ func (r *pairOfUserAndGroupRepository) CreatePairOfUserAndGroup(ctx context.Cont
 	return r.addSubjectGroupingPolicy(ctx, rbacDomain, rbacUser, rbacRole)
 }
 
-func (r *pairOfUserAndGroupRepository) DeletePairOfUserAndGroup(ctx context.Context, operator domain.UserInterface, userID *domain.UserID, userGroupID *domain.UserGroupID) error {
+func (r *PairOfUserAndGroupRepository) DeletePairOfUserAndGroup(ctx context.Context, operator domain.UserInterface, userID *domain.UserID, userGroupID *domain.UserGroupID) error {
 	_, span := tracer.Start(ctx, "pairOfUserAndGroupRepository.DeletePairOfUserAndGroup")
 	defer span.End()
 
@@ -66,7 +66,7 @@ func (r *pairOfUserAndGroupRepository) DeletePairOfUserAndGroup(ctx context.Cont
 	return r.removeSubjectGroupingPolicy(ctx, rbacDomain, rbacUser, rbacRole)
 }
 
-func (r *pairOfUserAndGroupRepository) FindUserGroupsByUserID(ctx context.Context, operator domain.UserInterface, userID *domain.UserID) ([]*domain.UserGroup, error) {
+func (r *PairOfUserAndGroupRepository) FindUserGroupsByUserID(ctx context.Context, operator domain.UserInterface, userID *domain.UserID) ([]*domain.UserGroup, error) {
 	_, span := tracer.Start(ctx, "pairOfUserAndGroupRepository.FindUserGroupsByUserID")
 	defer span.End()
 
@@ -113,7 +113,7 @@ func (r *pairOfUserAndGroupRepository) FindUserGroupsByUserID(ctx context.Contex
 	return result, nil
 }
 
-func (r *pairOfUserAndGroupRepository) addSubjectGroupingPolicy(ctx context.Context, rbacDomain libdomain.RBACDomain, child libdomain.RBACSubject, parent libdomain.RBACSubject) error {
+func (r *PairOfUserAndGroupRepository) addSubjectGroupingPolicy(ctx context.Context, rbacDomain libdomain.RBACDomain, child libdomain.RBACSubject, parent libdomain.RBACSubject) error {
 	roles, err := r.rbacRepo.GetGroupsForSubject(ctx, rbacDomain, child)
 	if err != nil {
 		return fmt.Errorf("rbacRepo.GetGroupsForSubject: %w", err)
@@ -132,7 +132,7 @@ func (r *pairOfUserAndGroupRepository) addSubjectGroupingPolicy(ctx context.Cont
 	return nil
 }
 
-func (r *pairOfUserAndGroupRepository) removeSubjectGroupingPolicy(ctx context.Context, rbacDomain libdomain.RBACDomain, child libdomain.RBACSubject, parent libdomain.RBACSubject) error {
+func (r *PairOfUserAndGroupRepository) removeSubjectGroupingPolicy(ctx context.Context, rbacDomain libdomain.RBACDomain, child libdomain.RBACSubject, parent libdomain.RBACSubject) error {
 	roles, err := r.rbacRepo.GetGroupsForSubject(ctx, rbacDomain, child)
 	if err != nil {
 		return fmt.Errorf("rbacRepo.GetGroupsForSubject: %w", err)
