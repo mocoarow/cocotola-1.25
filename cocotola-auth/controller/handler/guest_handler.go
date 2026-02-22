@@ -67,18 +67,6 @@ func (h *GuestAuthHandler) Authenticate(c *gin.Context) {
 	})
 }
 
-// func NewInitGuestRouterFunc(guest GuestUsecase) libgin.InitRouterGroupFunc {
-// 	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
-// 		auth := parentRouterGroup.Group("guest")
-// 		for _, m := range middleware {
-// 			auth.Use(m)
-// 		}
-
-// 		guestAuthHandler := NewGuestAuthHandler(guest)
-// 		auth.POST("authenticate", guestAuthHandler.Authenticate)
-// 	}
-// }
-
 func InitGuestRouter(guest GuestUsecase, parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
 	auth := parentRouterGroup.Group("guest")
 	for _, m := range middleware {
