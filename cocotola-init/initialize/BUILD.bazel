@@ -20,7 +20,6 @@ go_library(
         "//cocotola-init/usecase",
         "//cocotola-lib/domain",
         "//cocotola-lib/gateway",
-        "//cocotola-lib/service",
         "@io_gorm_gorm//:gorm",
         "@io_opentelemetry_go_otel//:otel",
     ],

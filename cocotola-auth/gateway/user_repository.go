@@ -107,8 +107,8 @@ func (r *UserRepository) FindSystemOwnerByOrganizationID(ctx context.Context, _ 
 	defer span.End()
 
 	var user userEntity
-	wrappedDB := wrappedDB{dbc: r.dbc, organizationID: organizationID}
-	db := wrappedDB.WhereUser().Where(UserTableName+".login_id = ?", service.SystemOwnerLoginID).dbc.DB
+	wrappedDB := newWrappedDB(r.dbc, organizationID)
+	db := wrappedDB.WhereUser().Where(UserTableName+".login_id = ?", service.SystemOwnerLoginID).db
 	if result := db.First(&user); result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("system owner not found. organization ID: %d, err: %w", organizationID, service.ErrSystemOwnerNotFound)
@@ -170,9 +170,9 @@ func (r *UserRepository) findUserByID(ctx context.Context, organizationID *domai
 	defer span.End()
 
 	var userE userEntity
-	wrappedDB := wrappedDB{dbc: r.dbc, organizationID: organizationID}
-	dbc := wrappedDB.WhereUser().Where(UserTableName+".id = ?", id.Int()).dbc
-	if result := dbc.DB.First(&userE); result.Error != nil {
+	wrappedDB := newWrappedDB(r.dbc, organizationID)
+	db := wrappedDB.WhereUser().Where(UserTableName+".id = ?", id.Int()).db
+	if result := db.First(&userE); result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, service.ErrUserNotFound
 		}
@@ -218,9 +218,9 @@ func (r *UserRepository) findUserEntityByLoginID(ctx context.Context, organizati
 	defer span.End()
 
 	var user userEntity
-	wrappedDB := wrappedDB{dbc: r.dbc, organizationID: organizationID}
-	db := wrappedDB.WhereUser().Where(UserTableName+".login_id = ?", loginID).dbc
-	if result := db.DB.First(&user); result.Error != nil {
+	wrappedDB := newWrappedDB(r.dbc, organizationID)
+	db := wrappedDB.WhereUser().Where(UserTableName+".login_id = ?", loginID).db
+	if result := db.First(&user); result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, service.ErrUserNotFound
 		}
@@ -236,8 +236,8 @@ func (r *UserRepository) FindOwnerByLoginID(ctx context.Context, operator domain
 	defer span.End()
 
 	var user userEntity
-	wrappedDB := wrappedDB{dbc: r.dbc, organizationID: operator.GetOrganizationID()}
-	dbc := wrappedDB.Table(UserTableName).Select(UserTableName+".*").
+	wrappedDB := newWrappedDB(r.dbc, operator.GetOrganizationID())
+	db := wrappedDB.Table(UserTableName).Select(UserTableName+".*").
 		// WherePairOfUserAndGroup().
 		// WhereUserGroup().
 		WhereUser().
@@ -245,9 +245,9 @@ func (r *UserRepository) FindOwnerByLoginID(ctx context.Context, operator domain
 		// Where(UserGroupTableName+".key_name = ? ", service.OwnerGroupKey).
 		// Joins("inner join " + PairOfUserAndGroupTableName + " on " + UserTableName + ".id = " + PairOfUserAndGroupTableName + ".user_id").
 		// Joins("inner join " + UserGroupTableName + " on " + PairOfUserAndGroupTableName + ".user_group_id = " + UserGroupTableName + ".id").
-		dbc
+		db
 
-	if result := dbc.DB.First(&user); result.Error != nil {
+	if result := db.First(&user); result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, service.ErrUserNotFound
 		}

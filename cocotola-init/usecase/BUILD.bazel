@@ -32,9 +32,9 @@ smart_go_test(
         "//cocotola-auth/domain",
         "//cocotola-auth/gateway",
         "//cocotola-auth/service",
+        "//cocotola-init/initialize",
         "//cocotola-lib/gateway",
         "//cocotola-lib/testlib/gateway",
         "@com_github_stretchr_testify//require",
-        "@io_gorm_gorm//:gorm",
     ],
 )

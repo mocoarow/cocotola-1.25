@@ -3,6 +3,8 @@ package gateway
 import (
 	"fmt"
 
+	"gorm.io/gorm"
+
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 )
@@ -13,41 +15,50 @@ type HasTableName interface {
 
 type wrappedDB struct {
 	dbc            *libgateway.DBConnection
+	db             *gorm.DB
 	organizationID *domain.OrganizationID
 }
 
+func newWrappedDB(dbc *libgateway.DBConnection, organizationID *domain.OrganizationID) *wrappedDB {
+	return &wrappedDB{
+		dbc:            dbc,
+		db:             dbc.DB,
+		organizationID: organizationID,
+	}
+}
+
 func (x *wrappedDB) Table(name string, args ...interface{}) *wrappedDB {
-	x.dbc.DB = x.dbc.DB.Table(name, args...)
+	x.db = x.db.Table(name, args...)
 
 	return x
 }
 
 func (x *wrappedDB) Select(query interface{}, args ...interface{}) *wrappedDB {
-	x.dbc.DB = x.dbc.DB.Select(query, args...)
+	x.db = x.db.Select(query, args...)
 
 	return x
 }
 
 func (x *wrappedDB) Where(query interface{}, args ...interface{}) *wrappedDB {
-	x.dbc.DB = x.dbc.DB.Where(query, args...)
+	x.db = x.db.Where(query, args...)
 
 	return x
 }
 
 func (x *wrappedDB) Joins(query string, args ...interface{}) *wrappedDB {
-	x.dbc.DB = x.dbc.DB.Joins(query, args...)
+	x.db = x.db.Joins(query, args...)
 
 	return x
 }
 
 func (x *wrappedDB) WhereOrganizationID(table HasTableName, organizationID *domain.OrganizationID) *wrappedDB {
-	x.dbc.DB = x.dbc.DB.Where(fmt.Sprintf("%s.organization_id = ?", table.TableName()), organizationID.Int())
+	x.db = x.db.Where(fmt.Sprintf("%s.organization_id = ?", table.TableName()), organizationID.Int())
 
 	return x
 }
 
 func (x *wrappedDB) WhereNotDeleted(table HasTableName) *wrappedDB {
-	x.dbc.DB = x.dbc.DB.Where(fmt.Sprintf("%s.deleted = ?", table.TableName()), x.dbc.Dialect.BoolDefaultValue())
+	x.db = x.db.Where(fmt.Sprintf("%s.deleted = ?", table.TableName()), x.dbc.Dialect.BoolDefaultValue())
 
 	return x
 }

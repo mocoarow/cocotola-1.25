@@ -15,7 +15,6 @@ go_library(
         "//cocotola-auth/controller/middleware",
         "//cocotola-auth/domain",
         "//cocotola-auth/gateway",
-        "//cocotola-auth/service",
         "//cocotola-auth/usecase/auth",
         "//cocotola-auth/usecase/guest",
         "//cocotola-auth/usecase/password",
@@ -24,7 +23,6 @@ go_library(
         "//cocotola-lib/gateway",
         "@com_github_gin_gonic_gin//:gin",
         "@com_github_golang_jwt_jwt_v5//:jwt",
-        "@io_gorm_gorm//:gorm",
         "@io_opentelemetry_go_otel//:otel",
     ],
 )

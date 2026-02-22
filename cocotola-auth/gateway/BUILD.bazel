@@ -11,7 +11,6 @@ go_library(
         "organization_repository.go",
         "pair_of_user_and_group_repository.go",
         "rbac_repository.go",
-        "repository_factory.go",
         "space_manager.go",
         "space_repository.go",
         "user_group_repository.go",
@@ -63,6 +62,5 @@ smart_go_test(
         "@com_github_golang_jwt_jwt_v5//:jwt",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//require",
-        "@io_gorm_gorm//:gorm",
     ],
 )
