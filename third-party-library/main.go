@@ -1,3 +1,4 @@
+// Package main demonstrates third-party library usage.
 package main
 
 import (

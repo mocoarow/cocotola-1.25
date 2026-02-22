@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/mocoarow/cocotola-1.25/cocotola-auth/gateway"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
@@ -20,7 +21,7 @@ func TestUserGroupRepository_AddUserGroup_shouldPersistAndBeQueryable(t *testing
 		orgID, sysOwner, owner := setupTestOrganization(ctx, t, tr)
 		defer teardownOrganization(t, tr, orgID)
 
-		repo := tr.rf.NewUserGroupRepository(ctx)
+		repo := gateway.NewUserGroupRepository(tr.dbc)
 		param := testNewUserGroupAddParameter(t, "group-key", "Group Name", "desc")
 		groupID, err := repo.AddUserGroup(ctx, owner, param)
 		require.NoError(t, err)

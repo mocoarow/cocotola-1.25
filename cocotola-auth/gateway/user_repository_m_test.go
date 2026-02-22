@@ -22,7 +22,7 @@ func TestUserRepository_CreateAndFindUser_shouldReturnUser_whenOwnerCreates(t *t
 		orgID, _, owner := setupTestOrganization(ctx, t, tr)
 		defer teardownOrganization(t, tr, orgID)
 
-		userRepo := tr.rf.NewUserRepository(ctx)
+		userRepo := gateway.NewUserRepository(tr.dbc)
 		param := testNewCreateUserParameter(t, fmt.Sprintf("login_%s", RandString(4)), "USERNAME_U", "PASSWORD_U")
 		userID, err := userRepo.CreateUser(ctx, owner, param)
 		require.NoError(t, err)
@@ -40,7 +40,7 @@ func TestUserRepository_CreateAndFindUser_shouldReturnUser_whenOwnerCreates(t *t
 		require.NoError(t, err)
 		assert.Equal(t, service.SystemOwnerLoginID, sysOwnerByID.LoginID)
 
-		orgRepo := gateway.NewOrganizationRepository(ctx, tr.db)
+		orgRepo := gateway.NewOrganizationRepository(tr.dbc)
 		org, err := orgRepo.GetOrganization(ctx, owner)
 		require.NoError(t, err)
 		sysOwnerByName, err := userRepo.FindSystemOwnerByOrganizationName(ctx, systemAdmin, org.Name)

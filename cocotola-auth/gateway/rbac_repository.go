@@ -8,9 +8,9 @@ import (
 	"github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"github.com/pkg/errors"
-	"gorm.io/gorm"
 
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
+	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
@@ -34,21 +34,21 @@ m = g(r.sub, p.sub, r.dom) && (keyMatch(r.obj, p.obj) || g2(r.obj, p.obj, r.dom)
 `
 
 type rbacRepository struct {
-	db       *gorm.DB
+	dbc      *libgateway.DBConnection
 	conf     string
 	enforcer casbin.IEnforcer
 }
 
 var _ service.RBACRepository = (*rbacRepository)(nil)
 
-func NewRBACRepository(_ context.Context, db *gorm.DB) (service.RBACRepository, error) {
-	if db == nil {
-		panic(errors.New("db is nil"))
+func NewRBACRepository(_ context.Context, dbc *libgateway.DBConnection) (service.RBACRepository, error) {
+	if dbc == nil {
+		panic(errors.New("dbc is nil"))
 	}
 
-	gormadapter.TurnOffAutoMigrate(db)
+	gormadapter.TurnOffAutoMigrate(dbc.DB)
 
-	a, err := gormadapter.NewAdapterByDB(db)
+	a, err := gormadapter.NewAdapterByDB(dbc.DB)
 	if err != nil {
 		return nil, fmt.Errorf("gormadapter.NewAdapterByDB: %w", err)
 	}
@@ -65,7 +65,7 @@ func NewRBACRepository(_ context.Context, db *gorm.DB) (service.RBACRepository, 
 	e.EnableAutoSave(true)
 
 	return &rbacRepository{
-		db:       db,
+		dbc:      dbc,
 		conf:     rbacConf,
 		enforcer: e,
 	}, nil

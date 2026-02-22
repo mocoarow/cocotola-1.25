@@ -36,6 +36,12 @@ type OrganizationRepositoryGetOrganization interface {
 	GetOrganization(ctx context.Context, operator domain.UserInterface) (*domain.Organization, error)
 }
 
+type CreateOrganizationFunc func(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.OrganizationID, error)
+
+type OrganizationRepositoryCreateOrganization interface {
+	CreateOrganization(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.OrganizationID, error)
+}
+
 type OrganizationRepository interface {
 	// GetOrganization(ctx context.Context, operator domain.UserInterface) (*domain.Organization, error)
 	OrganizationRepositoryGetOrganization

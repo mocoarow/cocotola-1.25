@@ -1,3 +1,4 @@
+// Package main provides a simple hello world application.
 package main
 
 import (

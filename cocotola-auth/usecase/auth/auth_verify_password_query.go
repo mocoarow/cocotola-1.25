@@ -11,23 +11,23 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-type AuthVerifyPasswordCommandGateway interface {
+type VerifyPasswordCommandGateway interface {
 	service.UserRepositoryVerifyPassword
 }
 
-type AuthVerifyPasswordCommand struct {
-	gw     AuthVerifyPasswordCommandGateway
+type VerifyPasswordCommand struct {
+	gw     VerifyPasswordCommandGateway
 	logger *slog.Logger
 }
 
-func NewAuthVerifyPasswordCommand(gw AuthVerifyPasswordCommandGateway) *AuthVerifyPasswordCommand {
-	return &AuthVerifyPasswordCommand{
+func NewVerifyPasswordCommand(gw VerifyPasswordCommandGateway) *VerifyPasswordCommand {
+	return &VerifyPasswordCommand{
 		gw:     gw,
 		logger: slog.Default().With(slog.String(libdomain.LoggerNameKey, "VerifyPasswordCommand")),
 	}
 }
 
-func (u *AuthVerifyPasswordCommand) Execute(ctx context.Context, operator domain.SystemOwnerInterface, loginID, password string) error {
+func (u *VerifyPasswordCommand) Execute(ctx context.Context, operator domain.SystemOwnerInterface, loginID, password string) error {
 	ok, err := u.gw.VerifyPassword(ctx, operator, loginID, password)
 	if err != nil {
 		return fmt.Errorf("VerifyPassword: %w", err)

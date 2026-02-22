@@ -32,6 +32,12 @@ func NewAddUserGroupParameter(key, name, description string) (*AddUserGroupParam
 	return m, nil
 }
 
+type CreateOwnerGroupFunc func(ctx context.Context, operator domain.SystemOwnerInterface, organizationID *domain.OrganizationID) (*domain.UserGroupID, error)
+
+type CreatePublicGroupFunc func(ctx context.Context, operator domain.SystemOwnerInterface, organizationID *domain.OrganizationID) (*domain.UserGroupID, error)
+
+type FindUserGroupByKeyFunc func(ctx context.Context, operator domain.UserInterface, key string) (*domain.UserGroup, error)
+
 type UserGroupRepository interface {
 	FindAllUserGroups(ctx context.Context, operator domain.UserInterface) ([]*domain.UserGroup, error)
 

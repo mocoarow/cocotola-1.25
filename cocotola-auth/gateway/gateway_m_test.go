@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"gorm.io/gorm"
 
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 	testlibgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/testlib/gateway"
@@ -21,9 +20,10 @@ import (
 )
 
 type testResource struct {
-	dialect libgateway.DialectRDBMS
-	db      *gorm.DB
-	rf      service.RepositoryFactory
+	// dialect libgateway.DialectRDBMS
+	// db      *gorm.DB
+	dbc *libgateway.DBConnection
+	// rf      service.RepositoryFactory
 }
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -52,18 +52,16 @@ func testDB(t *testing.T, fn func(t *testing.T, ctx context.Context, tr testReso
 	t.Helper()
 	ctx := context.Background()
 
-	for dialect, db := range testlibgateway.ListDB() {
-		dialect := dialect
-		db := db
+	for dialect, dbc := range testlibgateway.ListDB() {
 		t.Run(dialect.Name(), func(t *testing.T) {
 			// t.Parallel()
-			sqlDB, err := db.DB()
+			sqlDB, err := dbc.DB.DB()
 			require.NoError(t, err)
 			defer sqlDB.Close()
 
-			rf, err := gateway.NewRepositoryFactory(ctx, dialect, dialect.Name(), db, loc)
+			// rf, err := gateway.NewRepositoryFactory(ctx, dialect, dialect.Name(), db, loc)
 			require.NoError(t, err)
-			testResource := testResource{dialect: dialect, db: db, rf: rf}
+			testResource := testResource{dbc: dbc}
 
 			fn(t, ctx, testResource)
 		})
@@ -158,13 +156,13 @@ func testDB(t *testing.T, fn func(t *testing.T, ctx context.Context, tr testReso
 func teardownOrganization(t *testing.T, tr testResource, orgID *domain.OrganizationID) {
 	t.Helper()
 	// delete all organizations
-	tr.db.Exec("delete from mb_user_n_space where organization_id = ?", orgID.Int())
-	tr.db.Exec("delete from mb_space where organization_id = ?", orgID.Int())
-	tr.db.Exec("delete from mb_group_n_group where organization_id = ?", orgID.Int())
-	tr.db.Exec("delete from mb_user_n_group where organization_id = ?", orgID.Int())
-	tr.db.Exec("delete from mb_user_group where organization_id = ?", orgID.Int())
-	tr.db.Exec("delete from mb_user where organization_id = ?", orgID.Int())
-	tr.db.Exec("delete from mb_organization where id = ?", orgID.Int())
+	tr.dbc.DB.Exec("delete from mb_user_n_space where organization_id = ?", orgID.Int())
+	tr.dbc.DB.Exec("delete from mb_space where organization_id = ?", orgID.Int())
+	tr.dbc.DB.Exec("delete from mb_group_n_group where organization_id = ?", orgID.Int())
+	tr.dbc.DB.Exec("delete from mb_user_n_group where organization_id = ?", orgID.Int())
+	tr.dbc.DB.Exec("delete from mb_user_group where organization_id = ?", orgID.Int())
+	tr.dbc.DB.Exec("delete from mb_user where organization_id = ?", orgID.Int())
+	tr.dbc.DB.Exec("delete from mb_organization where id = ?", orgID.Int())
 	// db.Where("true").Delete(&spaceEntity{})
 	// db.Where("true").Delete(&userEntity{})
 	// db.Where("true").Delete(&organizationEntity{})
@@ -179,9 +177,9 @@ func testNewCreateUserParameter(t *testing.T, loginID, username, password string
 	return p
 }
 
-func testAddUser(t *testing.T, ctx context.Context, tr testResource, owner domain.OwnerInterface, loginID, username, password string) *domain.User {
+func testAddUser(ctx context.Context, t *testing.T, tr testResource, owner domain.OwnerInterface, loginID, username, password string) *domain.User {
 	t.Helper()
-	userRepo := tr.rf.NewUserRepository(ctx)
+	userRepo := gateway.NewUserRepository(tr.dbc)
 	userID1, err := userRepo.CreateUser(ctx, owner, testNewCreateUserParameter(t, loginID, username, password))
 	require.NoError(t, err)
 	user1, err := userRepo.FindUserByID(ctx, owner, userID1)
@@ -199,9 +197,9 @@ func testNewUserGroupAddParameter(t *testing.T, key, name, description string) *
 	return p
 }
 
-func testAddUserGroup(t *testing.T, ctx context.Context, tr testResource, owner domain.OwnerInterface, key, name, description string) *domain.UserGroup {
+func testAddUserGroup(ctx context.Context, t *testing.T, tr testResource, owner domain.OwnerInterface, key, name, description string) *domain.UserGroup {
 	t.Helper()
-	userGorupRepo := tr.rf.NewUserGroupRepository(ctx)
+	userGorupRepo := gateway.NewUserGroupRepository(tr.dbc)
 	groupID1, err := userGorupRepo.AddUserGroup(ctx, owner, testNewUserGroupAddParameter(t, key, name, description))
 	require.NoError(t, err)
 	group1, err := userGorupRepo.FindUserGroupByID(ctx, owner, groupID1)

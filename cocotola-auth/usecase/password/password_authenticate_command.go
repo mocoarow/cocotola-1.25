@@ -10,24 +10,24 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-type PasswordAuthenticateCommandRepository interface {
+type AuthenticateCommandRepository interface {
 	service.UserRepositoryVerifyPassword
 	service.UserRepositoryFindUserByLoginID
 	service.OrganizationRepositoryGetOrganization
 	service.AuthTokenManagerCreateTokenSet
 }
 
-type PasswordAuthenticateCommand struct {
-	repo PasswordAuthenticateCommandRepository
+type AuthenticateCommand struct {
+	repo AuthenticateCommandRepository
 }
 
-func NewPasswordAuthenticateCommand(_ context.Context, repo PasswordAuthenticateCommandRepository) *PasswordAuthenticateCommand {
-	return &PasswordAuthenticateCommand{
+func NewAuthenticateCommand(_ context.Context, repo AuthenticateCommandRepository) *AuthenticateCommand {
+	return &AuthenticateCommand{
 		repo: repo,
 	}
 }
 
-func (u *PasswordAuthenticateCommand) Execute(ctx context.Context, systemOwner domain.SystemOwnerInterface, loginID, password string) (*service.AuthTokenSet, error) {
+func (u *AuthenticateCommand) Execute(ctx context.Context, systemOwner domain.SystemOwnerInterface, loginID, password string) (*service.AuthTokenSet, error) {
 	// 1. Check authorization
 	if err := u.checkAuthorization(ctx, systemOwner, loginID); err != nil {
 		return nil, fmt.Errorf("checkAuthorization: %w", err)
@@ -46,7 +46,7 @@ func (u *PasswordAuthenticateCommand) Execute(ctx context.Context, systemOwner d
 	return tokenSet, nil
 }
 
-func (u *PasswordAuthenticateCommand) checkAuthorization(_ context.Context, _ domain.SystemOwnerInterface, loginID string) error {
+func (u *AuthenticateCommand) checkAuthorization(_ context.Context, _ domain.SystemOwnerInterface, loginID string) error {
 	if strings.Contains(loginID, "guest@@") {
 		return service.ErrUnauthenticated
 	}
@@ -54,7 +54,7 @@ func (u *PasswordAuthenticateCommand) checkAuthorization(_ context.Context, _ do
 	return nil
 }
 
-func (u *PasswordAuthenticateCommand) execute(ctx context.Context, systemOwner domain.SystemOwnerInterface, loginID, password string) (*service.AuthTokenSet, error) {
+func (u *AuthenticateCommand) execute(ctx context.Context, systemOwner domain.SystemOwnerInterface, loginID, password string) (*service.AuthTokenSet, error) {
 	if ok, err := u.repo.VerifyPassword(ctx, systemOwner, loginID, password); err != nil {
 		return nil, fmt.Errorf("verifyPassword: %w", err)
 	} else if !ok {
@@ -79,6 +79,6 @@ func (u *PasswordAuthenticateCommand) execute(ctx context.Context, systemOwner d
 	return tokenSet, nil
 }
 
-func (u *PasswordAuthenticateCommand) callback(_ context.Context, _ domain.SystemOwnerInterface) error {
+func (u *AuthenticateCommand) callback(_ context.Context, _ domain.SystemOwnerInterface) error {
 	return nil
 }

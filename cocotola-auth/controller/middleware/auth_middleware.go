@@ -18,7 +18,7 @@ type BearerTokenAuthGateway interface {
 	VerifyAccessToken(ctx context.Context, accessToken string) (*domain.User, error)
 }
 
-func NewBearerTokenAuthMiddleware(systemToken domain.SystemToken, bearerTokenAuthGateway BearerTokenAuthGateway) gin.HandlerFunc {
+func NewBearerTokenAuthMiddleware(_ domain.SystemToken, bearerTokenAuthGateway BearerTokenAuthGateway) gin.HandlerFunc {
 	logger := slog.Default().With(slog.String(libdomain.LoggerNameKey, domain.AppName+"-BearerTokenAuthMiddleware"))
 
 	return func(c *gin.Context) {

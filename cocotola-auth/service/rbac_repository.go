@@ -9,10 +9,10 @@ import (
 // var RBACSetAction = libdomain.NewRBACAction("Set")
 // var RBACUnsetAction = libdomain.NewRBACAction("Unset")
 
-var AnyObject = libdomain.NewRBACObject("*")
+var AnyObject = libdomain.NewRBACObject("*") //nolint:gochecknoglobals
 
-var RBACAllowEffect = libdomain.NewRBACEffect("allow")
-var RBACDenyEffect = libdomain.NewRBACEffect("deny")
+var RBACAllowEffect = libdomain.NewRBACEffect("allow") //nolint:gochecknoglobals
+var RBACDenyEffect = libdomain.NewRBACEffect("deny")   //nolint:gochecknoglobals
 
 type RBACEnforcer interface {
 	LoadPolicy() error

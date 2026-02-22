@@ -1,3 +1,4 @@
+// Package config provides configuration loading for the cocotola-app.
 package config
 
 import (
@@ -16,6 +17,7 @@ import (
 	authconfig "github.com/mocoarow/cocotola-1.25/cocotola-auth/config"
 )
 
+// ServerConfig holds server configuration.
 type ServerConfig struct {
 	HTTPPort             int                           `yaml:"httpPort" validate:"required"`
 	MetricsPort          int                           `yaml:"metricsPort" validate:"required"`
@@ -24,10 +26,12 @@ type ServerConfig struct {
 	Shutdown             *libcontroller.ShutdownConfig `yaml:"shutdown" validate:"required"`
 }
 
+// AppConfig holds application configuration.
 type AppConfig struct {
 	Auth *authconfig.AuthConfig `yaml:"auth" validate:"required"`
 }
 
+// Config holds the complete application configuration.
 type Config struct {
 	App    *AppConfig              `yaml:"app" validate:"required"`
 	Server *ServerConfig           `yaml:"server" validate:"required"`
@@ -39,6 +43,7 @@ type Config struct {
 //go:embed config.yml
 var config embed.FS
 
+// LoadConfig loads configuration from embedded config.yml file.
 func LoadConfig() (*Config, error) {
 	filename := "config.yml"
 	confContent, err := config.ReadFile(filename)

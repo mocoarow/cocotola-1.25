@@ -18,7 +18,7 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/handler"
 )
 
-func initGuestRouter(t *testing.T, ctx context.Context, guest handler.GuestUsecase) *gin.Engine {
+func initGuestRouter(ctx context.Context, t *testing.T, guest handler.GuestUsecase) *gin.Engine {
 	t.Helper()
 
 	router := libgin.InitRootRouterGroup(ctx, &config, "cocotola-auth-test")
@@ -58,7 +58,7 @@ func TestGuestHandler_Authenticate_shouldReturn400_whenInvalidRequest(t *testing
 
 			// given
 			guestUserUsecase := NewMockGuestUsecase(t)
-			r := initGuestRouter(t, ctx, guestUserUsecase)
+			r := initGuestRouter(ctx, t, guestUserUsecase)
 			w := httptest.NewRecorder()
 
 			// when

@@ -22,10 +22,10 @@ func TestVerifyPasswordCommand_Execute_shouldReturnNil_whenPasswordMatches(t *te
 	ctx := context.Background()
 	operator := newSystemOwner(t)
 
-	gwMock := NewMockAuthVerifyPasswordCommandGateway(t)
+	gwMock := NewMockVerifyPasswordCommandGateway(t)
 	gwMock.EXPECT().VerifyPassword(ctx, operator, "login-id", "secret").Return(true, nil)
 
-	cmd := auth.NewAuthVerifyPasswordCommand(gwMock)
+	cmd := auth.NewVerifyPasswordCommand(gwMock)
 
 	// when
 	err := cmd.Execute(ctx, operator, "login-id", "secret")
@@ -41,10 +41,10 @@ func TestVerifyPasswordCommand_Execute_shouldReturnUnauthenticated_whenPasswordD
 	ctx := context.Background()
 	operator := newSystemOwner(t)
 
-	gwMock := NewMockAuthVerifyPasswordCommandGateway(t)
+	gwMock := NewMockVerifyPasswordCommandGateway(t)
 	gwMock.EXPECT().VerifyPassword(ctx, operator, "login-id", "secret").Return(false, nil)
 
-	cmd := auth.NewAuthVerifyPasswordCommand(gwMock)
+	cmd := auth.NewVerifyPasswordCommand(gwMock)
 
 	// when
 	err := cmd.Execute(ctx, operator, "login-id", "secret")
@@ -60,10 +60,10 @@ func TestVerifyPasswordCommand_Execute_shouldReturnError_whenRepositoryFails(t *
 	ctx := context.Background()
 	operator := newSystemOwner(t)
 
-	gwMock := NewMockAuthVerifyPasswordCommandGateway(t)
+	gwMock := NewMockVerifyPasswordCommandGateway(t)
 	gwMock.EXPECT().VerifyPassword(ctx, operator, "login-id", "secret").Return(false, errors.New("verify failure"))
 
-	cmd := auth.NewAuthVerifyPasswordCommand(gwMock)
+	cmd := auth.NewVerifyPasswordCommand(gwMock)
 
 	// when
 	err := cmd.Execute(ctx, operator, "login-id", "secret")

@@ -42,14 +42,14 @@ func (e *OrganizationEntity) toModel() (*domain.Organization, error) {
 }
 
 type OrganizationRepository struct {
-	db *gorm.DB
+	dbc *libgateway.DBConnection
 }
 
 var _ service.OrganizationRepository = (*OrganizationRepository)(nil)
 
-func NewOrganizationRepository(_ context.Context, db *gorm.DB) *OrganizationRepository {
+func NewOrganizationRepository(dbc *libgateway.DBConnection) *OrganizationRepository {
 	return &OrganizationRepository{
-		db: db,
+		dbc: dbc,
 	}
 }
 
@@ -58,7 +58,7 @@ func (r *OrganizationRepository) GetOrganization(ctx context.Context, operator d
 	defer span.End()
 
 	var organization OrganizationEntity
-	if result := r.db.WithContext(ctx).Where(OrganizationEntity{ //nolint:exhaustruct
+	if result := r.dbc.DB.WithContext(ctx).Where(OrganizationEntity{ //nolint:exhaustruct
 		ID: operator.GetOrganizationID().Int(),
 	}).First(&organization); result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -76,7 +76,7 @@ func (r *OrganizationRepository) FindOrganizationByName(ctx context.Context, _ d
 	defer span.End()
 
 	var organization OrganizationEntity
-	if result := r.db.WithContext(ctx).Where(OrganizationEntity{ //nolint:exhaustruct
+	if result := r.dbc.DB.WithContext(ctx).Where(OrganizationEntity{ //nolint:exhaustruct
 		Name: name,
 	}).First(&organization); result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -94,7 +94,7 @@ func (r *OrganizationRepository) FindOrganizationByID(ctx context.Context, _ dom
 	defer span.End()
 
 	var organization OrganizationEntity
-	if result := r.db.WithContext(ctx).Where(OrganizationEntity{ //nolint:exhaustruct
+	if result := r.dbc.DB.WithContext(ctx).Where(OrganizationEntity{ //nolint:exhaustruct
 		ID: id.Int(),
 	}).First(&organization); result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -120,7 +120,7 @@ func (r *OrganizationRepository) CreateOrganization(ctx context.Context, operato
 		Name: organizationName,
 	}
 
-	if result := r.db.WithContext(ctx).Create(&organization); result.Error != nil {
+	if result := r.dbc.DB.WithContext(ctx).Create(&organization); result.Error != nil {
 		return nil, fmt.Errorf("create organization: %w", libgateway.ConvertDuplicatedError(result.Error, service.ErrOrganizationAlreadyExists))
 	}
 

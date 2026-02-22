@@ -31,7 +31,6 @@ func NewGetMyProfileQuery(repo GetMyProfileQueryRepository) *GetMyProfileQuery {
 }
 
 func (u *GetMyProfileQuery) Execute(ctx context.Context, operator domain.UserInterface) (*domain.ProfileModel, error) {
-
 	org, err := u.repo.GetOrganization(ctx, operator)
 	if err != nil {
 		return nil, fmt.Errorf("GetOrganization: %w", err)

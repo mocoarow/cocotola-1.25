@@ -8,23 +8,23 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-type AuthVerifyAccessTokenQueryGateway interface {
+type VerifyAccessTokenQueryGateway interface {
 	service.UserRepositoryFindUserByLoginID
 	service.UserRepositoryFindSystemOwnerByOrganizationName
 	service.AuthTokenManagerGetUserInfo
 }
 
-type AuthVerifyAccessTokenQuery struct {
-	gw AuthVerifyAccessTokenQueryGateway
+type VerifyAccessTokenQuery struct {
+	gw VerifyAccessTokenQueryGateway
 }
 
-func NewAuthVerifyAccessTokenQuery(gw AuthVerifyAccessTokenQueryGateway) *AuthVerifyAccessTokenQuery {
-	return &AuthVerifyAccessTokenQuery{
+func NewVerifyAccessTokenQuery(gw VerifyAccessTokenQueryGateway) *VerifyAccessTokenQuery {
+	return &VerifyAccessTokenQuery{
 		gw: gw,
 	}
 }
 
-func (u *AuthVerifyAccessTokenQuery) Execute(ctx context.Context, systemAdmin domain.SystemAdminInterface, bearerToken string) (*domain.User, error) {
+func (u *VerifyAccessTokenQuery) Execute(ctx context.Context, systemAdmin domain.SystemAdminInterface, bearerToken string) (*domain.User, error) {
 	ctx, span := tracer.Start(ctx, "AuthVerifyAccessTokenQuery.Execute")
 	defer span.End()
 

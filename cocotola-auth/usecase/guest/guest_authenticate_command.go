@@ -9,23 +9,23 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-type GuestAuthenticateCommandGateway interface {
+type AuthenticateCommandGateway interface {
 	service.AuthTokenManagerCreateTokenSet
 	service.UserRepositoryFindUserByLoginID
 	service.OrganizationRepositoryGetOrganization
 }
 
-type GuestAuthenticateCommand struct {
-	gw GuestAuthenticateCommandGateway
+type AuthenticateCommand struct {
+	gw AuthenticateCommandGateway
 }
 
-func NewGuestAuthenticateCommand(_ context.Context, gw GuestAuthenticateCommandGateway) *GuestAuthenticateCommand {
-	return &GuestAuthenticateCommand{
+func NewAuthenticateCommand(_ context.Context, gw AuthenticateCommandGateway) *AuthenticateCommand {
+	return &AuthenticateCommand{
 		gw: gw,
 	}
 }
 
-func (u *GuestAuthenticateCommand) Execute(ctx context.Context, systemOwner domain.SystemOwnerInterface, organizationName string) (*service.AuthTokenSet, error) {
+func (u *AuthenticateCommand) Execute(ctx context.Context, systemOwner domain.SystemOwnerInterface, organizationName string) (*service.AuthTokenSet, error) {
 	// 1. Check authorization
 	if err := u.checkAuthorization(ctx, systemOwner); err != nil {
 		return nil, fmt.Errorf("checkAuthorization: %w", err)
@@ -44,11 +44,11 @@ func (u *GuestAuthenticateCommand) Execute(ctx context.Context, systemOwner doma
 	return tokenSet, nil
 }
 
-func (u *GuestAuthenticateCommand) checkAuthorization(_ context.Context, _ domain.SystemOwnerInterface) error {
+func (u *AuthenticateCommand) checkAuthorization(_ context.Context, _ domain.SystemOwnerInterface) error {
 	return nil
 }
 
-func (u *GuestAuthenticateCommand) execute(ctx context.Context, systemOwner domain.SystemOwnerInterface, organizationName string) (*service.AuthTokenSet, error) {
+func (u *AuthenticateCommand) execute(ctx context.Context, systemOwner domain.SystemOwnerInterface, organizationName string) (*service.AuthTokenSet, error) {
 	guestLoginID := domain.NewGuestLoginID(organizationName)
 	user, err := u.gw.FindUserByLoginID(ctx, systemOwner, guestLoginID)
 	if err != nil {
@@ -68,6 +68,6 @@ func (u *GuestAuthenticateCommand) execute(ctx context.Context, systemOwner doma
 	return tokenSet, nil
 }
 
-func (u *GuestAuthenticateCommand) callback(_ context.Context, _ domain.SystemOwnerInterface) error {
+func (u *AuthenticateCommand) callback(_ context.Context, _ domain.SystemOwnerInterface) error {
 	return nil
 }

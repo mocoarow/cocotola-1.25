@@ -1,13 +1,11 @@
 package gateway
 
 import (
-	"gorm.io/gorm"
-
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 )
 
-func ListDB() map[libgateway.DialectRDBMS]*gorm.DB {
-	list := make(map[libgateway.DialectRDBMS]*gorm.DB)
+func ListDB() map[libgateway.DialectRDBMS]*libgateway.DBConnection {
+	list := make(map[libgateway.DialectRDBMS]*libgateway.DBConnection)
 
 	// mysql
 	m, err := openMySQLForTest()
@@ -15,7 +13,11 @@ func ListDB() map[libgateway.DialectRDBMS]*gorm.DB {
 		panic(err)
 	}
 	mysql := libgateway.DialectMySQL{}
-	list[&mysql] = m
+	list[&mysql] = &libgateway.DBConnection{
+		DriverName: mysql.Name(),
+		Dialect:    &mysql,
+		DB:         m,
+	}
 
 	// // postgres
 	// p, err := openPostgresForTest()

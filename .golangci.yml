@@ -103,7 +103,6 @@ linters:
       - legacy
       - std-error-handling
     paths:
-      - lib/gateway/sqlite3/db_sqlite3_migrate.go
       - third_party$
       - builtin$
       - examples$
@@ -112,10 +111,53 @@ linters:
         linters:
           - dupl
           - wsl_v5
-          - revive
           - exhaustruct
           - wrapcheck
           - goconst
+          - forcetypeassert
+          - gochecknoglobals
+          - ireturn
+          - staticcheck
+      - path: mocks_test*\.go
+        linters:
+          - forcetypeassert
+          - gochecknoglobals
+          - ireturn
+          - staticcheck
+      - path: init\.go
+        linters:
+          - gochecknoglobals
+      - path: openapi\.go
+        linters:
+          - gosec
+      - path: gateway/
+        linters:
+          - ireturn
+      - path: domain/
+        linters:
+          - ireturn
+          - iface
+      - path: usecase/
+        linters:
+          - iface
+      - path: service/
+        linters:
+          - ireturn
+      - path: middleware/
+        linters:
+          - gochecknoglobals
+      - path: gateway/sqlite3/db_sqlite3_migrate\.go
+        linters:
+          - errorlint
+          - exhaustruct
+          - gochecknoglobals
+          - gosec
+          - nilerr
+          - noctx
+          - sqlclosecheck
+          - staticcheck
+          - wrapcheck
+          - wsl_v5
 formatters:
   enable:
     - gofmt

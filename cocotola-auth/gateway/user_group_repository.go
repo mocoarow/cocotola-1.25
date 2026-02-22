@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 
-	"gorm.io/gorm"
-
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 
@@ -53,18 +51,16 @@ func (e *userGroupEntity) toUserGroup() (*domain.UserGroup, error) {
 }
 
 type UserGroupRepository struct {
-	dialect libgateway.DialectRDBMS
-	db      *gorm.DB
-	logger  *slog.Logger
+	dbc    *libgateway.DBConnection
+	logger *slog.Logger
 }
 
 var _ service.UserGroupRepository = (*UserGroupRepository)(nil)
 
-func NewUserGroupRepository(_ context.Context, dialect libgateway.DialectRDBMS, db *gorm.DB) service.UserGroupRepository {
+func NewUserGroupRepository(dbc *libgateway.DBConnection) service.UserGroupRepository {
 	return &UserGroupRepository{
-		dialect: dialect,
-		db:      db,
-		logger:  slog.Default().With(slog.String(libdomain.LoggerNameKey, "UserGroupRepository")),
+		dbc:    dbc,
+		logger: slog.Default().With(slog.String(libdomain.LoggerNameKey, "UserGroupRepository")),
 	}
 }
 
@@ -73,7 +69,7 @@ func (r *UserGroupRepository) FindAllUserGroups(ctx context.Context, operator do
 	defer span.End()
 
 	userGroups := []userGroupEntity{}
-	if result := r.db.Where(&userGroupEntity{ //nolint:exhaustruct
+	if result := r.dbc.DB.Where(&userGroupEntity{ //nolint:exhaustruct
 		OrganizationID: operator.GetOrganizationID().Int(),
 	}).Find(&userGroups); result.Error != nil {
 		return nil, result.Error
@@ -96,7 +92,7 @@ func (r *UserGroupRepository) FindSystemOwnerGroup(ctx context.Context, _ domain
 	defer span.End()
 
 	var userGroup userGroupEntity
-	if result := r.db.Where(&userGroupEntity{ //nolint:exhaustruct
+	if result := r.dbc.DB.Where(&userGroupEntity{ //nolint:exhaustruct
 		OrganizationID: organizationID.Int(),
 		KeyName:        service.SystemOwnerGroupKey,
 	}).First(&userGroup); result.Error != nil {
@@ -111,8 +107,8 @@ func (r *UserGroupRepository) FindUserGroupByID(ctx context.Context, operator do
 	defer span.End()
 
 	var userGroup userGroupEntity
-	if result := r.db.Where("organization_id = ?", operator.GetOrganizationID().Int()).
-		Where("id = ? and deleted = ?", userGroupID.Int(), r.dialect.BoolDefaultValue()).
+	if result := r.dbc.DB.Where("organization_id = ?", operator.GetOrganizationID().Int()).
+		Where("id = ? and deleted = ?", userGroupID.Int(), r.dbc.Dialect.BoolDefaultValue()).
 		First(&userGroup); result.Error != nil {
 		return nil, result.Error
 	}
@@ -125,8 +121,8 @@ func (r *UserGroupRepository) FindUserGroupByKey(ctx context.Context, operator d
 	defer span.End()
 
 	var userGroup userGroupEntity
-	if result := r.db.Where("organization_id = ?", operator.GetOrganizationID().Int()).
-		Where("key_name = ? and deleted = ?", key, r.dialect.BoolDefaultValue()).
+	if result := r.dbc.DB.Where("organization_id = ?", operator.GetOrganizationID().Int()).
+		Where("key_name = ? and deleted = ?", key, r.dbc.Dialect.BoolDefaultValue()).
 		First(&userGroup); result.Error != nil {
 		return nil, result.Error
 	}
@@ -146,7 +142,7 @@ func (r *UserGroupRepository) createUserGroup(userID *domain.UserID, organizatio
 		KeyName:        key,
 		Name:           name,
 	}
-	if result := r.db.Create(&userGroup); result.Error != nil {
+	if result := r.dbc.DB.Create(&userGroup); result.Error != nil {
 		return nil, fmt.Errorf("create user group(%s): %w", key, libgateway.ConvertDuplicatedError(result.Error, service.ErrUserGroupAlreadyExists))
 	}
 
@@ -212,7 +208,7 @@ func (r *UserGroupRepository) AddUserGroup(ctx context.Context, operator domain.
 		Name:           param.Name,
 		Description:    param.Description,
 	}
-	if result := r.db.Create(&userGroup); result.Error != nil {
+	if result := r.dbc.DB.Create(&userGroup); result.Error != nil {
 		return nil, fmt.Errorf(": %w", libgateway.ConvertDuplicatedError(result.Error, service.ErrUserGroupAlreadyExists))
 	}
 

@@ -11,25 +11,25 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-type ProfileUsecaseRepository interface {
+type UsecaseRepository interface {
 	service.OrganizationRepositoryGetOrganization
 	service.UserRepositoryGetUser
 	service.SpacemanagerGetPersonalSpaceInterface
 }
 
-type ProfileUsecase struct {
-	repo   ProfileUsecaseRepository
+type Usecase struct {
+	repo   UsecaseRepository
 	logger *slog.Logger
 }
 
-func NewProfileUsecase(repo ProfileUsecaseRepository) *ProfileUsecase {
-	return &ProfileUsecase{
+func NewUsecase(repo UsecaseRepository) *Usecase {
+	return &Usecase{
 		repo:   repo,
-		logger: slog.Default().With(slog.String(libdomain.LoggerNameKey, "ProfileUsecase")),
+		logger: slog.Default().With(slog.String(libdomain.LoggerNameKey, "Usecase")),
 	}
 }
 
-func (u *ProfileUsecase) GetMyProfile(ctx context.Context, operator domain.UserInterface) (*domain.ProfileModel, error) {
+func (u *Usecase) GetMyProfile(ctx context.Context, operator domain.UserInterface) (*domain.ProfileModel, error) {
 	command := NewGetMyProfileQuery(u.repo)
 	profile, err := command.Execute(ctx, operator)
 	if err != nil {

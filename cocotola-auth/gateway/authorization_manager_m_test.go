@@ -30,18 +30,18 @@ func TestAuthorizationManager_CheckAuthorization_shouldReflectGroupMembership_wh
 		orgID, _, owner := setupTestOrganization(ctx, t, tr)
 		defer teardownOrganization(t, tr, orgID)
 
-		authorizationManager, err := gateway.NewAuthorizationManager(ctx, tr.dialect, tr.db, tr.rf)
+		authorizationManager, err := gateway.NewAuthorizationManager(ctx, tr.dbc)
 		require.NoError(t, err)
-		membershipRepo := gateway.NewPairOfUserAndGroupRepository(ctx, tr.dialect, tr.db, tr.rf)
+		membershipRepo := gateway.NewPairOfUserAndGroupRepository(ctx, tr.dbc)
 
-		group := testAddUserGroup(t, ctx, tr, owner, "TEST_GROUP", "GROUP_NAME_Auth", "GROUP_DESC_Auth")
+		group := testAddUserGroup(ctx, t, tr, owner, "TEST_GROUP", "GROUP_NAME_Auth", "GROUP_DESC_Auth")
 		rbacGroup := domain.NewRBACRoleFromGroup(orgID, group.UserGroupID)
 		if err := authorizationManager.AttachPolicyToGroup(ctx, owner, rbacGroup, service.CreateUserAction, service.AnyObject, service.RBACAllowEffect); err != nil {
 			require.NoError(t, err)
 		}
 
-		targetUser := testAddUser(t, ctx, tr, owner, "TARGET_USER", "USERNAME_TARGET", "PASSWORD_TARGET")
-		otherUser := testAddUser(t, ctx, tr, owner, "OTHER_USER", "USERNAME_OTHER", "PASSWORD_OTHER")
+		targetUser := testAddUser(ctx, t, tr, owner, "TARGET_USER", "USERNAME_TARGET", "PASSWORD_TARGET")
+		otherUser := testAddUser(ctx, t, tr, owner, "OTHER_USER", "USERNAME_OTHER", "PASSWORD_OTHER")
 
 		ok, err := authorizationManager.CheckAuthorization(ctx, targetUser, service.CreateUserAction, service.AnyObject)
 		require.NoError(t, err)
@@ -62,7 +62,7 @@ func TestAuthorizationManager_CheckAuthorization_shouldReflectGroupMembership_wh
 		require.NoError(t, err)
 		assert.Len(t, groupsAfter, 1)
 
-		rbacRepo, err := gateway.NewRBACRepository(ctx, tr.db)
+		rbacRepo, err := gateway.NewRBACRepository(ctx, tr.dbc)
 		require.NoError(t, err)
 		e := rbacRepo.GetEnforcer()
 		require.NoError(t, e.LoadPolicy())

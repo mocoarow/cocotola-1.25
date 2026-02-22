@@ -23,10 +23,10 @@ func TestSpaceManager_CreatePersonalSpace_and_GetPersonalSpace(t *testing.T) {
 		_ = sysOwner
 		defer teardownOrganization(t, tr, orgID)
 
-		mgr, err := gateway.NewSpaceManager(ctx, tr.dialect, tr.db, tr.rf)
+		mgr, err := gateway.NewSpaceManager(ctx, tr.dbc)
 		require.NoError(t, err)
 
-		target := testAddUser(t, ctx, tr, owner, "space_user", "SPACE USER", "password")
+		target := testAddUser(ctx, t, tr, owner, "space_user", "SPACE USER", "password")
 
 		spaceID, err := mgr.CreatePersonalSpace(ctx, owner, &service.CreatePersonalSpaceParameter{
 			UserID:  target.GetUserID(),
@@ -53,10 +53,10 @@ func TestSpaceManager_AddUserToSpace_shouldAttachExistingSpace(t *testing.T) {
 		orgID, sysOwner, owner := setupTestOrganization(ctx, t, tr)
 		defer teardownOrganization(t, tr, orgID)
 
-		mgr, err := gateway.NewSpaceManager(ctx, tr.dialect, tr.db, tr.rf)
+		mgr, err := gateway.NewSpaceManager(ctx, tr.dbc)
 		require.NoError(t, err)
 
-		spaceRepo := tr.rf.NewSpaceRepository(ctx)
+		spaceRepo := gateway.NewSpaceRepository(tr.dbc)
 		spaceID, err := spaceRepo.CreateSpace(ctx, owner, &service.CreateSpaceParameter{
 			Key:       "shared-space",
 			Name:      "Shared Space",
@@ -64,11 +64,11 @@ func TestSpaceManager_AddUserToSpace_shouldAttachExistingSpace(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		other := testAddUser(t, ctx, tr, owner, "new_member", "NEW MEMBER", "password")
+		other := testAddUser(ctx, t, tr, owner, "new_member", "NEW MEMBER", "password")
 		err = mgr.AddUserToSpace(ctx, sysOwner, *other.GetUserID(), spaceID)
 		require.NoError(t, err)
 
-		rbacRepo, err := gateway.NewRBACRepository(ctx, tr.db)
+		rbacRepo, err := gateway.NewRBACRepository(ctx, tr.dbc)
 		require.NoError(t, err)
 		rbacDomain := domain.NewRBACDomainFromOrganization(orgID)
 		rbacUser := domain.NewRBACUserFromUser(other.GetUserID())
