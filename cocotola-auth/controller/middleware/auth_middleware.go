@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -11,15 +12,14 @@ import (
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
-	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
-	"github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase"
 )
 
-func NewBearerTokenAuthMiddleware(systemToken domain.SystemToken, authTokenManager service.AuthTokenManager, mbNonTxManager service.TransactionManager, _ service.RepositoryFactory) gin.HandlerFunc {
-	logger := slog.Default().With(slog.String(libdomain.LoggerNameKey, domain.AppName+"-BearerTokenAuthMiddleware"))
+type BearerTokenAuthGateway interface {
+	VerifyAccessToken(ctx context.Context, accessToken string) (*domain.User, error)
+}
 
-	sysAdmin := domain.NewSystemAdmin(systemToken)
-	verifyAccessTokenQuery := usecase.NewVerifyAccessTokenQuery(mbNonTxManager, authTokenManager)
+func NewBearerTokenAuthMiddleware(systemToken domain.SystemToken, bearerTokenAuthGateway BearerTokenAuthGateway) gin.HandlerFunc {
+	logger := slog.Default().With(slog.String(libdomain.LoggerNameKey, domain.AppName+"-BearerTokenAuthMiddleware"))
 
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
@@ -35,7 +35,7 @@ func NewBearerTokenAuthMiddleware(systemToken domain.SystemToken, authTokenManag
 		}
 
 		bearerToken := authorization[len("Bearer "):]
-		user, err := verifyAccessTokenQuery.Execute(ctx, sysAdmin, bearerToken)
+		user, err := bearerTokenAuthGateway.VerifyAccessToken(ctx, bearerToken)
 		if err != nil {
 			logger.WarnContext(ctx, fmt.Sprintf("verifyAccessToken: %v", err))
 			c.AbortWithStatus(http.StatusUnauthorized)

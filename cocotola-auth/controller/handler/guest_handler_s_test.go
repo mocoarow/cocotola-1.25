@@ -1,6 +1,6 @@
 //go:build small
 
-package gin_test
+package handler_test
 
 import (
 	"bytes"
@@ -13,22 +13,19 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	ctrlgin "github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/gin"
-
 	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+
+	"github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/handler"
 )
 
-func initGuestRouter(t *testing.T, ctx context.Context, guest ctrlgin.GuestUsecase) *gin.Engine {
+func initGuestRouter(t *testing.T, ctx context.Context, guest handler.GuestUsecase) *gin.Engine {
 	t.Helper()
-	fn := ctrlgin.NewInitGuestRouterFunc(guest)
-
-	initPublicRouterFuncs := []libgin.InitRouterGroupFunc{fn}
 
 	router := libgin.InitRootRouterGroup(ctx, &config, "cocotola-auth-test")
 	api := router.Group("api")
 	v1 := api.Group("v1")
 
-	libgin.InitPublicAPIRouterGroup(ctx, v1, initPublicRouterFuncs)
+	handler.InitGuestRouter(guest, v1)
 
 	return router
 }
@@ -60,7 +57,7 @@ func TestGuestHandler_Authenticate_shouldReturn400_whenInvalidRequest(t *testing
 			ctx := context.Background()
 
 			// given
-			guestUserUsecase := new(MockGuestUsecase)
+			guestUserUsecase := NewMockGuestUsecase(t)
 			r := initGuestRouter(t, ctx, guestUserUsecase)
 			w := httptest.NewRecorder()
 

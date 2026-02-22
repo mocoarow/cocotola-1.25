@@ -1,4 +1,4 @@
-package gin_test
+package handler_test
 
 import (
 	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"

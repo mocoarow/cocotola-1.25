@@ -50,6 +50,28 @@ func NewCreateUserParameter(loginID, username, password, provider, providerLogin
 	return &m, nil
 }
 
+type FindSystemOwnerByOrganizationNameFunc func(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.SystemOwner, error)
+
+type UserRepositoryFindSystemOwnerByOrganizationName interface {
+	FindSystemOwnerByOrganizationName(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.SystemOwner, error)
+}
+
+type FindUserByLoginIDFunc func(ctx context.Context, operator domain.UserInterface, loginID string) (*domain.User, error)
+
+type UserRepositoryFindUserByLoginID interface {
+	FindUserByLoginID(ctx context.Context, operator domain.UserInterface, loginID string) (*domain.User, error)
+}
+
+type VerifyPasswordFunc func(ctx context.Context, operator domain.SystemOwnerInterface, loginID, password string) (bool, error)
+
+type UserRepositoryVerifyPassword interface {
+	VerifyPassword(ctx context.Context, operator domain.SystemOwnerInterface, loginID, password string) (bool, error)
+}
+
+type UserRepositoryGetUser interface {
+	GetUser(ctx context.Context, operator domain.UserInterface) (*domain.User, error)
+}
+
 type UserRepository interface {
 	FindSystemOwnerByOrganizationID(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.SystemOwner, error)
 

@@ -39,3 +39,5 @@ AGENTS.md
 DESIGN.md
 *.txt
 openapi-generated/**
+.claude
+.serena

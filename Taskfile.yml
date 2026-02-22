@@ -49,11 +49,14 @@ tasks:
     cmds:
       - |
         cd {{ .GO_PROJECT }}
-        mockery
+        if [ -f .mockery.yaml ]; then
+          mockery
+        fi
     requires:
       vars: [GO_PROJECT]
 
   gen-code:
+    desc: "Generate code (e.g., mocks) for all Go projects"
     cmds:
       - for:
           var: GO_PROJECTS
@@ -173,6 +176,7 @@ tasks:
       - bazelisk run //cocotola-init:cocotola-init
 
   run-cocotola-auth:
+    desc: "Run cocotola-auth with local infrastructure (e.g., Jaeger)"
     cmds:
       - docker compose -f compose.local.jaeger.yml up -d --wait
       - bazelisk run //cocotola-auth:cocotola-auth

@@ -26,6 +26,14 @@ func findUserbyLoginID(ctx context.Context, mbrf service.RepositoryFactory, oper
 	return user, nil
 }
 
+func FindUserbyLoginID(ctx context.Context, repo service.UserRepositoryFindUserByLoginID, operator domain.UserInterface, loginID string) (*domain.User, error) {
+	user, err := repo.FindUserByLoginID(ctx, operator, loginID)
+	if err != nil {
+		return nil, fmt.Errorf("find user by login id(%s): %w", loginID, err)
+	}
+	return user, nil
+}
+
 func getOrganization(ctx context.Context, mbrf service.RepositoryFactory, operator domain.UserInterface) (*domain.Organization, error) {
 	orgRepo := mbrf.NewOrganizationRepository(ctx)
 	org, err := orgRepo.GetOrganization(ctx, operator)

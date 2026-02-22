@@ -11,6 +11,11 @@ type CreatePersonalSpaceParameter struct {
 	KeyName string
 	Name    string
 }
+
+type SpacemanagerGetPersonalSpaceInterface interface {
+	GetPersonalSpace(ctx context.Context, operator domain.UserInterface) (*domain.Space, error)
+}
+
 type SpaceManager interface {
 	CreatePersonalSpace(ctx context.Context, operator domain.UserInterface, param *CreatePersonalSpaceParameter) (*domain.SpaceID, error)
 	CreatePublicDefaultSpace(ctx context.Context, operator domain.SystemOwnerInterface) (*domain.SpaceID, error)

@@ -88,23 +88,23 @@ func (e *userEntity) toSystemOwner(_ context.Context, _ service.RepositoryFactor
 	return systemOwner, nil
 }
 
-type userRepository struct {
+type UserRepository struct {
 	dialect libgateway.DialectRDBMS
 	db      *gorm.DB
 	rf      service.RepositoryFactory
 }
 
-var _ service.UserRepository = (*userRepository)(nil)
+var _ service.UserRepository = (*UserRepository)(nil)
 
-func NewUserRepository(_ context.Context, dialect libgateway.DialectRDBMS, db *gorm.DB, rf service.RepositoryFactory) service.UserRepository {
-	return &userRepository{
+func NewUserRepository(_ context.Context, dialect libgateway.DialectRDBMS, db *gorm.DB, rf service.RepositoryFactory) *UserRepository {
+	return &UserRepository{
 		dialect: dialect,
 		db:      db,
 		rf:      rf,
 	}
 }
 
-func (r *userRepository) FindSystemOwnerByOrganizationID(ctx context.Context, _ domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.SystemOwner, error) {
+func (r *UserRepository) FindSystemOwnerByOrganizationID(ctx context.Context, _ domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.SystemOwner, error) {
 	_, span := tracer.Start(ctx, "userRepository.FindSystemOwnerByOrganizationID")
 	defer span.End()
 
@@ -122,7 +122,7 @@ func (r *userRepository) FindSystemOwnerByOrganizationID(ctx context.Context, _ 
 	return user.toSystemOwner(ctx, r.rf, nil)
 }
 
-func (r *userRepository) FindSystemOwnerByOrganizationName(ctx context.Context, _ domain.SystemAdminInterface, organizationName string) (*domain.SystemOwner, error) {
+func (r *UserRepository) FindSystemOwnerByOrganizationName(ctx context.Context, _ domain.SystemAdminInterface, organizationName string) (*domain.SystemOwner, error) {
 	_, span := tracer.Start(ctx, "userRepository.FindSystemOwnerByOrganizationName")
 	defer span.End()
 
@@ -153,21 +153,21 @@ func (r *userRepository) FindSystemOwnerByOrganizationName(ctx context.Context, 
 	return userE.toSystemOwner(ctx, r.rf, userGroups)
 }
 
-func (r *userRepository) GetUser(ctx context.Context, operator domain.UserInterface) (*domain.User, error) {
+func (r *UserRepository) GetUser(ctx context.Context, operator domain.UserInterface) (*domain.User, error) {
 	_, span := tracer.Start(ctx, "userRepository.GetUser")
 	defer span.End()
 
 	return r.findUserByID(ctx, operator.GetOrganizationID(), operator.GetUserID())
 }
 
-func (r *userRepository) FindUserByID(ctx context.Context, operator domain.UserInterface, id *domain.UserID) (*domain.User, error) {
+func (r *UserRepository) FindUserByID(ctx context.Context, operator domain.UserInterface, id *domain.UserID) (*domain.User, error) {
 	_, span := tracer.Start(ctx, "userRepository.FindUserByID")
 	defer span.End()
 
 	return r.findUserByID(ctx, operator.GetOrganizationID(), id)
 }
 
-func (r *userRepository) findUserByID(ctx context.Context, organizationID *domain.OrganizationID, id *domain.UserID) (*domain.User, error) {
+func (r *UserRepository) findUserByID(ctx context.Context, organizationID *domain.OrganizationID, id *domain.UserID) (*domain.User, error) {
 	_, span := tracer.Start(ctx, "userRepository.findUserByID")
 	defer span.End()
 
@@ -196,14 +196,14 @@ func (r *userRepository) findUserByID(ctx context.Context, organizationID *domai
 	return userE.toUser(userGroups)
 }
 
-func (r *userRepository) FindUserByLoginID(ctx context.Context, operator domain.UserInterface, loginID string) (*domain.User, error) {
+func (r *UserRepository) FindUserByLoginID(ctx context.Context, operator domain.UserInterface, loginID string) (*domain.User, error) {
 	_, span := tracer.Start(ctx, "userRepository.FindUserByLoginID")
 	defer span.End()
 
 	return r.findUserByLoginID(ctx, operator.GetOrganizationID(), loginID)
 }
 
-func (r *userRepository) findUserByLoginID(ctx context.Context, organizationID *domain.OrganizationID, loginID string) (*domain.User, error) {
+func (r *UserRepository) findUserByLoginID(ctx context.Context, organizationID *domain.OrganizationID, loginID string) (*domain.User, error) {
 	_, span := tracer.Start(ctx, "userRepository.findUserByLoginID")
 	defer span.End()
 
@@ -215,7 +215,7 @@ func (r *userRepository) findUserByLoginID(ctx context.Context, organizationID *
 	return userEntity.toUser(nil)
 }
 
-func (r *userRepository) findUserEntityByLoginID(ctx context.Context, organizationID *domain.OrganizationID, loginID string) (*userEntity, error) {
+func (r *UserRepository) findUserEntityByLoginID(ctx context.Context, organizationID *domain.OrganizationID, loginID string) (*userEntity, error) {
 	_, span := tracer.Start(ctx, "userRepository.findUserEntityByLoginID")
 	defer span.End()
 
@@ -233,7 +233,7 @@ func (r *userRepository) findUserEntityByLoginID(ctx context.Context, organizati
 	return &user, nil
 }
 
-func (r *userRepository) FindOwnerByLoginID(ctx context.Context, operator domain.SystemOwnerInterface, loginID string) (*domain.Owner, error) {
+func (r *UserRepository) FindOwnerByLoginID(ctx context.Context, operator domain.SystemOwnerInterface, loginID string) (*domain.Owner, error) {
 	_, span := tracer.Start(ctx, "userRepository.FindOwnerByLoginID")
 	defer span.End()
 
@@ -260,7 +260,7 @@ func (r *userRepository) FindOwnerByLoginID(ctx context.Context, operator domain
 	return user.toOwner(nil)
 }
 
-func (r *userRepository) createUser(ctx context.Context, userEntity *userEntity) (*domain.UserID, error) {
+func (r *UserRepository) createUser(ctx context.Context, userEntity *userEntity) (*domain.UserID, error) {
 	_, span := tracer.Start(ctx, "userRepository.createUser")
 	defer span.End()
 
@@ -276,7 +276,7 @@ func (r *userRepository) createUser(ctx context.Context, userEntity *userEntity)
 	return userID, nil
 }
 
-func (r *userRepository) CreateUser(ctx context.Context, operator domain.UserInterface, param *service.CreateUserParameter) (*domain.UserID, error) {
+func (r *UserRepository) CreateUser(ctx context.Context, operator domain.UserInterface, param *service.CreateUserParameter) (*domain.UserID, error) {
 	_, span := tracer.Start(ctx, "userRepository.AddUser")
 	defer span.End()
 
@@ -310,7 +310,7 @@ func (r *userRepository) CreateUser(ctx context.Context, operator domain.UserInt
 	return userID, nil
 }
 
-func (r *userRepository) CreateSystemOwner(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.UserID, error) {
+func (r *UserRepository) CreateSystemOwner(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.UserID, error) {
 	_, span := tracer.Start(ctx, "userRepository.CreateSystemOwner")
 	defer span.End()
 
@@ -333,7 +333,7 @@ func (r *userRepository) CreateSystemOwner(ctx context.Context, operator domain.
 	return userID, nil
 }
 
-func (r *userRepository) VerifyPassword(ctx context.Context, operator domain.SystemOwnerInterface, loginID, password string) (bool, error) {
+func (r *UserRepository) VerifyPassword(ctx context.Context, operator domain.SystemOwnerInterface, loginID, password string) (bool, error) {
 	organizationID := operator.GetOrganizationID()
 	userEntity, err := r.findUserEntityByLoginID(ctx, organizationID, loginID)
 	if err != nil {

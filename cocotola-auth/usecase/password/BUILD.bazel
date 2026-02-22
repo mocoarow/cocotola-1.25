@@ -1,16 +1,15 @@
 load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "usecase",
+    name = "password",
     srcs = [
-        "helper.go",
-        "init.go",
+        "password_authenticate_command.go",
+        "password_usecase.go",
     ],
-    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase",
+    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase/password",
     visibility = ["//visibility:public"],
     deps = [
         "//cocotola-auth/domain",
         "//cocotola-auth/service",
-        "@io_opentelemetry_go_otel//:otel",
     ],
 )

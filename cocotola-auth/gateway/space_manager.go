@@ -23,7 +23,7 @@ type SpaceManager struct {
 
 var _ service.SpaceManager = (*SpaceManager)(nil)
 
-func NewSpaceManager(ctx context.Context, dialect libgateway.DialectRDBMS, db *gorm.DB, rf service.RepositoryFactory) (service.SpaceManager, error) {
+func NewSpaceManager(ctx context.Context, dialect libgateway.DialectRDBMS, db *gorm.DB, rf service.RepositoryFactory) (*SpaceManager, error) {
 	rbacRepo, err := NewRBACRepository(ctx, db)
 	if err != nil {
 		return nil, fmt.Errorf("new rbac repository: %w", err)

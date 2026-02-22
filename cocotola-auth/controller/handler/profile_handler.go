@@ -1,4 +1,4 @@
-package gin
+package handler
 
 import (
 	"context"
@@ -8,11 +8,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/gin/helper"
+	"github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/handler/helper"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/openapi"
 
-	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 )
 
@@ -62,13 +61,22 @@ func (h *ProfileHandler) errorHandle(ctx context.Context, _ *gin.Context, err er
 	return false
 }
 
-func NewInitProfileRouterFunc(profileQueryUsecase ProfileQueryUsecase) libgin.InitRouterGroupFunc {
-	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
-		profile := parentRouterGroup.Group("profile")
-		for _, m := range middleware {
-			profile.Use(m)
-		}
-		profileHandler := NewProfileHandler(profileQueryUsecase)
-		profile.GET("me", profileHandler.GetMyProfile)
+// func NewInitProfileRouterFunc(profileQueryUsecase ProfileQueryUsecase) libgin.InitRouterGroupFunc {
+// 	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
+// 		profile := parentRouterGroup.Group("profile")
+// 		for _, m := range middleware {
+// 			profile.Use(m)
+// 		}
+// 		profileHandler := NewProfileHandler(profileQueryUsecase)
+// 		profile.GET("me", profileHandler.GetMyProfile)
+// 	}
+// }
+
+func InitProfileRouter(profileQueryUsecase ProfileQueryUsecase, parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
+	profile := parentRouterGroup.Group("profile")
+	for _, m := range middleware {
+		profile.Use(m)
 	}
+	profileHandler := NewProfileHandler(profileQueryUsecase)
+	profile.GET("me", profileHandler.GetMyProfile)
 }

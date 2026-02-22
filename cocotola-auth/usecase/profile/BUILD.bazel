@@ -1,0 +1,33 @@
+load("@rules_go//go:def.bzl", "go_library")
+load("//bazel:go_test.bzl", "smart_go_test")
+
+go_library(
+    name = "profile",
+    srcs = [
+        "get_my_profile_query.go",
+        "profile_usecase.go",
+    ],
+    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase/profile",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-auth/domain",
+        "//cocotola-auth/service",
+        "//cocotola-lib/domain",
+    ],
+)
+
+smart_go_test(
+    name = "profile_test",
+    srcs = [
+        "get_my_profile_query_s_test.go",
+        "mocks_test.go",
+    ],
+    deps = [
+        ":profile",
+        "//cocotola-auth/domain",
+        "//cocotola-auth/service",
+        "//cocotola-lib/domain",
+        "@com_github_stretchr_testify//mock",
+        "@com_github_stretchr_testify//require",
+    ],
+)

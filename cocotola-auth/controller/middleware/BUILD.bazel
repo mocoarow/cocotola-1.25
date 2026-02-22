@@ -6,12 +6,10 @@ go_library(
         "auth_middleware.go",
         "init.go",
     ],
-    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/gin/middleware",
+    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/middleware",
     visibility = ["//visibility:public"],
     deps = [
         "//cocotola-auth/domain",
-        "//cocotola-auth/service",
-        "//cocotola-auth/usecase",
         "//cocotola-lib/domain",
         "@com_github_gin_gonic_gin//:gin",
         "@io_opentelemetry_go_otel//:otel",

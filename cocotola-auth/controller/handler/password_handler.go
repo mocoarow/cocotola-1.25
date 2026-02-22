@@ -1,4 +1,4 @@
-package gin
+package handler
 
 import (
 	"context"
@@ -9,7 +9,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
@@ -17,34 +16,33 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-type GuestUsecase interface {
-	Authenticate(ctx context.Context, organizationName string) (*service.AuthTokenSet, error)
+type PasswordUsecase interface {
+	Authenticate(ctx context.Context, loginID, password, organizationName string) (*service.AuthTokenSet, error)
 }
 
-type GuestAuthHandler struct {
-	guestUsecase GuestUsecase
-	logger       *slog.Logger
+type PasswordHandler struct {
+	passwordUsecase PasswordUsecase
+	logger          *slog.Logger
 }
 
-func NewGuestAuthHandler(guestUsecase GuestUsecase) *GuestAuthHandler {
-	return &GuestAuthHandler{
-		guestUsecase: guestUsecase,
-		logger:       slog.Default().With(slog.String(libdomain.LoggerNameKey, domain.AppName+"-GuestAuthHandler")),
+func NewPasswordHandler(passwordUsecase PasswordUsecase) *PasswordHandler {
+	return &PasswordHandler{
+		passwordUsecase: passwordUsecase,
+		logger:          slog.Default().With(slog.String(libdomain.LoggerNameKey, domain.AppName+"-PasswordAuthHandler")),
 	}
 }
 
-func (h *GuestAuthHandler) Authenticate(c *gin.Context) {
+func (h *PasswordHandler) Authorize(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	var apiReq openapi.GuestAuthRequest
-	if err := c.ShouldBindJSON(&apiReq); err != nil {
+	var passwordAuthRequest openapi.PasswordAuthRequest
+	if err := c.ShouldBindJSON(&passwordAuthRequest); err != nil {
 		h.logger.InfoContext(ctx, fmt.Sprintf("invalid parameter: %+v", err))
 		c.JSON(http.StatusBadRequest, gin.H{"message": http.StatusText(http.StatusBadRequest)})
-
 		return
 	}
 
-	authResult, err := h.guestUsecase.Authenticate(ctx, apiReq.OrganizationName)
+	authResult, err := h.passwordUsecase.Authenticate(ctx, passwordAuthRequest.LoginID, passwordAuthRequest.Password, passwordAuthRequest.OrganizationName)
 	if err != nil {
 		if errors.Is(err, service.ErrSystemOwnerNotFound) {
 			h.logger.InfoContext(ctx, fmt.Sprintf("system owner not found: %+v", err))
@@ -57,7 +55,7 @@ func (h *GuestAuthHandler) Authenticate(c *gin.Context) {
 			return
 		}
 
-		h.logger.ErrorContext(ctx, fmt.Sprintf("guestUsecase.Authenticate: %+v", err))
+		h.logger.ErrorContext(ctx, fmt.Sprintf("passwordUsecase.Authenticate: %+v", err))
 		c.JSON(http.StatusInternalServerError, gin.H{"message": http.StatusText(http.StatusInternalServerError)})
 		return
 	}
@@ -68,14 +66,12 @@ func (h *GuestAuthHandler) Authenticate(c *gin.Context) {
 	})
 }
 
-func NewInitGuestRouterFunc(guest GuestUsecase) libgin.InitRouterGroupFunc {
-	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
-		auth := parentRouterGroup.Group("guest")
-		for _, m := range middleware {
-			auth.Use(m)
-		}
-
-		guestAuthHandler := NewGuestAuthHandler(guest)
-		auth.POST("authenticate", guestAuthHandler.Authenticate)
+func InitPasswordRouter(password PasswordUsecase, parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
+	auth := parentRouterGroup.Group("password")
+	for _, m := range middleware {
+		auth.Use(m)
 	}
+
+	passwordHandler := NewPasswordHandler(password)
+	auth.POST("authenticate", passwordHandler.Authorize)
 }

@@ -8,53 +8,53 @@ run:
     - large
 linters:
   enable:
+    - asasalint
     - bodyclose
+    - canonicalheader
+    - decorder
+    - dupl
+    - dupword
     - errorlint
     - exhaustive
+    - exhaustruct
+    - exptostd
+    - fatcontext
     - forbidigo
     - forcetypeassert
+    - gocheckcompilerdirectives
+    - gochecknoglobals
     - gocognit
+    - goconst
     - gocyclo
+    - goheader
     - gosec
+    - iface
+    - importas
+    - ireturn
+    - makezero
+    - mirror
+    - misspell
+    - musttag
+    - nestif
+    - nilerr
+    - nilnil
     - noctx
+    - nolintlint
+    - paralleltest
+    - prealloc
+    - predeclared
+    - reassign
+    - revive
+    - spancheck
+    - sqlclosecheck
+    - staticcheck
+    - tagliatelle
+    - testifylint
     - testpackage
     - thelper
     - unconvert
     - whitespace
-    - asasalint
-    - dupword
-    - dupl
-    - exptostd
-    - nestif
-    - goconst
-    - tagliatelle
-    - predeclared
-    - importas
-    - revive
-    - goheader
-    - nolintlint
-    - paralleltest
-    - testifylint
-    - spancheck
-    - staticcheck
     - wrapcheck
-    - forcetypeassert
-    - canonicalheader
-    - decorder
-    - nilnil
-    - prealloc
-    - mirror
-    - misspell
-    - nilerr
-    - noctx
-    - predeclared
-    - reassign
-    - unconvert
-    - gocheckcompilerdirectives
-    - makezero
-    - exhaustruct
-    - exhaustive
-    - fatcontext
     - wsl_v5
 
   settings:
