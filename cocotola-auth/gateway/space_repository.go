@@ -79,21 +79,19 @@ func (e spaceEntities) toSpaces() ([]*domain.Space, error) {
 	return spaces, nil
 }
 
-type spaceRepository struct {
-	dialect libgateway.DialectRDBMS
-	db      *gorm.DB
+type SpaceRepository struct {
+	dbc *libgateway.DBConnection
 }
 
-var _ service.SpaceRepository = (*spaceRepository)(nil)
+var _ service.SpaceRepository = (*SpaceRepository)(nil)
 
-func NewSpaceRepository(_ context.Context, dialect libgateway.DialectRDBMS, db *gorm.DB) service.SpaceRepository {
-	return &spaceRepository{
-		dialect: dialect,
-		db:      db,
+func NewSpaceRepository(dbc *libgateway.DBConnection) *SpaceRepository {
+	return &SpaceRepository{
+		dbc: dbc,
 	}
 }
 
-func (r *spaceRepository) CreateSpace(ctx context.Context, operator domain.UserInterface, param *service.CreateSpaceParameter) (*domain.SpaceID, error) {
+func (r *SpaceRepository) CreateSpace(ctx context.Context, operator domain.UserInterface, param *service.CreateSpaceParameter) (*domain.SpaceID, error) {
 	_, span := tracer.Start(ctx, "spaceRepository.CreateSpace")
 	defer span.End()
 
@@ -109,7 +107,7 @@ func (r *spaceRepository) CreateSpace(ctx context.Context, operator domain.UserI
 		Name:           param.Name,
 		SpaceType:      param.SpaceType,
 	}
-	if result := r.db.WithContext(ctx).Create(&spaceE); result.Error != nil {
+	if result := r.dbc.DB.WithContext(ctx).Create(&spaceE); result.Error != nil {
 		return nil, fmt.Errorf("add space entity: %w", libgateway.ConvertDuplicatedError(result.Error, service.ErrSpaceAlreadyExists))
 	}
 
@@ -121,12 +119,12 @@ func (r *spaceRepository) CreateSpace(ctx context.Context, operator domain.UserI
 	return spaceID, nil
 }
 
-func (r *spaceRepository) FindPublicSpaces(ctx context.Context, operator domain.UserInterface) ([]*domain.Space, error) {
+func (r *SpaceRepository) FindPublicSpaces(ctx context.Context, operator domain.UserInterface) ([]*domain.Space, error) {
 	_, span := tracer.Start(ctx, "spaceRepository.FindPublicSpaces")
 	defer span.End()
 
 	var spacesE spaceEntities
-	if result := r.db.WithContext(ctx).Model(
+	if result := r.dbc.DB.WithContext(ctx).Model(
 		&spaceEntity{}, //nolint:exhaustruct
 	).
 		Where("organization_id = ?", uint(operator.GetOrganizationID().Value)).
@@ -142,12 +140,12 @@ func (r *spaceRepository) FindPublicSpaces(ctx context.Context, operator domain.
 	return spaces, nil
 }
 
-func (r *spaceRepository) FindPublicSpaceByKey(ctx context.Context, operator domain.UserInterface, keyName string) (*domain.Space, error) {
+func (r *SpaceRepository) FindPublicSpaceByKey(ctx context.Context, operator domain.UserInterface, keyName string) (*domain.Space, error) {
 	_, span := tracer.Start(ctx, "spaceRepository.FindPublicSpaceByKey")
 	defer span.End()
 
 	var spaceE spaceEntity
-	if result := r.db.Model(&spaceE).
+	if result := r.dbc.DB.Model(&spaceE).
 		Where("organization_id = ?", uint(operator.GetOrganizationID().Value)).
 		Where("key_name = ?", keyName).
 		Where("space_type = ?", "public").
@@ -167,12 +165,12 @@ func (r *spaceRepository) FindPublicSpaceByKey(ctx context.Context, operator dom
 	return space, nil
 }
 
-func (r *spaceRepository) GetSpaceByID(ctx context.Context, operator domain.UserInterface, spaceID *domain.SpaceID) (*domain.Space, error) {
+func (r *SpaceRepository) GetSpaceByID(ctx context.Context, operator domain.UserInterface, spaceID *domain.SpaceID) (*domain.Space, error) {
 	_, span := tracer.Start(ctx, "spaceRepository.GetSpaceByID")
 	defer span.End()
 
 	var spaceE spaceEntity
-	if result := r.db.Model(
+	if result := r.dbc.DB.Model(
 		&spaceEntity{}, //nolint:exhaustruct
 	).
 		Where("organization_id = ?", uint(operator.GetOrganizationID().Int())).

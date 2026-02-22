@@ -6,23 +6,31 @@ import (
 	"log/slog"
 
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
-	libservice "github.com/mocoarow/cocotola-1.25/cocotola-lib/service"
 
 	authdomain "github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 	authservice "github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-type CreateFirstOwnerCommand struct {
-	txManager    authservice.TransactionManager
-	nonTxManager authservice.TransactionManager
-	logger       *slog.Logger
+type CreateFirstOwnerCommandGateway interface {
+	WithTransaction(ctx context.Context, fn func(
+		createUser authservice.CreateUserFunc,
+		findUserByID authservice.FindUserByIDFunc,
+		findUserGroupByKey authservice.FindUserGroupByKeyFunc,
+		addUserToGroup authservice.AddUserToGroupFunc,
+		attachPolicyToUserBySystemOwner authservice.AttachPolicyToUserBySystemOwnerFunc,
+		createPersonalSpace authservice.CreatePersonalSpaceFunc,
+	) (*authdomain.UserID, error)) (*authdomain.UserID, error)
 }
 
-func NewCreateFirstOwnerCommand(txManager authservice.TransactionManager, nonTxManager authservice.TransactionManager) *CreateFirstOwnerCommand {
+type CreateFirstOwnerCommand struct {
+	gw     CreateFirstOwnerCommandGateway
+	logger *slog.Logger
+}
+
+func NewCreateFirstOwnerCommand(_ context.Context, gw CreateFirstOwnerCommandGateway) *CreateFirstOwnerCommand {
 	return &CreateFirstOwnerCommand{
-		txManager:    txManager,
-		nonTxManager: nonTxManager,
-		logger:       slog.Default().With(slog.String(libdomain.LoggerNameKey, "CreateFirstOwnerCommand")),
+		gw:     gw,
+		logger: slog.Default().With(slog.String(libdomain.LoggerNameKey, "CreateFirstOwnerCommand")),
 	}
 }
 
@@ -52,91 +60,69 @@ func (u *CreateFirstOwnerCommand) checkAuthorization(_ context.Context, _ authdo
 }
 
 func (u *CreateFirstOwnerCommand) execute(ctx context.Context, operator authdomain.SystemOwnerInterface, param *authservice.CreateUserParameter) (*authdomain.UserID, error) {
-	fn2 := func(rf authservice.RepositoryFactory) (*authdomain.UserID, error) {
-		userRepo := rf.NewUserRepository(ctx)
-		userGroupRepo := rf.NewUserGroupRepository(ctx)
-		authorizationManager, err := rf.NewAuthorizationManager(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("failed to NewAuthorizationManager: %w", err)
-		}
+	firstOwnerID, err := u.gw.WithTransaction(ctx, func(
+		createUser authservice.CreateUserFunc,
+		findUserByID authservice.FindUserByIDFunc,
+		findUserGroupByKey authservice.FindUserGroupByKeyFunc,
+		addUserToGroup authservice.AddUserToGroupFunc,
+		attachPolicyToUserBySystemOwner authservice.AttachPolicyToUserBySystemOwnerFunc,
+		createPersonalSpace authservice.CreatePersonalSpaceFunc,
+	) (*authdomain.UserID, error) {
 		// 1. create owner
-		firstOwner, err := u.createFirstOwner(ctx, operator, param, userRepo)
+		firstOwnerID, err := createUser(ctx, operator, param)
 		if err != nil {
 			return nil, fmt.Errorf("CreateUser: %w", err)
 		}
 
-		// 2. add owner to owner-group
-		if err := u.addFirstOwnerToOwnerGroup(ctx, operator, firstOwner.GetUserID(), userGroupRepo, authorizationManager); err != nil {
-			return nil, fmt.Errorf("addUserToGroup: %w", err)
+		// 2. find first owner
+		firstOwner, err := findUserByID(ctx, operator, firstOwnerID)
+		if err != nil {
+			return nil, fmt.Errorf("FindUserByID: %w", err)
 		}
 
-		// 3. attach policy to "first-owner" user
+		// 3. find owner group
+		ownerGroup, err := findUserGroupByKey(ctx, operator, authservice.OwnerGroupKey)
+		if err != nil {
+			return nil, fmt.Errorf("FindUserGroupByKey: %w", err)
+		}
+
+		// 4. add owner to owner-group
+		if err := addUserToGroup(ctx, operator, firstOwnerID, ownerGroup.UserGroupID); err != nil {
+			return nil, fmt.Errorf("AddUserToGroup: %w", err)
+		}
+
+		// 5. attach policy to "first-owner" user
 		// first owner can create users
-		subject := firstOwner.GetUserID().GetRBACSubject()
+		subject := firstOwnerID.GetRBACSubject()
 		action := authservice.CreateUserAction
 		object := authservice.AnyObject
 		effect := authservice.RBACAllowEffect
 
-		if err := authorizationManager.AttachPolicyToUserBySystemOwner(ctx, operator, subject, action, object, effect); err != nil {
+		if err := attachPolicyToUserBySystemOwner(ctx, operator, subject, action, object, effect); err != nil {
 			return nil, fmt.Errorf("AttachPolicyToUserBySystemOwner: %w", err)
 		}
 
-		// 4. create personal space for first owner
-		spaceManager, err := rf.NewSpaceManager(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("NewSpaceManager: %w", err)
-		}
+		// 6. create personal space for first owner
 		createPersonalSpaceParameter := authservice.CreatePersonalSpaceParameter{
 			UserID:  firstOwner.UserID,
 			KeyName: authservice.NewPersonalSpaceKey(firstOwner.UserID.Int()),
 			Name:    authservice.NewPersonalSpaceName(firstOwner.GetLoginID()),
 		}
-		spaceID, err := spaceManager.CreatePersonalSpace(ctx, operator, &createPersonalSpaceParameter)
+		spaceID, err := createPersonalSpace(ctx, operator, &createPersonalSpaceParameter)
 		if err != nil {
 			return nil, fmt.Errorf("CreatePersonalSpace: %w", err)
 		}
 		u.logger.InfoContext(ctx, fmt.Sprintf("personalSpaceID: %d", spaceID.Int()))
 
-		return firstOwner.UserID, nil
-	}
-
-	firstOwnerID, err := libservice.Do1(ctx, u.txManager, fn2)
+		return firstOwnerID, nil
+	})
 	if err != nil {
-		return nil, fmt.Errorf("Do1: %w", err)
+		return nil, fmt.Errorf("WithTransaction: %w", err)
 	}
 
 	return firstOwnerID, nil
 }
 
 func (u *CreateFirstOwnerCommand) callback(_ context.Context, _ authdomain.SystemOwnerInterface, _ *authdomain.UserID) error {
-	return nil
-}
-
-func (u *CreateFirstOwnerCommand) createFirstOwner(ctx context.Context, operator authdomain.SystemOwnerInterface, param *authservice.CreateUserParameter, userRepo authservice.UserRepository) (*authdomain.User, error) {
-	// 1. create owner
-	firstOwnerID, err := userRepo.CreateUser(ctx, operator, param)
-	if err != nil {
-		return nil, fmt.Errorf("CreateUser: %w", err)
-	}
-
-	// 2. attach policy to "first-owner" user
-	firstOwner, err := userRepo.FindUserByID(ctx, operator, firstOwnerID)
-	if err != nil {
-		return nil, fmt.Errorf("FindUserByLoginID: %w", err)
-	}
-
-	return firstOwner, nil
-}
-
-func (u *CreateFirstOwnerCommand) addFirstOwnerToOwnerGroup(ctx context.Context, operator authdomain.SystemOwnerInterface, userID *authdomain.UserID, userGroupRepo authservice.UserGroupRepository, authorizationManager authservice.AuthorizationManager) error {
-	ownerGroup, err := userGroupRepo.FindUserGroupByKey(ctx, operator, authservice.OwnerGroupKey)
-	if err != nil {
-		return fmt.Errorf("FindUserGroupByKey: %w", err)
-	}
-
-	// 2. add owner to owner-group
-	if err := authorizationManager.AddUserToGroup(ctx, operator, userID, ownerGroup.UserGroupID); err != nil {
-		return fmt.Errorf("AddUserToGroup: %w", err)
-	}
 	return nil
 }

@@ -94,14 +94,14 @@ func InitAPIRouterGroup(_ context.Context, parentRouterGroup gin.IRouter, _ *Log
 	return api
 }
 
-func InitPublicAPIRouterGroup(_ context.Context, parentRouterGroup gin.IRouter, initPublicRouterFunc []InitRouterGroupFunc, middleware ...gin.HandlerFunc) {
-	for _, fn := range initPublicRouterFunc {
-		fn(parentRouterGroup, middleware...)
-	}
-}
+// func InitPublicAPIRouterGroup(_ context.Context, parentRouterGroup gin.IRouter, initPublicRouterFunc []InitRouterGroupFunc, middleware ...gin.HandlerFunc) {
+// 	for _, fn := range initPublicRouterFunc {
+// 		fn(parentRouterGroup, middleware...)
+// 	}
+// }
 
-func InitPrivateAPIRouterGroup(_ context.Context, parentRouterGroup gin.IRouter, authMiddleware gin.HandlerFunc, initPrivateRouterFunc []InitRouterGroupFunc) {
-	for _, fn := range initPrivateRouterFunc {
-		fn(parentRouterGroup, authMiddleware)
-	}
-}
+// func InitPrivateAPIRouterGroup(_ context.Context, parentRouterGroup gin.IRouter, authMiddleware gin.HandlerFunc, initPrivateRouterFunc []InitRouterGroupFunc) {
+// 	for _, fn := range initPrivateRouterFunc {
+// 		fn(parentRouterGroup, authMiddleware)
+// 	}
+// }

@@ -30,8 +30,21 @@ func NewCreateOrganizationParameter(name string, firstOwner *CreateUserParameter
 	return &m, nil
 }
 
-type OrganizationRepository interface {
+type GetOrganizationFunc func(ctx context.Context, operator domain.UserInterface) (*domain.Organization, error)
+
+type OrganizationRepositoryGetOrganization interface {
 	GetOrganization(ctx context.Context, operator domain.UserInterface) (*domain.Organization, error)
+}
+
+type CreateOrganizationFunc func(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.OrganizationID, error)
+
+type OrganizationRepositoryCreateOrganization interface {
+	CreateOrganization(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.OrganizationID, error)
+}
+
+type OrganizationRepository interface {
+	// GetOrganization(ctx context.Context, operator domain.UserInterface) (*domain.Organization, error)
+	OrganizationRepositoryGetOrganization
 
 	FindOrganizationByName(ctx context.Context, operator domain.SystemAdminInterface, name string) (*domain.Organization, error)
 

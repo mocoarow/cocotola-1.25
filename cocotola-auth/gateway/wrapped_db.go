@@ -14,9 +14,17 @@ type HasTableName interface {
 }
 
 type wrappedDB struct {
-	dialect        libgateway.DialectRDBMS
+	dbc            *libgateway.DBConnection
 	db             *gorm.DB
 	organizationID *domain.OrganizationID
+}
+
+func newWrappedDB(dbc *libgateway.DBConnection, organizationID *domain.OrganizationID) *wrappedDB {
+	return &wrappedDB{
+		dbc:            dbc,
+		db:             dbc.DB,
+		organizationID: organizationID,
+	}
 }
 
 func (x *wrappedDB) Table(name string, args ...interface{}) *wrappedDB {
@@ -50,7 +58,7 @@ func (x *wrappedDB) WhereOrganizationID(table HasTableName, organizationID *doma
 }
 
 func (x *wrappedDB) WhereNotDeleted(table HasTableName) *wrappedDB {
-	x.db = x.db.Where(fmt.Sprintf("%s.deleted = ?", table.TableName()), x.dialect.BoolDefaultValue())
+	x.db = x.db.Where(fmt.Sprintf("%s.deleted = ?", table.TableName()), x.dbc.Dialect.BoolDefaultValue())
 
 	return x
 }

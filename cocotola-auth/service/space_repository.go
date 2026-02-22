@@ -16,6 +16,8 @@ type CreateSpaceParameter struct {
 	SpaceType string
 }
 
+type FindPublicSpaceByKeyFunc func(ctx context.Context, operator domain.UserInterface, key string) (*domain.Space, error)
+
 type SpaceRepository interface {
 	CreateSpace(ctx context.Context, operator domain.UserInterface, param *CreateSpaceParameter) (*domain.SpaceID, error)
 

@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"gorm.io/gorm"
-
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 
@@ -15,24 +13,20 @@ import (
 )
 
 type pairOfUserAndGroupRepository struct {
-	dialect  libgateway.DialectRDBMS
-	db       *gorm.DB
-	rf       service.RepositoryFactory
+	dbc      *libgateway.DBConnection
 	rbacRepo service.RBACRepository
 }
 
 var _ service.PairOfUserAndGroupRepository = (*pairOfUserAndGroupRepository)(nil)
 
-func NewPairOfUserAndGroupRepository(ctx context.Context, dialect libgateway.DialectRDBMS, db *gorm.DB, rf service.RepositoryFactory) service.PairOfUserAndGroupRepository {
-	rbacRepo, err := NewRBACRepository(ctx, db)
+func NewPairOfUserAndGroupRepository(ctx context.Context, dbc *libgateway.DBConnection) service.PairOfUserAndGroupRepository {
+	rbacRepo, err := NewRBACRepository(ctx, dbc)
 	if err != nil {
 		panic(fmt.Errorf("new rbac repository: %w", err))
 	}
 
 	return &pairOfUserAndGroupRepository{
-		dialect:  dialect,
-		db:       db,
-		rf:       rf,
+		dbc:      dbc,
 		rbacRepo: rbacRepo,
 	}
 }
@@ -89,7 +83,8 @@ func (r *pairOfUserAndGroupRepository) FindUserGroupsByUserID(ctx context.Contex
 		return []*domain.UserGroup{}, nil
 	}
 
-	userGroupRepo := r.rf.NewUserGroupRepository(ctx)
+	userGroupRepo := NewUserGroupRepository(r.dbc)
+	// userGroupRepo := r.rf.NewUserGroupRepository(ctx)
 	result := make([]*domain.UserGroup, 0, len(roles))
 	seen := make(map[int]struct{})
 	for _, role := range roles {

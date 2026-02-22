@@ -3,7 +3,7 @@ package domain
 import "sync/atomic"
 
 var (
-	systemTokenCounter = atomic.Int64{}
+	systemTokenCounter = atomic.Int64{} //nolint:gochecknoglobals
 )
 
 type SystemToken interface {

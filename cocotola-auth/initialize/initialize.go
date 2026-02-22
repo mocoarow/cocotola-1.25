@@ -7,16 +7,19 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"gorm.io/gorm"
 
 	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/config"
-	ctrlgin "github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/gin"
+	"github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/handler"
+	"github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/middleware"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/gateway"
-	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
+	"github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase/auth"
+	"github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase/guest"
+	"github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase/password"
+	"github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase/profile"
 )
 
 // func newCallbackOnAddUser(cocotolaAuthCallbackClient service.CocotolaAuthCallbackClient, logger *slog.Logger) func(ctx context.Context, obj any) {
@@ -122,7 +125,8 @@ func Initialize(ctx context.Context, systemToken domain.SystemToken, parent gin.
 	return nil
 }
 
-func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, dbConn *libgateway.DBConnection, logConfig *libgin.LogConfig, authConfig *config.AuthConfig) error {
+func initApp(_ context.Context, systemToken domain.SystemToken, parent gin.IRouter, dbc *libgateway.DBConnection, logConfig *libgin.LogConfig, authConfig *config.AuthConfig) error {
+	ctx := context.Background()
 	// logger := slog.Default().With(slog.String(mbliblog.LoggerNameKey, domain.AppName+"initApp"))
 
 	// cocotolaAuthCallbackClient := initCocotolaAuthCallbackClient(authConfig)
@@ -138,38 +142,31 @@ func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRo
 	// 	domain.ResourceUser:  userEventHandler,
 	// 	domain.RecourceSpace: spaceEventHandler,
 	// }
-	rff := func(ctx context.Context, db *gorm.DB) (service.RepositoryFactory, error) {
-		return gateway.NewRepositoryFactory(ctx, dbConn.Dialect, dbConn.DriverName, db, time.UTC)
-	}
-	rf, err := rff(ctx, dbConn.DB)
-	if err != nil {
-		return fmt.Errorf("rff: %w", err)
-	}
+	// rff := func(ctx context.Context, db *gorm.DB) (service.RepositoryFactory, error) {
+	// 	return gateway.NewRepositoryFactory(ctx, dbConn.Dialect, dbConn.DriverName, db, time.UTC)
+	// }
+	// rf, err := rff(ctx, dbConn.DB)
+	// if err != nil {
+	// 	return fmt.Errorf("rff: %w", err)
+	// }
 
-	// init transaction manager
-	txManager, err := initTransactionManager(dbConn.DB, rff)
+	orgRepo := gateway.NewOrganizationRepository(dbc)
+	userRepo := gateway.NewUserRepository(dbc)
+	spaceManager, err := gateway.NewSpaceManager(ctx, dbc)
 	if err != nil {
-		return fmt.Errorf("initTransactionManager: %w", err)
+		return fmt.Errorf("NewSpaceManager: %w", err)
 	}
-	nonTxManager, err := initNonTransactionManager(rf)
-	if err != nil {
-		return fmt.Errorf("initNonTransactionManager: %w", err)
-	}
-
 	// init auth token manager
 	signingKey := []byte(authConfig.SigningKey)
 	signingMethod := jwt.SigningMethodHS256
 	authTokenManager := gateway.NewAuthTokenManager(ctx, signingKey, signingMethod, time.Duration(authConfig.AccessTokenTTLMin)*time.Minute, time.Duration(authConfig.RefreshTokenTTLHour)*time.Hour)
-	if err != nil {
-		return fmt.Errorf("NewAuthTokenManager: %w", err)
-	}
 
 	// init public and private router group functions
-	publicRouterGroupFuncs, err := ctrlgin.GetPublicRouterGroupFuncs(ctx, systemToken, authConfig, txManager, nonTxManager, authTokenManager)
-	if err != nil {
-		return fmt.Errorf("GetPublicRouterGroupFuncs: %w", err)
-	}
-	bearerTokenRouterGroupFuncs := ctrlgin.GetBearerTokenRouterGroupFuncs(ctx, systemToken, txManager, nonTxManager, authTokenManager, rf)
+	// publicRouterGroupFuncs, err := ctrlgin.GetPublicRouterGroupFuncs(ctx, systemToken, authConfig, txManager, nonTxManager, authTokenManager)
+	// if err != nil {
+	// 	return fmt.Errorf("GetPublicRouterGroupFuncs: %w", err)
+	// }
+	// bearerTokenRouterGroupFuncs := ctrlgin.GetBearerTokenRouterGroupFuncs(ctx, systemToken, txManager, nonTxManager, authTokenManager, rf)
 	// basicPrivateRouterGroupFuncs := controller.GetBasicPrivateRouterGroupFuncs(ctx, systemToken, cocotolaCoreCallbackClient)
 
 	// api
@@ -179,19 +176,109 @@ func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRo
 	v1 := api.Group("v1")
 
 	// public router
-	libgin.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs)
-
-	bearerTokenAuthMiddleware, err := ctrlgin.InitBearerTokenAuthMiddleware(systemToken, authTokenManager, nonTxManager, rf)
-	if err != nil {
-		return fmt.Errorf("InitBearerTokenAuthMiddleware: %w", err)
+	// libgin.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs)
+	{
+		passwordUsecase := newPasswordUsecase(systemToken, orgRepo, userRepo, authTokenManager)
+		handler.InitPasswordRouter(passwordUsecase, v1)
 	}
+	{
+		guestUsecase := newGuestUsecase(systemToken, orgRepo, userRepo, authTokenManager)
+		handler.InitGuestRouter(guestUsecase, v1)
+	}
+	authUsecase := newVerifyAccessTokenQuery(systemToken, orgRepo, authTokenManager, userRepo)
+	bearerTokenAuthMiddleware := middleware.NewBearerTokenAuthMiddleware(systemToken, authUsecase)
+	{
+		profileUsecase := newProfileUsecase(orgRepo, userRepo, spaceManager)
+		handler.InitProfileRouter(profileUsecase, v1, bearerTokenAuthMiddleware)
+	}
+
 	// private router
-	libgin.InitPrivateAPIRouterGroup(ctx, v1, bearerTokenAuthMiddleware, bearerTokenRouterGroupFuncs)
+	// libgin.InitPrivateAPIRouterGroup(ctx, v1, bearerTokenAuthMiddleware, bearerTokenRouterGroupFuncs)
 
 	// libcontroller.InitPrivateAPIRouterGroup(ctx, v1, basicAuthMiddleware, basicPrivateRouterGroupFuncs)
 
 	return nil
 }
+
+type VerifyAccessTokenQueryGateway struct {
+	*gateway.OrganizationRepository
+	*gateway.UserRepository
+	*gateway.AuthTokenManager
+}
+
+func newVerifyAccessTokenQuery(systemToken domain.SystemToken, orgRepo *gateway.OrganizationRepository, authTokenManager *gateway.AuthTokenManager, userRepo *gateway.UserRepository) *auth.Usecase {
+	verifyAccessTokenQueryRepo := &VerifyAccessTokenQueryGateway{
+		OrganizationRepository: orgRepo,
+		UserRepository:         userRepo,
+		AuthTokenManager:       authTokenManager,
+	}
+	authUsecase := auth.NewUsecase(systemToken, verifyAccessTokenQueryRepo)
+	return authUsecase
+}
+
+type GuestGateway struct {
+	*gateway.UserRepository
+	*gateway.OrganizationRepository
+	*gateway.AuthTokenManager
+}
+
+func newGuestUsecase(systemToken domain.SystemToken, orgRepo *gateway.OrganizationRepository, userRepo *gateway.UserRepository, authTokenManager *gateway.AuthTokenManager) *guest.Usecase {
+	guestRepo := &GuestGateway{
+		UserRepository:         userRepo,
+		OrganizationRepository: orgRepo,
+		AuthTokenManager:       authTokenManager,
+	}
+	guestUsecase := guest.NewUsecase(systemToken, guestRepo)
+	return guestUsecase
+}
+
+type PasswordRepo struct {
+	*gateway.UserRepository
+	*gateway.OrganizationRepository
+	*gateway.AuthTokenManager
+}
+
+func newPasswordUsecase(systemToken domain.SystemToken, orgRepo *gateway.OrganizationRepository, userRepo *gateway.UserRepository, authTokenManager *gateway.AuthTokenManager) *password.Usecase {
+	passwordRepo := &PasswordRepo{
+		UserRepository:         userRepo,
+		OrganizationRepository: orgRepo,
+		AuthTokenManager:       authTokenManager,
+	}
+	passwordUsecase := password.NewPassword(systemToken, passwordRepo)
+	return passwordUsecase
+}
+
+type ProfileRepo struct {
+	*gateway.OrganizationRepository
+	*gateway.UserRepository
+	*gateway.SpaceManager
+}
+
+//	func (r *ProfileRepo) GetOrganization(ctx context.Context, operator domain.UserInterface) (*domain.Organization, error) {
+//		return r.organizationRepo.GetOrganization(ctx, operator)
+//	}
+//
+// func
+func newProfileUsecase(orgRepo *gateway.OrganizationRepository, userRepo *gateway.UserRepository, spaceManager *gateway.SpaceManager) *profile.Usecase {
+	profileRepo := &ProfileRepo{
+		OrganizationRepository: orgRepo,
+		UserRepository:         userRepo,
+		SpaceManager:           spaceManager,
+	}
+	profileUsecase := profile.NewUsecase(profileRepo)
+	return profileUsecase
+}
+
+// func initProfileRouter(_ context.Context, _ domain.SystemToken, _, mbNonTxManager service.TransactionManager, _ service.AuthTokenManager, rf service.RepositoryFactory) error {
+// 	orgRepo := rf.NewOrganizationRepository(context.Background())
+// 	userRepo := rf.NewUserRepository(context.Background())
+// 	spaceManager, err := rf.NewSpaceManager(context.Background())
+// 	if err != nil {
+// 		return fmt.Errorf("NewSpaceManager: %w", err)
+// 	}
+// 	profileUsecase := newProfileUsecase(mbNonTxManager, orgRepo, userRepo, spaceManager)
+// 	return nil
+// }
 
 // func initCocotolaAuthCallbackClient(authConfig *config.AuthConfig) service.CocotolaAuthCallbackClient {
 // 	httpClient := http.Client{ //nolint:exhaustruct
@@ -239,18 +326,18 @@ func initApp(ctx context.Context, systemToken domain.SystemToken, parent gin.IRo
 // 	return nonTxManager
 // }
 
-func initTransactionManager(db *gorm.DB, rff func(ctx context.Context, db *gorm.DB) (service.RepositoryFactory, error)) (service.TransactionManager, error) {
-	txManager, err := libgateway.NewTransactionManagerT(db, rff)
-	if err != nil {
-		return nil, fmt.Errorf("NewTransactionManagerT: %w", err)
-	}
-	return txManager, nil
-}
+// func initTransactionManager(db *gorm.DB, rff func(ctx context.Context, db *gorm.DB) (service.RepositoryFactory, error)) (service.TransactionManager, error) {
+// 	txManager, err := libgateway.NewTransactionManagerT(db, rff)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("NewTransactionManagerT: %w", err)
+// 	}
+// 	return txManager, nil
+// }
 
-func initNonTransactionManager(rf service.RepositoryFactory) (service.TransactionManager, error) {
-	nonTxManager, err := libgateway.NewNonTransactionManagerT(rf)
-	if err != nil {
-		return nil, fmt.Errorf("NewNonTransactionManagerT: %w", err)
-	}
-	return nonTxManager, nil
-}
+// func initNonTransactionManager(rf service.RepositoryFactory) (service.TransactionManager, error) {
+// 	nonTxManager, err := libgateway.NewNonTransactionManagerT(rf)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("NewNonTransactionManagerT: %w", err)
+// 	}
+// 	return nonTxManager, nil
+// }

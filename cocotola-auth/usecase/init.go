@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	tracer = otel.Tracer("github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase")
+	_ = otel.Tracer("github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase")
 )

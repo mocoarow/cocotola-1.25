@@ -23,21 +23,21 @@ func TestPairOfUserAndGroupRepository_FindUserGroupsByUserID_shouldReturnGroups_
 		orgID, _, owner := setupTestOrganization(ctx, t, tr)
 		defer teardownOrganization(t, tr, orgID)
 
-		repo := gateway.NewPairOfUserAndGroupRepository(ctx, tr.dialect, tr.db, tr.rf)
+		repo := gateway.NewPairOfUserAndGroupRepository(ctx, tr.dbc)
 
-		user1 := testAddUser(t, ctx, tr, owner, "LOGIN_ID_1", "USERNAME_1", "PASSWORD_1")
-		user2 := testAddUser(t, ctx, tr, owner, "LOGIN_ID_2", "USERNAME_2", "PASSWORD_2")
+		user1 := testAddUser(ctx, t, tr, owner, "LOGIN_ID_1", "USERNAME_1", "PASSWORD_1")
+		user2 := testAddUser(ctx, t, tr, owner, "LOGIN_ID_2", "USERNAME_2", "PASSWORD_2")
 
-		group1 := testAddUserGroup(t, ctx, tr, owner, "GROUP_KEY_1", "GROUP_NAME_1", "GROUP_DESC_1")
-		group2 := testAddUserGroup(t, ctx, tr, owner, "GROUP_KEY_2", "GROUP_NAME_2", "GROUP_DESC_2")
-		group3 := testAddUserGroup(t, ctx, tr, owner, "GROUP_KEY_3", "GROUP_NAME_3", "GROUP_DESC_3")
+		group1 := testAddUserGroup(ctx, t, tr, owner, "GROUP_KEY_1", "GROUP_NAME_1", "GROUP_DESC_1")
+		group2 := testAddUserGroup(ctx, t, tr, owner, "GROUP_KEY_2", "GROUP_NAME_2", "GROUP_DESC_2")
+		group3 := testAddUserGroup(ctx, t, tr, owner, "GROUP_KEY_3", "GROUP_NAME_3", "GROUP_DESC_3")
 
 		for _, g := range []*domain.UserGroup{group1, group2, group3} {
 			require.NoError(t, repo.CreatePairOfUserAndGroup(ctx, owner, user1.GetUserID(), g.UserGroupID))
 		}
 		require.NoError(t, repo.CreatePairOfUserAndGroup(ctx, owner, user2.GetUserID(), group1.UserGroupID))
 
-		result := tr.db.WithContext(ctx).
+		result := tr.dbc.DB.WithContext(ctx).
 			Table("casbin_rule").
 			Where("ptype = ? AND v0 = ?", "g", fmt.Sprintf("user:%d", user1.GetUserID().Int())).
 			Find(&[]struct{}{})
@@ -66,10 +66,10 @@ func TestPairOfUserAndGroupRepository_DeletePairOfUserAndGroup_shouldRemoveRelat
 		orgID, _, owner := setupTestOrganization(ctx, t, tr)
 		defer teardownOrganization(t, tr, orgID)
 
-		repo := gateway.NewPairOfUserAndGroupRepository(ctx, tr.dialect, tr.db, tr.rf)
+		repo := gateway.NewPairOfUserAndGroupRepository(ctx, tr.dbc)
 
-		user := testAddUser(t, ctx, tr, owner, "LOGIN_ID_1", "USERNAME_1", "PASSWORD_1")
-		group := testAddUserGroup(t, ctx, tr, owner, "GROUP_KEY_1", "GROUP_NAME_1", "GROUP_DESC_1")
+		user := testAddUser(ctx, t, tr, owner, "LOGIN_ID_1", "USERNAME_1", "PASSWORD_1")
+		group := testAddUserGroup(ctx, t, tr, owner, "GROUP_KEY_1", "GROUP_NAME_1", "GROUP_DESC_1")
 
 		require.NoError(t, repo.CreatePairOfUserAndGroup(ctx, owner, user.GetUserID(), group.UserGroupID))
 

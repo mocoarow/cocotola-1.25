@@ -1,0 +1,36 @@
+load("@rules_go//go:def.bzl", "go_library")
+load("//bazel:go_test.bzl", "smart_go_test")
+
+go_library(
+    name = "auth",
+    srcs = [
+        "auth_usecase.go",
+        "auth_verify_access_token_query.go",
+        "auth_verify_password_query.go",
+        "init.go",
+    ],
+    importpath = "github.com/mocoarow/cocotola-1.25/cocotola-auth/usecase/auth",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-auth/domain",
+        "//cocotola-auth/service",
+        "//cocotola-lib/domain",
+        "@io_opentelemetry_go_otel//:otel",
+    ],
+)
+
+smart_go_test(
+    name = "auth_test",
+    srcs = [
+        "auth_verify_password_query_s_test.go",
+        "mocks_test.go",
+    ],
+    deps = [
+        ":auth",
+        "//cocotola-auth/domain",
+        "//cocotola-auth/service",
+        "//cocotola-lib/domain",
+        "@com_github_stretchr_testify//mock",
+        "@com_github_stretchr_testify//require",
+    ],
+)

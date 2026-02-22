@@ -117,28 +117,21 @@ func run() (int, error) {
 	// v1
 	v1 := api.Group("v1")
 	// public router
-	libgin.InitPublicAPIRouterGroup(ctx, v1, []libgin.InitRouterGroupFunc{
-		func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
-			test := parentRouterGroup.Group("test")
-			for _, m := range middleware {
-				test.Use(m)
-			}
-			test.GET("/ping", func(c *gin.Context) {
-				c.JSON(http.StatusOK, gin.H{"message": "pong"})
-			})
-			test.POST("/200", func(c *gin.Context) {
-				logger.InfoContext(ctx, "POST /200")
-				params := gin.H{}
-				if err := c.BindJSON(&params); err != nil {
-					logger.InfoContext(ctx, fmt.Sprintf("err: %+v", err))
-					c.Status(http.StatusBadRequest)
-					return
-				}
+	test := v1.Group("test")
+	test.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "pong"})
+	})
+	test.POST("/200", func(c *gin.Context) {
+		logger.InfoContext(ctx, "POST /200")
+		params := gin.H{}
+		if err := c.BindJSON(&params); err != nil {
+			logger.InfoContext(ctx, fmt.Sprintf("err: %+v", err))
+			c.Status(http.StatusBadRequest)
+			return
+		}
 
-				logger.InfoContext(ctx, fmt.Sprintf("params: %+v", params))
-				c.Status(http.StatusOK)
-			})
-		},
+		logger.InfoContext(ctx, fmt.Sprintf("params: %+v", params))
+		c.Status(http.StatusOK)
 	})
 
 	readHeaderTimeout := time.Duration(cfg.Server.ReadHeaderTimeoutSec) * time.Second

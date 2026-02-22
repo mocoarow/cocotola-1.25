@@ -20,7 +20,7 @@ func Test_organizationRepository_CreateOrganization(t *testing.T) {
 		t.Helper()
 		orgName := RandString(orgNameLength)
 
-		orgRepo := gateway.NewOrganizationRepository(ctx, ts.db)
+		orgRepo := gateway.NewOrganizationRepository(ts.dbc)
 		_, err := orgRepo.CreateOrganization(ctx, systemAdmin, orgName)
 		require.NoError(t, err)
 	}
@@ -33,7 +33,7 @@ func Test_organizationRepository_FindOrganizationByID(t *testing.T) {
 		t.Helper()
 		orgName := RandString(orgNameLength)
 
-		orgRepo := gateway.NewOrganizationRepository(ctx, ts.db)
+		orgRepo := gateway.NewOrganizationRepository(ts.dbc)
 		orgID, err := orgRepo.CreateOrganization(ctx, systemAdmin, orgName)
 		require.NoError(t, err)
 		org, err := orgRepo.FindOrganizationByID(ctx, systemAdmin, orgID)
@@ -49,7 +49,7 @@ func Test_organizationRepository_FindOrganizationByName(t *testing.T) {
 		t.Helper()
 		orgName := RandString(orgNameLength)
 
-		orgRepo := gateway.NewOrganizationRepository(ctx, ts.db)
+		orgRepo := gateway.NewOrganizationRepository(ts.dbc)
 		_, err := orgRepo.CreateOrganization(ctx, systemAdmin, orgName)
 		require.NoError(t, err)
 		org, err := orgRepo.FindOrganizationByName(ctx, systemAdmin, orgName)

@@ -15,13 +15,13 @@ var ErrUserAlreadyExists = errors.New("user already exists")
 
 var ErrSystemOwnerNotFound = errors.New("system owner not found")
 
-var CreateUserAction = libdomain.NewRBACAction("CreateUser")
-var ListUsersAction = libdomain.NewRBACAction("ListUsers")
-var GetUserAction = libdomain.NewRBACAction("GetUser")
-var UpdateUserAction = libdomain.NewRBACAction("UpdateUser")
-var DeleteUserAction = libdomain.NewRBACAction("DeleteUser")
+var CreateUserAction = libdomain.NewRBACAction("CreateUser") //nolint:gochecknoglobals
+var ListUsersAction = libdomain.NewRBACAction("ListUsers")   //nolint:gochecknoglobals
+var GetUserAction = libdomain.NewRBACAction("GetUser")       //nolint:gochecknoglobals
+var UpdateUserAction = libdomain.NewRBACAction("UpdateUser") //nolint:gochecknoglobals
+var DeleteUserAction = libdomain.NewRBACAction("DeleteUser") //nolint:gochecknoglobals
 
-var CreateOwnerAction = libdomain.NewRBACAction("CreateOwner")
+var CreateOwnerAction = libdomain.NewRBACAction("CreateOwner") //nolint:gochecknoglobals
 
 type CreateUserParameter struct {
 	LoginID              string `validate:"required,max=255"`
@@ -48,6 +48,38 @@ func NewCreateUserParameter(loginID, username, password, provider, providerLogin
 	}
 
 	return &m, nil
+}
+
+type FindSystemOwnerByOrganizationNameFunc func(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.SystemOwner, error)
+
+type UserRepositoryFindSystemOwnerByOrganizationName interface {
+	FindSystemOwnerByOrganizationName(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.SystemOwner, error)
+}
+
+type FindUserByLoginIDFunc func(ctx context.Context, operator domain.UserInterface, loginID string) (*domain.User, error)
+
+type UserRepositoryFindUserByLoginID interface {
+	FindUserByLoginID(ctx context.Context, operator domain.UserInterface, loginID string) (*domain.User, error)
+}
+
+type VerifyPasswordFunc func(ctx context.Context, operator domain.SystemOwnerInterface, loginID, password string) (bool, error)
+
+type UserRepositoryVerifyPassword interface {
+	VerifyPassword(ctx context.Context, operator domain.SystemOwnerInterface, loginID, password string) (bool, error)
+}
+
+type UserRepositoryGetUser interface {
+	GetUser(ctx context.Context, operator domain.UserInterface) (*domain.User, error)
+}
+
+type CreateSystemOwnerFunc func(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.UserID, error)
+
+type CreateUserFunc func(ctx context.Context, operator domain.UserInterface, param *CreateUserParameter) (*domain.UserID, error)
+
+type FindUserByIDFunc func(ctx context.Context, operator domain.UserInterface, id *domain.UserID) (*domain.User, error)
+
+type UserRepositoryCreateSystemOwner interface {
+	CreateSystemOwner(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.UserID, error)
 }
 
 type UserRepository interface {

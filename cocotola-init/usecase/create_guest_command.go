@@ -12,17 +12,25 @@ import (
 	authservice "github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-type CreateGuestCommand struct {
-	txManager    authservice.TransactionManager
-	nonTxManager authservice.TransactionManager
-	logger       *slog.Logger
+type CreateGuestCommandGateway interface {
+	WithTransaction(ctx context.Context, fn func(
+		findPublicSpaceByKey authservice.FindPublicSpaceByKeyFunc,
+		createUser authservice.CreateUserFunc,
+		findUserGroupByKey authservice.FindUserGroupByKeyFunc,
+		addUserToGroup authservice.AddUserToGroupFunc,
+		attachPolicyToUser authservice.AttachPolicyToUserFunc,
+	) (*authdomain.UserID, error)) (*authdomain.UserID, error)
 }
 
-func NewCreateGuestCommand(txManager authservice.TransactionManager, nonTxManager authservice.TransactionManager) *CreateGuestCommand {
+type CreateGuestCommand struct {
+	gw     CreateGuestCommandGateway
+	logger *slog.Logger
+}
+
+func NewCreateGuestCommand(_ context.Context, gw CreateGuestCommandGateway) *CreateGuestCommand {
 	return &CreateGuestCommand{
-		txManager:    txManager,
-		nonTxManager: nonTxManager,
-		logger:       slog.Default().With(slog.String(libdomain.LoggerNameKey, "CreateGuestCommand")),
+		gw:     gw,
+		logger: slog.Default().With(slog.String(libdomain.LoggerNameKey, "CreateGuestCommand")),
 	}
 }
 
@@ -51,33 +59,57 @@ func (u *CreateGuestCommand) checkAuthorization(_ context.Context, _ authdomain.
 }
 
 func (u *CreateGuestCommand) execute(ctx context.Context, operator authdomain.SystemOwnerInterface, param *authservice.CreateUserParameter) (*authdomain.UserID, error) {
-	publicDefaultSpace, err := authservice.FindPublicSpaceByKey(ctx, operator, u.nonTxManager, authservice.PublicDefaultSpaceKey)
-	if err != nil {
-		return nil, fmt.Errorf("find public default space by key(%s): %w", authservice.PublicDefaultSpaceKey, err)
-	}
-
-	spaceObject := publicDefaultSpace.SpaceID.GetRBACObject()
-
-	aoeList := []libdomain.ActionObjectEffect{
-		// guest can list decks in the "public" space
-		{Action: libservice.ListDecksAction, Object: spaceObject, Effect: authservice.RBACAllowEffect},
-		// guest can read all decks in the "public" space
-		{Action: libservice.ReadDeckAction, Object: spaceObject, Effect: authservice.RBACAllowEffect},
-	}
-
-	fn2 := func(rf authservice.RepositoryFactory) (*authdomain.UserID, error) {
-		userID, err := AddUser(ctx, operator, rf, param, aoeList)
+	userID, err := u.gw.WithTransaction(ctx, func(
+		findPublicSpaceByKey authservice.FindPublicSpaceByKeyFunc,
+		createUser authservice.CreateUserFunc,
+		findUserGroupByKey authservice.FindUserGroupByKeyFunc,
+		addUserToGroup authservice.AddUserToGroupFunc,
+		attachPolicyToUser authservice.AttachPolicyToUserFunc,
+	) (*authdomain.UserID, error) {
+		// 1. find public default space
+		publicDefaultSpace, err := findPublicSpaceByKey(ctx, operator, authservice.PublicDefaultSpaceKey)
 		if err != nil {
-			return nil, fmt.Errorf("AddUser: %w", err)
+			return nil, fmt.Errorf("find public default space by key(%s): %w", authservice.PublicDefaultSpaceKey, err)
 		}
 
-		// u.logger.InfoContext(ctx, fmt.Sprintf("personalSpaceID: %d", spaceID.Int()))
+		spaceObject := publicDefaultSpace.SpaceID.GetRBACObject()
+
+		aoeList := []libdomain.ActionObjectEffect{
+			// guest can list decks in the "public" space
+			{Action: libservice.ListDecksAction, Object: spaceObject, Effect: authservice.RBACAllowEffect},
+			// guest can read all decks in the "public" space
+			{Action: libservice.ReadDeckAction, Object: spaceObject, Effect: authservice.RBACAllowEffect},
+		}
+
+		// 2. create new user
+		userID, err := createUser(ctx, operator, param)
+		if err != nil {
+			return nil, fmt.Errorf("CreateUser: %w", err)
+		}
+
+		// 3. add user to public-group
+		publicGroup, err := findUserGroupByKey(ctx, operator, authservice.PublicGroupKey)
+		if err != nil {
+			return nil, fmt.Errorf("find public group(%s): %w", authservice.PublicGroupKey, err)
+		}
+		if err := addUserToGroup(ctx, operator, userID, publicGroup.UserGroupID); err != nil {
+			return nil, fmt.Errorf("AddUserToGroup: %w", err)
+		}
+
+		// 4. attach policy to user
+		subject := userID.GetRBACSubject()
+		for _, aoe := range aoeList {
+			if err := attachPolicyToUser(ctx, operator, subject, aoe.Action, aoe.Object, aoe.Effect); err != nil {
+				return nil, fmt.Errorf("AttachPolicyToUser: %w", err)
+			}
+		}
+
 		return userID, nil
-	}
-	userID, err := libservice.Do1(ctx, u.txManager, fn2)
+	})
 	if err != nil {
-		return nil, fmt.Errorf("Do1: %w", err)
+		return nil, fmt.Errorf("WithTransaction: %w", err)
 	}
+
 	return userID, nil
 }
 

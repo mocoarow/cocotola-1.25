@@ -15,24 +15,20 @@ import (
 )
 
 type SpaceManager struct {
-	dialect  libgateway.DialectRDBMS
-	db       *gorm.DB
-	rf       service.RepositoryFactory
+	dbc      *libgateway.DBConnection
 	rbacRepo service.RBACRepository
 }
 
 var _ service.SpaceManager = (*SpaceManager)(nil)
 
-func NewSpaceManager(ctx context.Context, dialect libgateway.DialectRDBMS, db *gorm.DB, rf service.RepositoryFactory) (service.SpaceManager, error) {
-	rbacRepo, err := NewRBACRepository(ctx, db)
+func NewSpaceManager(ctx context.Context, dbc *libgateway.DBConnection) (*SpaceManager, error) {
+	rbacRepo, err := NewRBACRepository(ctx, dbc)
 	if err != nil {
 		return nil, fmt.Errorf("new rbac repository: %w", err)
 	}
 
 	return &SpaceManager{
-		dialect:  dialect,
-		db:       db,
-		rf:       rf,
+		dbc:      dbc,
 		rbacRepo: rbacRepo,
 	}, nil
 }
@@ -41,13 +37,13 @@ func (m *SpaceManager) CreatePersonalSpace(ctx context.Context, operator domain.
 	ctx, span := tracer.Start(ctx, "SpaceManager.CreatePersonalSpace")
 	defer span.End()
 
-	userRepo := m.rf.NewUserRepository(ctx)
+	userRepo := NewUserRepository(m.dbc)
 	targetUser, err := userRepo.FindUserByID(ctx, operator, param.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("FindUserByID: %w", err)
 	}
 
-	spaceRepo := m.rf.NewSpaceRepository(ctx)
+	spaceRepo := NewSpaceRepository(m.dbc)
 	createParam := &service.CreateSpaceParameter{
 		Key:       param.KeyName,
 		Name:      param.Name,
@@ -66,7 +62,7 @@ func (m *SpaceManager) CreatePersonalSpace(ctx context.Context, operator domain.
 }
 
 func (m *SpaceManager) CreatePublicDefaultSpace(ctx context.Context, operator domain.SystemOwnerInterface) (*domain.SpaceID, error) {
-	spaceRepo := m.rf.NewSpaceRepository(ctx)
+	spaceRepo := NewSpaceRepository(m.dbc)
 	addSpaceParam := service.CreateSpaceParameter{
 		Key:       service.PublicDefaultSpaceKey,
 		Name:      service.PublicDefaultSpaceName,
@@ -90,7 +86,7 @@ func (m *SpaceManager) AddUserToSpace(ctx context.Context, operator domain.UserI
 	defer span.End()
 
 	var space spaceEntity
-	if err := m.db.WithContext(ctx).
+	if err := m.dbc.DB.WithContext(ctx).
 		Where("organization_id = ?", operator.GetOrganizationID().Int()).
 		Where("id = ?", spaceID.Int()).
 		First(&space).Error; err != nil {
@@ -101,7 +97,7 @@ func (m *SpaceManager) AddUserToSpace(ctx context.Context, operator domain.UserI
 	}
 
 	userIDCopy := userID
-	userRepo := m.rf.NewUserRepository(ctx)
+	userRepo := NewUserRepository(m.dbc)
 	targetUser, err := userRepo.FindUserByID(ctx, operator, &userIDCopy)
 	if err != nil {
 		return fmt.Errorf("FindUserByID: %w", err)
@@ -189,9 +185,9 @@ func (m *SpaceManager) findSpacesByUser(ctx context.Context, operator domain.Use
 	}
 
 	var spacesE spaceEntities
-	if err := m.db.WithContext(ctx).
+	if err := m.dbc.DB.WithContext(ctx).
 		Where("organization_id = ?", operator.GetOrganizationID().Int()).
-		Where("deleted = ?", m.dialect.BoolDefaultValue()).
+		Where("deleted = ?", m.dbc.Dialect.BoolDefaultValue()).
 		Where("id IN ?", spaceIDs).
 		Order("key_name").
 		Find(&spacesE).Error; err != nil {

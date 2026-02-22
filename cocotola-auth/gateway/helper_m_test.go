@@ -6,7 +6,6 @@ import (
 	"context"
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -14,14 +13,10 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/gateway"
 )
 
-var (
-	loc = time.UTC
-)
-
 func setupTestOrganization(ctx context.Context, t *testing.T, tr testResource) (*domain.OrganizationID, domain.SystemOwnerInterface, domain.OwnerInterface) {
 	t.Helper()
-	orgRepo := gateway.NewOrganizationRepository(ctx, tr.db)
-	userRepo := tr.rf.NewUserRepository(ctx)
+	orgRepo := gateway.NewOrganizationRepository(tr.dbc)
+	userRepo := gateway.NewUserRepository(tr.dbc)
 
 	orgName := fmt.Sprintf("org-%s", RandString(8))
 	orgID, err := orgRepo.CreateOrganization(ctx, systemAdmin, orgName)
