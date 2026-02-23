@@ -19,7 +19,7 @@ type SpaceManager struct {
 	rbacRepo *RBACRepository
 }
 
-var _ service.SpaceManager = (*SpaceManager)(nil)
+// var _ service.SpaceManager = (*SpaceManager)(nil)
 
 func NewSpaceManager(ctx context.Context, dbc *libgateway.DBConnection) (*SpaceManager, error) {
 	rbacRepo, err := NewRBACRepository(ctx, dbc)

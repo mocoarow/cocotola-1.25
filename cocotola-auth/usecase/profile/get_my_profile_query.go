@@ -12,7 +12,7 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-type GetMyProfileQueryRepository interface {
+type GetMyProfileQueryRepository interface { //nolint:iface
 	service.OrganizationRepositoryGetOrganization
 	service.UserRepositoryGetUser
 	service.SpacemanagerGetPersonalSpaceInterface

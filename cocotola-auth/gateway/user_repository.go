@@ -94,7 +94,7 @@ type UserRepository struct {
 	//
 }
 
-var _ service.UserRepository = (*UserRepository)(nil)
+// var _ service.UserRepository = (*UserRepository)(nil)
 
 func NewUserRepository(dbc *libgateway.DBConnection) *UserRepository {
 	return &UserRepository{

@@ -42,13 +42,13 @@ type OrganizationRepositoryCreateOrganization interface {
 	CreateOrganization(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.OrganizationID, error)
 }
 
-type OrganizationRepository interface {
-	// GetOrganization(ctx context.Context, operator domain.UserInterface) (*domain.Organization, error)
-	OrganizationRepositoryGetOrganization
+// type OrganizationRepository interface {
+// 	// GetOrganization(ctx context.Context, operator domain.UserInterface) (*domain.Organization, error)
+// 	OrganizationRepositoryGetOrganization
 
-	FindOrganizationByName(ctx context.Context, operator domain.SystemAdminInterface, name string) (*domain.Organization, error)
+// 	FindOrganizationByName(ctx context.Context, operator domain.SystemAdminInterface, name string) (*domain.Organization, error)
 
-	FindOrganizationByID(ctx context.Context, operator domain.SystemAdminInterface, id *domain.OrganizationID) (*domain.Organization, error)
+// 	FindOrganizationByID(ctx context.Context, operator domain.SystemAdminInterface, id *domain.OrganizationID) (*domain.Organization, error)
 
-	CreateOrganization(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.OrganizationID, error)
-}
+// 	CreateOrganization(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.OrganizationID, error)
+// }

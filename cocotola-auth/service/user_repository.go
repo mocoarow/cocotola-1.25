@@ -82,22 +82,22 @@ type UserRepositoryCreateSystemOwner interface {
 	CreateSystemOwner(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.UserID, error)
 }
 
-type UserRepository interface {
-	FindSystemOwnerByOrganizationID(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.SystemOwner, error)
+// type UserRepository interface {
+// 	FindSystemOwnerByOrganizationID(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.SystemOwner, error)
 
-	FindSystemOwnerByOrganizationName(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.SystemOwner, error)
+// 	FindSystemOwnerByOrganizationName(ctx context.Context, operator domain.SystemAdminInterface, organizationName string) (*domain.SystemOwner, error)
 
-	GetUser(ctx context.Context, operator domain.UserInterface) (*domain.User, error)
+// 	GetUser(ctx context.Context, operator domain.UserInterface) (*domain.User, error)
 
-	FindUserByID(ctx context.Context, operator domain.UserInterface, id *domain.UserID) (*domain.User, error)
+// 	FindUserByID(ctx context.Context, operator domain.UserInterface, id *domain.UserID) (*domain.User, error)
 
-	FindUserByLoginID(ctx context.Context, operator domain.UserInterface, loginID string) (*domain.User, error)
+// 	FindUserByLoginID(ctx context.Context, operator domain.UserInterface, loginID string) (*domain.User, error)
 
-	FindOwnerByLoginID(ctx context.Context, operator domain.SystemOwnerInterface, loginID string) (*domain.Owner, error)
+// 	FindOwnerByLoginID(ctx context.Context, operator domain.SystemOwnerInterface, loginID string) (*domain.Owner, error)
 
-	CreateUser(ctx context.Context, operator domain.UserInterface, param *CreateUserParameter) (*domain.UserID, error)
+// 	CreateUser(ctx context.Context, operator domain.UserInterface, param *CreateUserParameter) (*domain.UserID, error)
 
-	CreateSystemOwner(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.UserID, error)
+// 	CreateSystemOwner(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.UserID, error)
 
-	VerifyPassword(ctx context.Context, operator domain.SystemOwnerInterface, loginID, password string) (bool, error)
-}
+// 	VerifyPassword(ctx context.Context, operator domain.SystemOwnerInterface, loginID, password string) (bool, error)
+// }

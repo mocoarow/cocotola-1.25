@@ -45,7 +45,7 @@ type OrganizationRepository struct {
 	dbc *libgateway.DBConnection
 }
 
-var _ service.OrganizationRepository = (*OrganizationRepository)(nil)
+// var _ service.OrganizationRepository = (*OrganizationRepository)(nil)
 
 func NewOrganizationRepository(dbc *libgateway.DBConnection) *OrganizationRepository {
 	return &OrganizationRepository{

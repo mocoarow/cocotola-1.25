@@ -38,16 +38,26 @@ type TraceConfig struct {
 
 const traceShutdownTimeout = 5 * time.Second
 
-func initTracerExporter(ctx context.Context, traceConfig *TraceConfig) (sdktrace.SpanExporter, error) {
-	initTracerExporter, ok := initTracerExporters[traceConfig.Exporter]
-	if !ok {
+func initTracerExporter(ctx context.Context, traceConfig *TraceConfig) (sdktrace.SpanExporter, error) { //nolint:ireturn
+	switch traceConfig.Exporter {
+	case "google":
+		return initTracerExporterGoogle(ctx, traceConfig)
+	case "otlphttp":
+		return initTracerExporterOTLPHTTP(ctx, traceConfig)
+	case "otlpgrpc":
+		return initTracerExporterOTLPgRPC(ctx, traceConfig)
+	case "none":
+		return initTracerExporterNone(ctx, traceConfig)
+	case "stdout":
+		return initTracerExporterStdout(ctx, traceConfig)
+	case "uptracehttp":
+		return initTracerExporterUptraceHTTP(ctx, traceConfig)
+	default:
 		return nil, fmt.Errorf("invalid trace exporter: %s", traceConfig.Exporter)
 	}
-
-	return initTracerExporter(ctx, traceConfig)
 }
 
-func initTraceSampler(samplingPercentage int) sdktrace.Sampler {
+func initTraceSampler(samplingPercentage int) sdktrace.Sampler { //nolint:ireturn
 	if samplingPercentage >= 100 {
 		return sdktrace.AlwaysSample()
 	}

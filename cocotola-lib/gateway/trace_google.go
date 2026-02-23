@@ -5,10 +5,9 @@ import (
 	"fmt"
 
 	gcpexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
-func initTracerExporterGoogle(_ context.Context, traceConfig *TraceConfig) (sdktrace.SpanExporter, error) {
+func initTracerExporterGoogle(_ context.Context, traceConfig *TraceConfig) (*gcpexporter.Exporter, error) {
 	if traceConfig.Google == nil {
 		return nil, fmt.Errorf("google trace configuration is required")
 	}

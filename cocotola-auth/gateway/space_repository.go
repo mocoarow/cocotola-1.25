@@ -83,7 +83,7 @@ type SpaceRepository struct {
 	dbc *libgateway.DBConnection
 }
 
-var _ service.SpaceRepository = (*SpaceRepository)(nil)
+// var _ service.SpaceRepository = (*SpaceRepository)(nil)
 
 func NewSpaceRepository(dbc *libgateway.DBConnection) *SpaceRepository {
 	return &SpaceRepository{

@@ -18,12 +18,12 @@ type CreateSpaceParameter struct {
 
 type FindPublicSpaceByKeyFunc func(ctx context.Context, operator domain.UserInterface, key string) (*domain.Space, error)
 
-type SpaceRepository interface {
-	CreateSpace(ctx context.Context, operator domain.UserInterface, param *CreateSpaceParameter) (*domain.SpaceID, error)
+// type SpaceRepository interface {
+// 	CreateSpace(ctx context.Context, operator domain.UserInterface, param *CreateSpaceParameter) (*domain.SpaceID, error)
 
-	FindPublicSpaces(ctx context.Context, operator domain.UserInterface) ([]*domain.Space, error)
+// 	FindPublicSpaces(ctx context.Context, operator domain.UserInterface) ([]*domain.Space, error)
 
-	FindPublicSpaceByKey(ctx context.Context, operator domain.UserInterface, key string) (*domain.Space, error)
+// 	FindPublicSpaceByKey(ctx context.Context, operator domain.UserInterface, key string) (*domain.Space, error)
 
-	GetSpaceByID(ctx context.Context, operator domain.UserInterface, deckID *domain.SpaceID) (*domain.Space, error)
-}
+// 	GetSpaceByID(ctx context.Context, operator domain.UserInterface, deckID *domain.SpaceID) (*domain.Space, error)
+// }

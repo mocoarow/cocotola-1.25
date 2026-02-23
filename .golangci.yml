@@ -132,15 +132,15 @@ linters:
         linters:
           - ireturn
           - iface
-      - path: usecase/
-        linters:
-          - iface
-      - path: service/
-        linters:
-          - ireturn
-      - path: gateway/trace.*\.go
-        linters:
-          - ireturn
+      # - path: usecase/
+      #   linters:
+      #     - iface
+      # - path: service/
+      #   linters:
+      #     - ireturn
+      # - path: gateway/trace.*\.go
+      #   linters:
+      #     - ireturn
       - path: gateway/db_.*\.go
         linters:
           - ireturn

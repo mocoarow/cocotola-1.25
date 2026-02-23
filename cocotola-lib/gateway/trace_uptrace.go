@@ -2,15 +2,15 @@ package gateway
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
-func initTracerExporterUptraceHTTP(ctx context.Context, traceConfig *TraceConfig) (sdktrace.SpanExporter, error) {
+func initTracerExporterUptraceHTTP(ctx context.Context, traceConfig *TraceConfig) (*otlptrace.Exporter, error) {
 	if traceConfig.Uptrace == nil {
-		return nil, fmt.Errorf("uptrace trace configuration is required")
+		return nil, errors.New("uptrace trace configuration is required")
 	}
 
 	return otlptracehttp.New(ctx, //nolint:wrapcheck

@@ -20,9 +20,9 @@ type CreatePublicDefaultSpaceFunc func(ctx context.Context, operator domain.Syst
 
 type CreatePersonalSpaceFunc func(ctx context.Context, operator domain.UserInterface, param *CreatePersonalSpaceParameter) (*domain.SpaceID, error)
 
-type SpaceManager interface {
-	CreatePersonalSpace(ctx context.Context, operator domain.UserInterface, param *CreatePersonalSpaceParameter) (*domain.SpaceID, error)
-	CreatePublicDefaultSpace(ctx context.Context, operator domain.SystemOwnerInterface) (*domain.SpaceID, error)
-	AddUserToSpace(ctx context.Context, operator domain.UserInterface, userID domain.UserID, spaceID *domain.SpaceID) error
-	GetPersonalSpace(ctx context.Context, operator domain.UserInterface) (*domain.Space, error)
-}
+// type SpaceManager interface {
+// 	CreatePersonalSpace(ctx context.Context, operator domain.UserInterface, param *CreatePersonalSpaceParameter) (*domain.SpaceID, error)
+// 	CreatePublicDefaultSpace(ctx context.Context, operator domain.SystemOwnerInterface) (*domain.SpaceID, error)
+// 	AddUserToSpace(ctx context.Context, operator domain.UserInterface, userID domain.UserID, spaceID *domain.SpaceID) error
+// 	GetPersonalSpace(ctx context.Context, operator domain.UserInterface) (*domain.Space, error)
+// }
