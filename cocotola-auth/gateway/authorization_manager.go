@@ -8,13 +8,12 @@ import (
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
-	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
 type AuthorizationManager struct {
 	dbc      *libgateway.DBConnection
-	rbacRepo service.RBACRepository
-	pairRepo service.PairOfUserAndGroupRepository
+	rbacRepo *RBACRepository
+	pairRepo *PairOfUserAndGroupRepository
 }
 
 func NewAuthorizationManager(ctx context.Context, dbc *libgateway.DBConnection) (*AuthorizationManager, error) {

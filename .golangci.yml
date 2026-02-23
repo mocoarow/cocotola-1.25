@@ -114,10 +114,8 @@ linters:
           - exhaustruct
           - wrapcheck
           - goconst
-          - forcetypeassert
           - gochecknoglobals
           - ireturn
-          - staticcheck
       - path: mocks_test*\.go
         linters:
           - forcetypeassert
@@ -130,9 +128,6 @@ linters:
       - path: openapi\.go
         linters:
           - gosec
-      - path: gateway/
-        linters:
-          - ireturn
       - path: domain/
         linters:
           - ireturn
@@ -141,6 +136,15 @@ linters:
         linters:
           - iface
       - path: service/
+        linters:
+          - ireturn
+      - path: gateway/trace.*\.go
+        linters:
+          - ireturn
+      - path: gateway/db_.*\.go
+        linters:
+          - ireturn
+      - path: gateway/log.*\.go
         linters:
           - ireturn
       - path: middleware/
@@ -152,6 +156,7 @@ linters:
           - exhaustruct
           - gochecknoglobals
           - gosec
+          - ireturn
           - nilerr
           - noctx
           - sqlclosecheck

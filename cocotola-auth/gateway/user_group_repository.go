@@ -57,7 +57,7 @@ type UserGroupRepository struct {
 
 var _ service.UserGroupRepository = (*UserGroupRepository)(nil)
 
-func NewUserGroupRepository(dbc *libgateway.DBConnection) service.UserGroupRepository {
+func NewUserGroupRepository(dbc *libgateway.DBConnection) *UserGroupRepository {
 	return &UserGroupRepository{
 		dbc:    dbc,
 		logger: slog.Default().With(slog.String(libdomain.LoggerNameKey, "UserGroupRepository")),

@@ -11,7 +11,7 @@ func init() {
 type systemToken struct {
 }
 
-func NewTestSystemToken() domain.SystemToken {
+func NewTestSystemToken() *systemToken {
 	return &systemToken{}
 }
 

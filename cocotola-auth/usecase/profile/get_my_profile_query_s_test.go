@@ -137,7 +137,7 @@ func Test_GetMyProfileQuery_Execute_shouldReturnError_whenGetPersonalSpaceFailsW
 	require.Nil(t, result)
 }
 
-func newUser(t *testing.T) domain.UserInterface {
+func newUser(t *testing.T) *domain.User {
 	t.Helper()
 
 	orgID, err := domain.NewOrganizationID(1)

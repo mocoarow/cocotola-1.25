@@ -16,7 +16,7 @@ import (
 
 type SpaceManager struct {
 	dbc      *libgateway.DBConnection
-	rbacRepo service.RBACRepository
+	rbacRepo *RBACRepository
 }
 
 var _ service.SpaceManager = (*SpaceManager)(nil)
