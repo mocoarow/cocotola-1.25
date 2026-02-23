@@ -52,6 +52,7 @@ func LoadConfig() (*Config, error) {
 	}
 
 	confContent = []byte(os.Expand(string(confContent), libconfig.ExpandEnvWithDefaults))
+
 	var conf Config
 	if err := yaml.Unmarshal(confContent, &conf); err != nil {
 		return nil, fmt.Errorf("unmarshal file(%s): %w", filename, err)

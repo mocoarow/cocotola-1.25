@@ -39,6 +39,7 @@ func (u *GetMyProfileQuery) Execute(ctx context.Context, operator domain.UserInt
 	if err != nil {
 		return nil, fmt.Errorf("GetUser: %w", err)
 	}
+
 	var personalSpaceID *domain.SpaceID
 	personalSpace, err := u.repo.GetPersonalSpace(ctx, operator)
 	if err != nil {

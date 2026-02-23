@@ -46,6 +46,7 @@ func run() (int, error) {
 		return 0, fmt.Errorf("init log: %w", err)
 	}
 	defer shutdownlog()
+
 	logger := slog.Default().With(slog.String(libdomain.LoggerNameKey, AppName+"-main"))
 
 	// init tracer	// init tracer
