@@ -25,14 +25,14 @@ type DialectSQLite3 struct {
 }
 
 func (d *DialectSQLite3) Name() string {
-	return "sqlite3"
+	return DriverNameSQLite3
 }
 
 func (d *DialectSQLite3) BoolDefaultValue() string {
 	return "0"
 }
 
-func initDBSQLite3(ctx context.Context, cfg *DBConfig, logLevel slog.Level, appName string) (DialectRDBMS, *gorm.DB, *sql.DB, error) {
+func initDBSQLite3(ctx context.Context, cfg *DBConfig, logLevel slog.Level, appName string) (*DialectSQLite3, *gorm.DB, *sql.DB, error) {
 	db, err := OpenSQLite3(cfg.SQLite3, logLevel, appName)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("OpenSQLite file(%s): %w", cfg.SQLite3.File, err)

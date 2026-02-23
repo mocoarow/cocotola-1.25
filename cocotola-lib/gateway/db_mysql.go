@@ -20,7 +20,7 @@ type DialectMySQL struct {
 }
 
 func (d *DialectMySQL) Name() string {
-	return "mysql"
+	return DriverNameMySQL
 }
 
 func (d *DialectMySQL) BoolDefaultValue() string {
@@ -35,7 +35,7 @@ type MySQLConfig struct {
 	Database string `yaml:"database" validate:"required"`
 }
 
-func initDBMySQL(ctx context.Context, cfg *DBConfig, logLevel slog.Level, appName string) (DialectRDBMS, *gorm.DB, *sql.DB, error) {
+func initDBMySQL(ctx context.Context, cfg *DBConfig, logLevel slog.Level, appName string) (*DialectMySQL, *gorm.DB, *sql.DB, error) {
 	db, err := OpenMySQL(cfg.MySQL, logLevel, appName)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("OpenMySQL: %w", err)

@@ -141,9 +141,9 @@ linters:
       # - path: gateway/trace.*\.go
       #   linters:
       #     - ireturn
-      - path: gateway/db_.*\.go
-        linters:
-          - ireturn
+      # - path: gateway/db_.*\.go
+      #   linters:
+      #     - ireturn
       - path: gateway/log.*\.go
         linters:
           - ireturn
