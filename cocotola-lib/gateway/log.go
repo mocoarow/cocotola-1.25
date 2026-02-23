@@ -16,6 +16,13 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
 )
 
+const (
+	logMaxQueueSize      = 10_000
+	logExportMaxBatch    = 10_000
+	logExportIntervalSec = 10
+	logExportTimeoutSec  = 10
+)
+
 type OTLPLogConfig struct {
 	Endpoint string `yaml:"endpoint" validate:"required"`
 	Insecure bool   `yaml:"insecure"`
@@ -55,13 +62,15 @@ func InitLog(ctx context.Context, logConfig *LogConfig, appName string) (func(),
 
 const logShutdownTimeout = 5 * time.Second
 
-func initLogExporter(ctx context.Context, logConfig *LogConfig) (sdklog.Exporter, error) {
-	initLogExporter, ok := initLogExporters[logConfig.Exporter]
-	if !ok {
+func initLogExporter(ctx context.Context, logConfig *LogConfig) (sdklog.Exporter, error) { //nolint:ireturn
+	switch logConfig.Exporter {
+	case "otlphttp":
+		return initLogExporterOTLPHTTP(ctx, logConfig)
+	case "uptracehttp":
+		return initLogExporterUptraceHTTP(ctx, logConfig)
+	default:
 		return nil, fmt.Errorf("invalid log exporter: %s", logConfig.Exporter)
 	}
-
-	return initLogExporter(ctx, logConfig)
 }
 
 func InitLogProvider(ctx context.Context, logConfig *LogConfig, appName string) (func(), error) {
@@ -71,10 +80,10 @@ func InitLogProvider(ctx context.Context, logConfig *LogConfig, appName string) 
 	}
 
 	bp := sdklog.NewBatchProcessor(exp,
-		sdklog.WithMaxQueueSize(10_000),
-		sdklog.WithExportMaxBatchSize(10_000),
-		sdklog.WithExportInterval(10*time.Second),
-		sdklog.WithExportTimeout(10*time.Second),
+		sdklog.WithMaxQueueSize(logMaxQueueSize),
+		sdklog.WithExportMaxBatchSize(logExportMaxBatch),
+		sdklog.WithExportInterval(logExportIntervalSec*time.Second),
+		sdklog.WithExportTimeout(logExportTimeoutSec*time.Second),
 	)
 
 	lp := sdklog.NewLoggerProvider(
@@ -154,7 +163,7 @@ func stringToLogLevel(value string) slog.Level {
 	case "error":
 		return slog.LevelError
 	default:
-		slog.Info(fmt.Sprintf("Unsupported log level: %s", value))
+		slog.Info("Unsupported log level: " + value)
 
 		return slog.LevelWarn
 	}

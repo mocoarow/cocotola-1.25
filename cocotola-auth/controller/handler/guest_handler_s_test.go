@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+	libhandler "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/handler"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/handler"
 )
@@ -21,7 +21,7 @@ import (
 func initGuestRouter(ctx context.Context, t *testing.T, guest handler.GuestUsecase) *gin.Engine {
 	t.Helper()
 
-	router := libgin.InitRootRouterGroup(ctx, &config, "cocotola-auth-test")
+	router := libhandler.InitRootRouterGroup(ctx, &config, "cocotola-auth-test")
 	api := router.Group("api")
 	v1 := api.Group("v1")
 

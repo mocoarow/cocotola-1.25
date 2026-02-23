@@ -15,12 +15,15 @@ linters:
     - dupl
     - dupword
     - errorlint
+    - errchkjson
+    - errcheck
     - exhaustive
     - exhaustruct
     - exptostd
     - fatcontext
     - forbidigo
     - forcetypeassert
+    - gocritic
     - gocheckcompilerdirectives
     - gochecknoglobals
     - gocognit
@@ -30,21 +33,28 @@ linters:
     - gosec
     - iface
     - importas
+    - intrange
+    - interfacebloat
     - ireturn
     - makezero
     - mirror
     - misspell
+    - mnd
+    - modernize
     - musttag
     - nestif
     - nilerr
+    - nilnesserr
     - nilnil
     - noctx
     - nolintlint
     - paralleltest
+    - perfsprint
     - prealloc
     - predeclared
     - reassign
     - revive
+    - sloglint
     - spancheck
     - sqlclosecheck
     - staticcheck
@@ -56,7 +66,6 @@ linters:
     - whitespace
     - wrapcheck
     - wsl_v5
-
   settings:
     forbidigo:
       forbid:
@@ -82,13 +91,9 @@ linters:
         - .Errorf
         - errors.New(
     wsl_v5:
-      allow-first-in-block: true
-      allow-whole-block: false
-      branch-max-lines: 2
       disable:
         - if
         - expr
-        - switch
         - append
         - range
         - assign
@@ -106,63 +111,15 @@ linters:
       - third_party$
       - builtin$
       - examples$
+      - gateway/sqlite3/db_sqlite3_migrate\.go
+      - openapi\.go
     rules:
       - path: _test\.go
         linters:
           - dupl
-          - wsl_v5
           - exhaustruct
-          - wrapcheck
           - goconst
           - gochecknoglobals
-          - ireturn
-      - path: mocks_test*\.go
-        linters:
-          - forcetypeassert
-          - gochecknoglobals
-          - ireturn
-          - staticcheck
-      - path: init\.go
-        linters:
-          - gochecknoglobals
-      - path: openapi\.go
-        linters:
-          - gosec
-      - path: domain/
-        linters:
-          - ireturn
-          - iface
-      - path: usecase/
-        linters:
-          - iface
-      - path: service/
-        linters:
-          - ireturn
-      - path: gateway/trace.*\.go
-        linters:
-          - ireturn
-      - path: gateway/db_.*\.go
-        linters:
-          - ireturn
-      - path: gateway/log.*\.go
-        linters:
-          - ireturn
-      - path: middleware/
-        linters:
-          - gochecknoglobals
-      - path: gateway/sqlite3/db_sqlite3_migrate\.go
-        linters:
-          - errorlint
-          - exhaustruct
-          - gochecknoglobals
-          - gosec
-          - ireturn
-          - nilerr
-          - noctx
-          - sqlclosecheck
-          - staticcheck
-          - wrapcheck
-          - wsl_v5
 formatters:
   enable:
     - gofmt
@@ -173,4 +130,4 @@ formatters:
       - third_party$
       - builtin$
       - examples$
-      - cocotola-auth/openapi/model_.*\.go$
+      - openapi\.go

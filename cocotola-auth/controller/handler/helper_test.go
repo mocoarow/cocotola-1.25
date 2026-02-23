@@ -31,7 +31,7 @@ func readBytes(t *testing.T, b *bytes.Buffer) []byte {
 	return respBytes
 }
 
-func parseJSON(t *testing.T, bytes []byte) interface{} {
+func parseJSON(t *testing.T, bytes []byte) any {
 	t.Helper()
 	obj, err := oj.Parse(bytes)
 	require.NoError(t, err)

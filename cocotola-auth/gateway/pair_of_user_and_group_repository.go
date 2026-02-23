@@ -17,7 +17,7 @@ type PairOfUserAndGroupRepository struct {
 	rbacRepo *RBACRepository
 }
 
-var _ service.PairOfUserAndGroupRepository = (*PairOfUserAndGroupRepository)(nil)
+// var _ service.PairOfUserAndGroupRepository = (*PairOfUserAndGroupRepository)(nil)
 
 func NewPairOfUserAndGroupRepository(ctx context.Context, dbc *libgateway.DBConnection) *PairOfUserAndGroupRepository {
 	rbacRepo, err := NewRBACRepository(ctx, dbc)
@@ -113,7 +113,7 @@ func (r *PairOfUserAndGroupRepository) FindUserGroupsByUserID(ctx context.Contex
 	return result, nil
 }
 
-func (r *PairOfUserAndGroupRepository) addSubjectGroupingPolicy(ctx context.Context, rbacDomain libdomain.RBACDomain, child libdomain.RBACSubject, parent libdomain.RBACSubject) error {
+func (r *PairOfUserAndGroupRepository) addSubjectGroupingPolicy(ctx context.Context, rbacDomain libdomain.RBACDomainInterface, child libdomain.RBACSubjectInterface, parent libdomain.RBACSubjectInterface) error {
 	roles, err := r.rbacRepo.GetGroupsForSubject(ctx, rbacDomain, child)
 	if err != nil {
 		return fmt.Errorf("rbacRepo.GetGroupsForSubject: %w", err)
@@ -132,7 +132,7 @@ func (r *PairOfUserAndGroupRepository) addSubjectGroupingPolicy(ctx context.Cont
 	return nil
 }
 
-func (r *PairOfUserAndGroupRepository) removeSubjectGroupingPolicy(ctx context.Context, rbacDomain libdomain.RBACDomain, child libdomain.RBACSubject, parent libdomain.RBACSubject) error {
+func (r *PairOfUserAndGroupRepository) removeSubjectGroupingPolicy(ctx context.Context, rbacDomain libdomain.RBACDomainInterface, child libdomain.RBACSubjectInterface, parent libdomain.RBACSubjectInterface) error {
 	roles, err := r.rbacRepo.GetGroupsForSubject(ctx, rbacDomain, child)
 	if err != nil {
 		return fmt.Errorf("rbacRepo.GetGroupsForSubject: %w", err)

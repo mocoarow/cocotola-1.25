@@ -19,7 +19,7 @@ server:
   httpPort: ${AUTH_HTTP_PORT:-8010}
   metricsPort: ${AUTH_METRICS_PORT:-8011}
   readHeaderTimeoutSec: ${AUTH_READ_HEADER_TIMEOUT_SEC:-30}
-  gin:
+  handler:
     cors:
       allowOrigins: ${CORS_ALLOW_ORIGINS:-'*'}
       allowMethods: ${CORS_ALLOW_METHODS:-'GET,POST,PUT,DELETE,OPTIONS'}

@@ -5,10 +5,9 @@ import (
 	"io"
 
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
-func initTracerExporterNone(_ context.Context, _ *TraceConfig) (sdktrace.SpanExporter, error) {
+func initTracerExporterNone(_ context.Context, _ *TraceConfig) (*stdouttrace.Exporter, error) {
 	return stdouttrace.New( //nolint:wrapcheck
 		stdouttrace.WithPrettyPrint(),
 		stdouttrace.WithWriter(io.Discard),

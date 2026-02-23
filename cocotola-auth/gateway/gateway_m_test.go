@@ -5,6 +5,7 @@ package gateway_test
 import (
 	"context"
 	"crypto/rand"
+	"fmt"
 	"log/slog"
 	"math/big"
 	"testing"
@@ -43,7 +44,7 @@ func RandString(n int) string {
 func RandInt(v int) (int, error) {
 	n, err := rand.Int(rand.Reader, big.NewInt(int64(v)))
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("rand.Int: %w", err)
 	}
 	return int(n.Int64()), nil
 }

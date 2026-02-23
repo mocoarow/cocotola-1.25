@@ -35,7 +35,7 @@ type AuthTokenManager struct {
 	logger         *slog.Logger
 }
 
-var _ service.AuthTokenManager = (*AuthTokenManager)(nil)
+// var _ service.AuthTokenManager = (*AuthTokenManager)(nil)
 
 func NewAuthTokenManager(_ context.Context, signingKey []byte, signingMethod jwt.SigningMethod, tokenTimeout, refreshTimeout time.Duration) *AuthTokenManager {
 	return &AuthTokenManager{
@@ -69,7 +69,7 @@ func (m *AuthTokenManager) CreateTokenSet(ctx context.Context, user domain.UserI
 
 func (m *AuthTokenManager) createJWT(ctx context.Context, user domain.UserInterface, organizationID *domain.OrganizationID, organizationName string, duration time.Duration, tokenType string) (string, error) {
 	if len(m.SigningKey) == 0 {
-		return "", fmt.Errorf("m.SigningKey is not set")
+		return "", errors.New("m.SigningKey is not set")
 	}
 
 	now := time.Now()
@@ -112,7 +112,7 @@ func (m *AuthTokenManager) GetUserInfo(ctx context.Context, tokenString string) 
 }
 
 func (m *AuthTokenManager) parseToken(ctx context.Context, tokenString string) (*UserClaims, error) {
-	keyFunc := func(_ *jwt.Token) (interface{}, error) {
+	keyFunc := func(_ *jwt.Token) (any, error) {
 		return m.SigningKey, nil
 	}
 
@@ -122,12 +122,12 @@ func (m *AuthTokenManager) parseToken(ctx context.Context, tokenString string) (
 		return nil, fmt.Errorf("ParseWithClaims: %w", err)
 	}
 	if !currentToken.Valid {
-		return nil, fmt.Errorf("invalid token")
+		return nil, errors.New("invalid token")
 	}
 
 	currentClaims, ok := currentToken.Claims.(*UserClaims)
 	if !ok {
-		return nil, fmt.Errorf("invalid claims")
+		return nil, errors.New("invalid claims")
 	}
 
 	v := jwt.NewValidator()

@@ -8,13 +8,13 @@ func init() {
 	systemAdmin = domain.NewSystemAdmin(NewTestSystemToken())
 }
 
-type systemToken struct {
+type SystemToken struct {
 }
 
-func NewTestSystemToken() domain.SystemToken {
-	return &systemToken{}
+func NewTestSystemToken() *SystemToken {
+	return &SystemToken{}
 }
 
-func (t *systemToken) IsSystemToken() bool {
+func (t *SystemToken) IsSystemToken() bool {
 	return true
 }

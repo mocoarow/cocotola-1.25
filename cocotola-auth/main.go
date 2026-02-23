@@ -9,7 +9,7 @@ import (
 	"time"
 
 	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller"
-	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+	libhandler "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/handler"
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 	libprocess "github.com/mocoarow/cocotola-1.25/cocotola-lib/process"
@@ -61,10 +61,10 @@ func run() (int, error) {
 	}
 	defer shutdownDB()
 
-	// init gin
-	router := libgin.InitRootRouterGroup(ctx, cfg.Server.Gin, domain.AppName)
+	// init handler
+	router := libhandler.InitRootRouterGroup(ctx, cfg.Server.Handler, domain.AppName)
 
-	if err := initialize.Initialize(ctx, systemToken, router, dbConn, cfg.Server.Gin.Log, cfg.App); err != nil {
+	if err := initialize.Initialize(ctx, systemToken, router, dbConn, cfg.Server.Handler.Log, cfg.App); err != nil {
 		return 0, fmt.Errorf("initialize: %w", err)
 	}
 

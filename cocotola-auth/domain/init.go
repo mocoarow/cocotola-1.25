@@ -25,7 +25,7 @@ type SystemOwnerInterface interface {
 }
 
 var (
-	SystemAdminID *UserID
+	SystemAdminID *UserID //nolint:gochecknoglobals
 )
 
 func init() {

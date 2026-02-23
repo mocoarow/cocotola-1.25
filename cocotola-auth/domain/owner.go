@@ -1,6 +1,6 @@
 package domain
 
-import "fmt"
+import "errors"
 
 type Owner struct {
 	*User
@@ -8,7 +8,7 @@ type Owner struct {
 
 func NewOwner(user *User) (*Owner, error) {
 	if user == nil {
-		return nil, fmt.Errorf("new owner: user is nil")
+		return nil, errors.New("new owner: user is nil")
 	}
 
 	return &Owner{

@@ -28,7 +28,7 @@ func (v *SpaceID) IsSpaceID() bool {
 	return true
 }
 
-func (v *SpaceID) GetRBACObject() libdomain.RBACObject {
+func (v *SpaceID) GetRBACObject() *libdomain.RBACObject {
 	return libdomain.NewRBACObject("space:" + strconv.Itoa(v.Value))
 }
 

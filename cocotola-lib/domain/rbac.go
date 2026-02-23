@@ -1,111 +1,109 @@
 package domain
 
-type RBACSubject interface {
+type RBACSubjectInterface interface {
 	Subject() string
 }
 
-type RBACUser interface {
-	RBACSubject
-}
+type RBACUserInterface RBACSubjectInterface
 
-type rbacUser struct {
+type RBACUser struct {
 	value string
 }
 
-func NewRBACUser(value string) RBACUser {
-	return &rbacUser{value: value}
+func NewRBACUser(value string) *RBACUser {
+	return &RBACUser{value: value}
 }
 
-func (r *rbacUser) Subject() string {
+func (r *RBACUser) Subject() string {
 	return r.value
 }
 
-type RBACRole interface {
-	RBACSubject
+type RBACRoleInterface interface {
+	RBACSubjectInterface
 	Role() string
 }
 
-type rbacRole struct {
+type RBACRole struct {
 	value string
 }
 
-func NewRBACRole(value string) RBACRole {
-	return &rbacRole{value: value}
+func NewRBACRole(value string) *RBACRole {
+	return &RBACRole{value: value}
 }
 
-func (r *rbacRole) Subject() string {
+func (r *RBACRole) Subject() string {
 	return r.value
 }
-func (r *rbacRole) Role() string {
+func (r *RBACRole) Role() string {
 	return r.value
 }
 
-type RBACDomain interface {
+type RBACDomainInterface interface {
 	Domain() string
 }
 
-type rbacDomain struct {
+type RBACDomain struct {
 	value string
 }
 
-func NewRBACDomain(value string) RBACDomain {
-	return &rbacDomain{value: value}
+func NewRBACDomain(value string) *RBACDomain {
+	return &RBACDomain{value: value}
 }
 
-func (r *rbacDomain) Domain() string {
+func (r *RBACDomain) Domain() string {
 	return r.value
 }
 
-type RBACObject interface {
+type RBACObjectInterface interface {
 	Object() string
 }
 
-type rbacObject struct {
+type RBACObject struct {
 	value string
 }
 
-func NewRBACObject(value string) RBACObject {
-	return &rbacObject{value: value}
+func NewRBACObject(value string) *RBACObject {
+	return &RBACObject{value: value}
 }
 
-func (r *rbacObject) Object() string {
+func (r *RBACObject) Object() string {
 	return r.value
 }
 
-type RBACAction interface {
+type RBACActionInterface interface {
 	Action() string
 }
 
-type rbacAction struct {
+type RBACAction struct {
 	value string
 }
 
-func NewRBACAction(value string) RBACAction {
-	return &rbacAction{value: value}
+func NewRBACAction(value string) *RBACAction {
+	return &RBACAction{value: value}
 }
 
-func (r *rbacAction) Action() string {
+func (r *RBACAction) Action() string {
 	return r.value
 }
 
-type RBACEffect interface {
+type RBACEffectInterface interface {
 	Effect() string
 }
 
-type rbacEffect struct {
+type RBACEffect struct {
 	value string
 }
 
-func NewRBACEffect(value string) RBACEffect {
-	return &rbacEffect{value: value}
+func NewRBACEffect(value string) *RBACEffect {
+	return &RBACEffect{value: value}
 }
 
-func (r *rbacEffect) Effect() string {
+func (r *RBACEffect) Effect() string {
 	return r.value
 }
 
 type ActionObjectEffect struct {
-	Action RBACAction
-	Object RBACObject
-	Effect RBACEffect
+	Action *RBACAction
+	Object *RBACObject
+	Effect *RBACEffect
 }

@@ -11,27 +11,27 @@ const (
 )
 
 var (
-	Validator = validator.New()
+	Validator = validator.New() //nolint:gochecknoglobals
 
 	ErrInvalidArgument  = errors.New("invalid argument")
 	ErrPermissionDenied = errors.New("permission denied")
 	ErrInvalidField     = errors.New("invalid field")
 
-	Lang2EN      *Lang2
-	Lang2ES      *Lang2
-	Lang2JA      *Lang2
-	Lang2KO      *Lang2
-	Lang2Unknown *Lang2
+	Lang2EN      *Lang2 //nolint:gochecknoglobals
+	Lang2ES      *Lang2 //nolint:gochecknoglobals
+	Lang2JA      *Lang2 //nolint:gochecknoglobals
+	Lang2KO      *Lang2 //nolint:gochecknoglobals
+	Lang2Unknown *Lang2 //nolint:gochecknoglobals
 
-	Lang3ENG     *Lang3
-	Lang3ESP     *Lang3
-	Lang3JPN     *Lang3
-	Lang3KOR     *Lang3
-	Lang3Unknown *Lang3
+	Lang3ENG     *Lang3 //nolint:gochecknoglobals
+	Lang3ESP     *Lang3 //nolint:gochecknoglobals
+	Lang3JPN     *Lang3 //nolint:gochecknoglobals
+	Lang3KOR     *Lang3 //nolint:gochecknoglobals
+	Lang3Unknown *Lang3 //nolint:gochecknoglobals
 
-	Lang5ENUS    *Lang5
-	Lang5JAJP    *Lang5
-	Lang5Unknown *Lang5
+	Lang5ENUS    *Lang5 //nolint:gochecknoglobals
+	Lang5JAJP    *Lang5 //nolint:gochecknoglobals
+	Lang5Unknown *Lang5 //nolint:gochecknoglobals
 )
 
 func init() {

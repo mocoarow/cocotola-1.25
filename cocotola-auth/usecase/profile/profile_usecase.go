@@ -11,10 +11,11 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-type UsecaseRepository interface {
+type UsecaseRepository interface { //nolint:iface
 	service.OrganizationRepositoryGetOrganization
 	service.UserRepositoryGetUser
 	service.SpacemanagerGetPersonalSpaceInterface
+	// GetMyProfileQueryRepository
 }
 
 type Usecase struct {

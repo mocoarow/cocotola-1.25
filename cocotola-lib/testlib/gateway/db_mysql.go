@@ -153,7 +153,7 @@ func OpenMySQL(cfg *MySQLConfig, logLevel slog.Level, appName string) (*gorm.DB,
 		Collation:            "utf8mb4_bin",
 		AllowNativePasswords: true,
 		CheckConnLiveness:    true,
-		MaxAllowedPacket:     64 << 20, // 64 MiB.
+		MaxAllowedPacket:     64 << 20, //nolint:mnd // 64 MiB.
 		Loc:                  time.UTC,
 	}
 

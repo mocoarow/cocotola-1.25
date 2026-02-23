@@ -10,7 +10,7 @@ go_library(
         "//cocotola-auth/config",
         "//cocotola-lib/config",
         "//cocotola-lib/controller",
-        "//cocotola-lib/controller/gin",
+        "//cocotola-lib/controller/handler",
         "//cocotola-lib/domain",
         "//cocotola-lib/gateway",
         "@in_yaml_go_yaml_v4//:yaml",

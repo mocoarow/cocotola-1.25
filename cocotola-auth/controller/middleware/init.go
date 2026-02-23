@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	tracer = otel.Tracer("github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/handler/middleware")
+	tracer = otel.Tracer("github.com/mocoarow/cocotola-1.25/cocotola-auth/controller/handler/middleware") //nolint:gochecknoglobals
 )

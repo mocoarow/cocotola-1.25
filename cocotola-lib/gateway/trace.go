@@ -14,6 +14,13 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
 )
 
+const (
+	traceMaxQueueSize      = 10_000
+	traceExportTimeoutSec  = 10
+	samplingPercentageFull = 100
+	samplingPercentageDiv  = 100.0
+)
+
 type OTLPTraceConfig struct {
 	Endpoint string `yaml:"endpoint" validate:"required"`
 	Insecure bool   `yaml:"insecure"`
@@ -38,23 +45,33 @@ type TraceConfig struct {
 
 const traceShutdownTimeout = 5 * time.Second
 
-func initTracerExporter(ctx context.Context, traceConfig *TraceConfig) (sdktrace.SpanExporter, error) {
-	initTracerExporter, ok := initTracerExporters[traceConfig.Exporter]
-	if !ok {
+func initTracerExporter(ctx context.Context, traceConfig *TraceConfig) (sdktrace.SpanExporter, error) { //nolint:ireturn
+	switch traceConfig.Exporter {
+	case "google":
+		return initTracerExporterGoogle(ctx, traceConfig)
+	case "otlphttp":
+		return initTracerExporterOTLPHTTP(ctx, traceConfig)
+	case "otlpgrpc":
+		return initTracerExporterOTLPgRPC(ctx, traceConfig)
+	case "none":
+		return initTracerExporterNone(ctx, traceConfig)
+	case "stdout":
+		return initTracerExporterStdout(ctx, traceConfig)
+	case "uptracehttp":
+		return initTracerExporterUptraceHTTP(ctx, traceConfig)
+	default:
 		return nil, fmt.Errorf("invalid trace exporter: %s", traceConfig.Exporter)
 	}
-
-	return initTracerExporter(ctx, traceConfig)
 }
 
-func initTraceSampler(samplingPercentage int) sdktrace.Sampler {
-	if samplingPercentage >= 100 {
+func initTraceSampler(samplingPercentage int) sdktrace.Sampler { //nolint:ireturn
+	if samplingPercentage >= samplingPercentageFull {
 		return sdktrace.AlwaysSample()
 	}
 	if samplingPercentage <= 0 {
 		return sdktrace.NeverSample()
 	}
-	return sdktrace.ParentBased(sdktrace.TraceIDRatioBased(float64(samplingPercentage) / 100.0))
+	return sdktrace.ParentBased(sdktrace.TraceIDRatioBased(float64(samplingPercentage) / samplingPercentageDiv))
 }
 
 func InitTracerProvider(ctx context.Context, traceConfig *TraceConfig, appName string) (func(), error) {
@@ -66,9 +83,9 @@ func InitTracerProvider(ctx context.Context, traceConfig *TraceConfig, appName s
 	sampler := initTraceSampler(traceConfig.SamplingPercentage)
 
 	bp := sdktrace.NewBatchSpanProcessor(exp,
-		sdktrace.WithMaxQueueSize(10_000),
-		sdktrace.WithMaxExportBatchSize(10_000),
-		sdktrace.WithExportTimeout(10*time.Second),
+		sdktrace.WithMaxQueueSize(traceMaxQueueSize),
+		sdktrace.WithMaxExportBatchSize(traceMaxQueueSize),
+		sdktrace.WithExportTimeout(traceExportTimeoutSec*time.Second),
 	)
 
 	tp := sdktrace.NewTracerProvider(

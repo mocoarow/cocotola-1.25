@@ -4,7 +4,6 @@ package gateway_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -18,7 +17,7 @@ func setupTestOrganization(ctx context.Context, t *testing.T, tr testResource) (
 	orgRepo := gateway.NewOrganizationRepository(tr.dbc)
 	userRepo := gateway.NewUserRepository(tr.dbc)
 
-	orgName := fmt.Sprintf("org-%s", RandString(8))
+	orgName := "org-" + RandString(8)
 	orgID, err := orgRepo.CreateOrganization(ctx, systemAdmin, orgName)
 	require.NoError(t, err)
 
@@ -28,7 +27,7 @@ func setupTestOrganization(ctx context.Context, t *testing.T, tr testResource) (
 	sysOwner, err := userRepo.FindSystemOwnerByOrganizationID(ctx, systemAdmin, orgID)
 	require.NoError(t, err)
 
-	ownerParam := testNewCreateUserParameter(t, fmt.Sprintf("owner_%s", RandString(6)), fmt.Sprintf("Owner %s", RandString(6)), "password-owner")
+	ownerParam := testNewCreateUserParameter(t, "owner_"+RandString(6), "Owner "+RandString(6), "password-owner")
 	ownerID, err := userRepo.CreateUser(ctx, sysOwner, ownerParam)
 	require.NoError(t, err)
 

@@ -4,7 +4,6 @@ package usecase_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -23,9 +22,6 @@ func TestCreateFirstOwnerCommand_Execute_shouldCreateFirstOwner_whenCalled(t *te
 	ctx := context.Background()
 
 	for dialect, dbc := range testlibgateway.ListDB() {
-		dialect := dialect
-		dbc := dbc
-
 		t.Run(dialect.Name(), func(t *testing.T) {
 			t.Parallel()
 
@@ -35,7 +31,7 @@ func TestCreateFirstOwnerCommand_Execute_shouldCreateFirstOwner_whenCalled(t *te
 			// Create organization first
 			createOrgGw := initialize.NewCreateOrganizationCommandGateway(dbc)
 			createOrgCmd := usecase.NewCreateOrganizationCommand(ctx, createOrgGw)
-			orgID, err := createOrgCmd.Execute(ctx, systemAdmin, fmt.Sprintf("org-%s", randString(8)))
+			orgID, err := createOrgCmd.Execute(ctx, systemAdmin, "org-"+randString(8))
 			require.NoError(t, err)
 			require.NotNil(t, orgID)
 
@@ -53,8 +49,8 @@ func TestCreateFirstOwnerCommand_Execute_shouldCreateFirstOwner_whenCalled(t *te
 			cmd := usecase.NewCreateFirstOwnerCommand(ctx, createFirstOwnerGw)
 
 			firstOwnerParam, err := authservice.NewCreateUserParameter(
-				fmt.Sprintf("first-owner-%s", randString(6)),
-				fmt.Sprintf("First Owner %s", randString(4)),
+				"first-owner-"+randString(6),
+				"First Owner "+randString(4),
 				"first-owner-password",
 				"",
 				"",
@@ -109,8 +105,8 @@ func TestCreateFirstOwnerCommand_Execute_shouldCreateFirstOwner_whenCalled(t *te
 				t.Helper()
 
 				additionalUserParam, err := authservice.NewCreateUserParameter(
-					fmt.Sprintf("member-%s", randString(6)),
-					fmt.Sprintf("Member %s", randString(4)),
+					"member-"+randString(6),
+					"Member "+randString(4),
 					"member-password",
 					"",
 					"",

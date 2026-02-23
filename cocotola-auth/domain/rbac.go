@@ -6,27 +6,27 @@ import (
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 )
 
-func NewRBACDomainFromOrganization(organizationID *OrganizationID) libdomain.RBACDomain {
+func NewRBACDomainFromOrganization(organizationID *OrganizationID) *libdomain.RBACDomain {
 	return libdomain.NewRBACDomain(fmt.Sprintf("domain:%d", organizationID.Int()))
 }
 
-func NewRBACUserFromUser(userID *UserID) libdomain.RBACUser {
+func NewRBACUserFromUser(userID *UserID) *libdomain.RBACUser {
 	return libdomain.NewRBACUser(fmt.Sprintf("user:%d", userID.Int()))
 }
 
-func NewRBACRoleFromGroup(organizationID *OrganizationID, userGroupID *UserGroupID) libdomain.RBACRole {
+func NewRBACRoleFromGroup(organizationID *OrganizationID, userGroupID *UserGroupID) *libdomain.RBACRole {
 	return libdomain.NewRBACRole(fmt.Sprintf("domain:%d,role:%d", organizationID.Int(), userGroupID.Int()))
 }
 
-func NewRBACRoleFromSpace(organizationID *OrganizationID, spaceID *SpaceID) libdomain.RBACRole {
+func NewRBACRoleFromSpace(organizationID *OrganizationID, spaceID *SpaceID) *libdomain.RBACRole {
 	return libdomain.NewRBACRole(fmt.Sprintf("domain:%d,space:%d", organizationID.Int(), spaceID.Int()))
 }
 
-func NewRBACObjectFromGroup(organizationID *OrganizationID, userRoleID *UserGroupID) libdomain.RBACObject {
+func NewRBACObjectFromGroup(organizationID *OrganizationID, userRoleID *UserGroupID) *libdomain.RBACObject {
 	return libdomain.NewRBACObject(fmt.Sprintf("domain:%d,role:%d", organizationID.Int(), userRoleID.Int()))
 }
 
-func NewRBACAllUserRolesObjectFromOrganization(organizationID *OrganizationID) libdomain.RBACObject {
+func NewRBACAllUserRolesObjectFromOrganization(organizationID *OrganizationID) *libdomain.RBACObject {
 	return libdomain.NewRBACObject(fmt.Sprintf("domain:%d,role:*", organizationID.Int()))
 }
 

@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 
-	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+	libhandler "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/handler"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/config"
@@ -114,7 +114,7 @@ import (
 // 	}
 // }
 
-func Initialize(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, dbConn *libgateway.DBConnection, logConfig *libgin.LogConfig, authConfig *config.AuthConfig) error {
+func Initialize(ctx context.Context, systemToken domain.SystemToken, parent gin.IRouter, dbConn *libgateway.DBConnection, logConfig *libhandler.LogConfig, authConfig *config.AuthConfig) error {
 	ctx, span := tracer.Start(ctx, "Initialize")
 	defer span.End()
 
@@ -125,7 +125,7 @@ func Initialize(ctx context.Context, systemToken domain.SystemToken, parent gin.
 	return nil
 }
 
-func initApp(_ context.Context, systemToken domain.SystemToken, parent gin.IRouter, dbc *libgateway.DBConnection, logConfig *libgin.LogConfig, authConfig *config.AuthConfig) error {
+func initApp(_ context.Context, systemToken domain.SystemToken, parent gin.IRouter, dbc *libgateway.DBConnection, logConfig *libhandler.LogConfig, authConfig *config.AuthConfig) error {
 	ctx := context.Background()
 	// logger := slog.Default().With(slog.String(mbliblog.LoggerNameKey, domain.AppName+"initApp"))
 
@@ -170,13 +170,13 @@ func initApp(_ context.Context, systemToken domain.SystemToken, parent gin.IRout
 	// basicPrivateRouterGroupFuncs := controller.GetBasicPrivateRouterGroupFuncs(ctx, systemToken, cocotolaCoreCallbackClient)
 
 	// api
-	api := libgin.InitAPIRouterGroup(ctx, parent, logConfig, domain.AppName)
+	api := libhandler.InitAPIRouterGroup(ctx, parent, logConfig, domain.AppName)
 
 	// v1
 	v1 := api.Group("v1")
 
 	// public router
-	// libgin.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs)
+	// libhandler.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs)
 	{
 		passwordUsecase := newPasswordUsecase(systemToken, orgRepo, userRepo, authTokenManager)
 		handler.InitPasswordRouter(passwordUsecase, v1)
@@ -186,7 +186,7 @@ func initApp(_ context.Context, systemToken domain.SystemToken, parent gin.IRout
 		handler.InitGuestRouter(guestUsecase, v1)
 	}
 	authUsecase := newVerifyAccessTokenQuery(systemToken, orgRepo, authTokenManager, userRepo)
-	bearerTokenAuthMiddleware := middleware.NewBearerTokenAuthMiddleware(systemToken, authUsecase)
+	bearerTokenAuthMiddleware := middleware.NewBearerTokenAuthMiddleware(authUsecase)
 	{
 		profileUsecase := newProfileUsecase(orgRepo, userRepo, spaceManager)
 		handler.InitProfileRouter(profileUsecase, v1, bearerTokenAuthMiddleware)

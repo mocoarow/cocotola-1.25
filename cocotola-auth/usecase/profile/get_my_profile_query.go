@@ -12,7 +12,7 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-type GetMyProfileQueryRepository interface {
+type GetMyProfileQueryRepository interface { //nolint:iface
 	service.OrganizationRepositoryGetOrganization
 	service.UserRepositoryGetUser
 	service.SpacemanagerGetPersonalSpaceInterface
@@ -39,6 +39,7 @@ func (u *GetMyProfileQuery) Execute(ctx context.Context, operator domain.UserInt
 	if err != nil {
 		return nil, fmt.Errorf("GetUser: %w", err)
 	}
+
 	var personalSpaceID *domain.SpaceID
 	personalSpace, err := u.repo.GetPersonalSpace(ctx, operator)
 	if err != nil {

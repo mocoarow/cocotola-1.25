@@ -33,7 +33,7 @@ smart_go_test(
         ":handler",
         "//cocotola-auth/domain",
         "//cocotola-auth/service",
-        "//cocotola-lib/controller/gin",
+        "//cocotola-lib/controller/handler",
         "@com_github_gin_gonic_gin//:gin",
         "@com_github_ohler55_ojg//jp",
         "@com_github_ohler55_ojg//oj",
