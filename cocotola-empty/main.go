@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller"
-	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+	libhandler "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/handler"
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 	libprocess "github.com/mocoarow/cocotola-1.25/cocotola-lib/process"
@@ -23,7 +23,7 @@ type ServerConfig struct {
 	HTTPPort             int                           `yaml:"httpPort" validate:"required"`
 	MetricsPort          int                           `yaml:"metricsPort" validate:"required"`
 	ReadHeaderTimeoutSec int                           `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
-	Gin                  *libgin.Config                `yaml:"gin" validate:"required"`
+	Gin                  *libhandler.Config            `yaml:"gin" validate:"required"`
 	Shutdown             *libcontroller.ShutdownConfig `yaml:"shutdown" validate:"required"`
 }
 
@@ -54,18 +54,18 @@ func run() (int, error) {
 			HTTPPort:             8080,
 			MetricsPort:          8081,
 			ReadHeaderTimeoutSec: 10,
-			Gin: &libgin.Config{
-				CORS: &libgin.CORSConfig{
+			Gin: &libhandler.Config{
+				CORS: &libhandler.CORSConfig{
 					AllowOrigins: "*",
 					AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
 					AllowHeaders: "Content-Type",
 				},
-				Log: &libgin.LogConfig{
+				Log: &libhandler.LogConfig{
 					AccessLog:             true,
 					AccessLogRequestBody:  true,
 					AccessLogResponseBody: true,
 				},
-				Debug: &libgin.DebugConfig{
+				Debug: &libhandler.DebugConfig{
 					Gin:  false,
 					Wait: false,
 				},
@@ -109,11 +109,11 @@ func run() (int, error) {
 	}
 	defer shutdownTrace()
 
-	// init gin
-	router := libgin.InitRootRouterGroup(ctx, cfg.Server.Gin, AppName)
+	// init handler
+	router := libhandler.InitRootRouterGroup(ctx, cfg.Server.Gin, AppName)
 
 	// api
-	api := libgin.InitAPIRouterGroup(ctx, router, cfg.Server.Gin.Log, AppName)
+	api := libhandler.InitAPIRouterGroup(ctx, router, cfg.Server.Gin.Log, AppName)
 	// v1
 	v1 := api.Group("v1")
 	// public router

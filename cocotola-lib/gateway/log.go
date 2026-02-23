@@ -55,13 +55,15 @@ func InitLog(ctx context.Context, logConfig *LogConfig, appName string) (func(),
 
 const logShutdownTimeout = 5 * time.Second
 
-func initLogExporter(ctx context.Context, logConfig *LogConfig) (sdklog.Exporter, error) {
-	initLogExporter, ok := initLogExporters[logConfig.Exporter]
-	if !ok {
+func initLogExporter(ctx context.Context, logConfig *LogConfig) (sdklog.Exporter, error) { //nolint:ireturn
+	switch logConfig.Exporter {
+	case "otlphttp":
+		return initLogExporterOTLPHTTP(ctx, logConfig)
+	case "uptracehttp":
+		return initLogExporterUptraceHTTP(ctx, logConfig)
+	default:
 		return nil, fmt.Errorf("invalid log exporter: %s", logConfig.Exporter)
 	}
-
-	return initLogExporter(ctx, logConfig)
 }
 
 func InitLogProvider(ctx context.Context, logConfig *LogConfig, appName string) (func(), error) {

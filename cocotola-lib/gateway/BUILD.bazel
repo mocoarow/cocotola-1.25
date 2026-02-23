@@ -7,7 +7,6 @@ go_library(
         "db.go",
         "db_mysql.go",
         "db_sqlite3.go",
-        "init.go",
         "log.go",
         "log_otlp.go",
         "log_uptrace.go",

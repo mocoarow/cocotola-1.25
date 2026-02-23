@@ -9,7 +9,7 @@ import (
 
 	libconfig "github.com/mocoarow/cocotola-1.25/cocotola-lib/config"
 	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller"
-	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+	libhandler "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/handler"
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 )
@@ -18,7 +18,7 @@ type ServerConfig struct {
 	HTTPPort             int                           `yaml:"httpPort" validate:"required"`
 	MetricsPort          int                           `yaml:"metricsPort" validate:"required"`
 	ReadHeaderTimeoutSec int                           `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
-	Gin                  *libgin.Config                `yaml:"gin" validate:"required"`
+	Handler              *libhandler.Config            `yaml:"handler" validate:"required"`
 	Shutdown             *libcontroller.ShutdownConfig `yaml:"shutdown" validate:"required"`
 }
 

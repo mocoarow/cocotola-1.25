@@ -13,7 +13,7 @@ import (
 	authinit "github.com/mocoarow/cocotola-1.25/cocotola-auth/initialize"
 
 	libcontroller "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller"
-	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+	libhandler "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/handler"
 	libdomain "github.com/mocoarow/cocotola-1.25/cocotola-lib/domain"
 	libgateway "github.com/mocoarow/cocotola-1.25/cocotola-lib/gateway"
 	libprocess "github.com/mocoarow/cocotola-1.25/cocotola-lib/process"
@@ -63,12 +63,12 @@ func run() (int, error) {
 	defer shutdownDB()
 
 	// init gin
-	router := libgin.InitRootRouterGroup(ctx, cfg.Server.Gin, AppName)
+	router := libhandler.InitRootRouterGroup(ctx, cfg.Server.Handler, AppName)
 
 	systemToken := authdomain.NewSystemToken()
 	{
 		auth := router.Group("auth")
-		if err := authinit.Initialize(ctx, systemToken, auth, dbConn, cfg.Server.Gin.Log, cfg.App.Auth); err != nil {
+		if err := authinit.Initialize(ctx, systemToken, auth, dbConn, cfg.Server.Handler.Log, cfg.App.Auth); err != nil {
 			return 0, fmt.Errorf("initialize auth: %w", err)
 		}
 	}

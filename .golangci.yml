@@ -144,12 +144,12 @@ linters:
       # - path: gateway/db_.*\.go
       #   linters:
       #     - ireturn
-      - path: gateway/log.*\.go
-        linters:
-          - ireturn
-      - path: middleware/
-        linters:
-          - gochecknoglobals
+      # - path: gateway/log.*\.go
+      #   linters:
+      #     - ireturn
+      # - path: middleware/
+      #   linters:
+      #     - gochecknoglobals
       - path: gateway/sqlite3/db_sqlite3_migrate\.go
         linters:
           - errorlint

@@ -1,26 +1,26 @@
 package handler_test
 
 import (
-	libgin "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/gin"
+	libhandler "github.com/mocoarow/cocotola-1.25/cocotola-lib/controller/handler"
 )
 
 var (
-	config libgin.Config
+	config libhandler.Config
 )
 
 func init() {
-	config = libgin.Config{
-		CORS: &libgin.CORSConfig{
+	config = libhandler.Config{
+		CORS: &libhandler.CORSConfig{
 			AllowOrigins: "*",
 			AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
 			AllowHeaders: "Content-Type",
 		},
-		Log: &libgin.LogConfig{
+		Log: &libhandler.LogConfig{
 			AccessLog:             false,
 			AccessLogRequestBody:  false,
 			AccessLogResponseBody: false,
 		},
-		Debug: &libgin.DebugConfig{
+		Debug: &libhandler.DebugConfig{
 			Gin:  false,
 			Wait: false,
 		},

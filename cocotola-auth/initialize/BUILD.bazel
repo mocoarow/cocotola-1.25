@@ -19,7 +19,7 @@ go_library(
         "//cocotola-auth/usecase/guest",
         "//cocotola-auth/usecase/password",
         "//cocotola-auth/usecase/profile",
-        "//cocotola-lib/controller/gin",
+        "//cocotola-lib/controller/handler",
         "//cocotola-lib/gateway",
         "@com_github_gin_gonic_gin//:gin",
         "@com_github_golang_jwt_jwt_v5//:jwt",

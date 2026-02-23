@@ -11,7 +11,7 @@ import (
 
 var (
 	// Total HTTP requests labeled by status, method, and path
-	httpRequestsTotal = promauto.NewCounterVec(
+	httpRequestsTotal = promauto.NewCounterVec( //nolint:gochecknoglobals
 		prometheus.CounterOpts{ //nolint:exhaustruct
 			Name: "http_requests_total",
 			Help: "Total number of HTTP requests",
@@ -20,7 +20,7 @@ var (
 	)
 
 	// HTTP request duration labeled by method and path
-	httpRequestDuration = promauto.NewHistogramVec(
+	httpRequestDuration = promauto.NewHistogramVec( //nolint:gochecknoglobals
 		prometheus.HistogramOpts{ //nolint:exhaustruct
 			Name:    "http_request_duration_seconds",
 			Help:    "HTTP request duration in seconds",
