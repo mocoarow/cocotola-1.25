@@ -15,12 +15,15 @@ linters:
     - dupl
     - dupword
     - errorlint
+    - errchkjson
+    - errcheck
     - exhaustive
     - exhaustruct
     - exptostd
     - fatcontext
     - forbidigo
     - forcetypeassert
+    - gocritic
     - gocheckcompilerdirectives
     - gochecknoglobals
     - gocognit
@@ -31,6 +34,7 @@ linters:
     - iface
     - importas
     - intrange
+    - interfacebloat
     - ireturn
     - makezero
     - mirror
@@ -123,7 +127,7 @@ linters:
           - gochecknoglobals
       - path: domain/
         linters:
-          - ireturn
+          # - ireturn
           - iface
 formatters:
   enable:

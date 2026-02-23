@@ -4,55 +4,55 @@ type RBACSubject interface {
 	Subject() string
 }
 
-type RBACUser interface {
+type RBACUserInterface interface {
 	RBACSubject
 }
 
-type rbacUser struct {
+type RBACUser struct {
 	value string
 }
 
-func NewRBACUser(value string) RBACUser {
-	return &rbacUser{value: value}
+func NewRBACUser(value string) *RBACUser {
+	return &RBACUser{value: value}
 }
 
-func (r *rbacUser) Subject() string {
+func (r *RBACUser) Subject() string {
 	return r.value
 }
 
-type RBACRole interface {
+type RBACRoleInterface interface {
 	RBACSubject
 	Role() string
 }
 
-type rbacRole struct {
+type RBACRole struct {
 	value string
 }
 
-func NewRBACRole(value string) RBACRole {
-	return &rbacRole{value: value}
+func NewRBACRole(value string) *RBACRole {
+	return &RBACRole{value: value}
 }
 
-func (r *rbacRole) Subject() string {
+func (r *RBACRole) Subject() string {
 	return r.value
 }
-func (r *rbacRole) Role() string {
+func (r *RBACRole) Role() string {
 	return r.value
 }
 
-type RBACDomain interface {
+type RBACDomainInterface interface {
 	Domain() string
 }
 
-type rbacDomain struct {
+type RBACDomain struct {
 	value string
 }
 
-func NewRBACDomain(value string) RBACDomain {
-	return &rbacDomain{value: value}
+func NewRBACDomain(value string) *RBACDomain {
+	return &RBACDomain{value: value}
 }
 
-func (r *rbacDomain) Domain() string {
+func (r *RBACDomain) Domain() string {
 	return r.value
 }
 

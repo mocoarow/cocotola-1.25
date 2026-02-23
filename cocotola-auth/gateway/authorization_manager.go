@@ -128,11 +128,11 @@ func (m *AuthorizationManager) CheckAuthorization(ctx context.Context, operator 
 
 	rbacRoles := make([]libdomain.RBACRole, 0, len(userGroups))
 	for _, userGroup := range userGroups {
-		rbacRoles = append(rbacRoles, domain.NewRBACRoleFromGroup(operator.GetOrganizationID(), userGroup.UserGroupID))
+		rbacRoles = append(rbacRoles, *domain.NewRBACRoleFromGroup(operator.GetOrganizationID(), userGroup.UserGroupID))
 	}
 
 	rbacOperator := domain.NewRBACUserFromUser(operator.GetUserID())
-	e, err := m.rbacRepo.NewEnforcerWithGroupsAndUsers(ctx, rbacRoles, []libdomain.RBACUser{rbacOperator})
+	e, err := m.rbacRepo.NewEnforcerWithGroupsAndUsers(ctx, rbacRoles, []libdomain.RBACUser{*rbacOperator})
 	if err != nil {
 		return false, fmt.Errorf("NewEnforcerWithGroupsAndUsers: %w", err)
 	}

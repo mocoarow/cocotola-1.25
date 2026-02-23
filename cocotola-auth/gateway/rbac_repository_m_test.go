@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/casbin/casbin/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -17,27 +16,27 @@ import (
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/service"
 )
 
-type RBACRepository interface {
-	GetEnforcer() *casbin.Enforcer
-	// who can do what actions on which resources
-	CreatePolicy(ctx context.Context, domain libdomain.RBACDomain, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObject, effect libdomain.RBACEffect) error
+// type RBACRepository interface {
+// 	GetEnforcer() *casbin.Enforcer
+// 	// who can do what actions on which resources
+// 	CreatePolicy(ctx context.Context, domain libdomain.RBACDomainInterface, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObject, effect libdomain.RBACEffect) error
 
-	// add user(or group) to parent group
-	CreateSubjectGroupingPolicy(ctx context.Context, domain libdomain.RBACDomain, child libdomain.RBACSubject, parent libdomain.RBACSubject) error
+// 	// add user(or group) to parent group
+// 	CreateSubjectGroupingPolicy(ctx context.Context, domain libdomain.RBACDomainInterface, child libdomain.RBACSubject, parent libdomain.RBACSubject) error
 
-	// add child object to parent object
-	CreateObjectGroupingPolicy(ctx context.Context, domain libdomain.RBACDomain, child libdomain.RBACObject, parent libdomain.RBACObject) error
+// 	// add child object to parent object
+// 	CreateObjectGroupingPolicy(ctx context.Context, domain libdomain.RBACDomainInterface, child libdomain.RBACObject, parent libdomain.RBACObject) error
 
-	DeletePolicy(ctx context.Context, domain libdomain.RBACDomain, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObject, effect libdomain.RBACEffect) error
+// 	DeletePolicy(ctx context.Context, domain libdomain.RBACDomain, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObject, effect libdomain.RBACEffect) error
 
-	DeleteSubjectGroupingPolicy(ctx context.Context, domain libdomain.RBACDomain, child libdomain.RBACSubject, parent libdomain.RBACSubject) error
-	DeleteObjectGroupingPolicy(ctx context.Context, domain libdomain.RBACDomain, child libdomain.RBACObject, parent libdomain.RBACObject) error
+// 	DeleteSubjectGroupingPolicy(ctx context.Context, domain libdomain.RBACDomain, child libdomain.RBACSubject, parent libdomain.RBACSubject) error
+// 	DeleteObjectGroupingPolicy(ctx context.Context, domain libdomain.RBACDomain, child libdomain.RBACObject, parent libdomain.RBACObject) error
 
-	NewEnforcerWithGroupsAndUsers(ctx context.Context, roles []libdomain.RBACRole, users []libdomain.RBACUser) (*casbin.Enforcer, error)
+// 	NewEnforcerWithGroupsAndUsers(ctx context.Context, roles []libdomain.RBACRole, users []libdomain.RBACUser) (*casbin.Enforcer, error)
 
-	// retrieve all groups (including inherited ones) a subject belongs to within a domain
-	GetGroupsForSubject(ctx context.Context, domain libdomain.RBACDomain, subject libdomain.RBACSubject) ([]libdomain.RBACRole, error)
-}
+//		// retrieve all groups (including inherited ones) a subject belongs to within a domain
+//		GetGroupsForSubject(ctx context.Context, domain libdomain.RBACDomain, subject libdomain.RBACSubject) ([]libdomain.RBACRole, error)
+//	}
 type testSDOA struct {
 	subject string
 	domain  string
@@ -50,7 +49,7 @@ func (t *testSDOA) String() string {
 	return fmt.Sprintf("%s,%s,%s,%s,%v", t.subject, t.domain, t.object, t.action, t.want)
 }
 
-func addPolicy(ctx context.Context, t *testing.T, rbacRepository RBACRepository, dom, sub, act, obj string, allowed bool) {
+func addPolicy(ctx context.Context, t *testing.T, rbacRepository *gateway.RBACRepository, dom, sub, act, obj string, allowed bool) {
 	t.Helper()
 	effect := service.RBACAllowEffect
 	if !allowed {
@@ -61,13 +60,13 @@ func addPolicy(ctx context.Context, t *testing.T, rbacRepository RBACRepository,
 	require.NoError(t, err)
 }
 
-func addObjectGroupingPolicy(ctx context.Context, t *testing.T, rbacRepository RBACRepository, dom, child, parent string) {
+func addObjectGroupingPolicy(ctx context.Context, t *testing.T, rbacRepository *gateway.RBACRepository, dom, child, parent string) {
 	t.Helper()
 	err := rbacRepository.CreateObjectGroupingPolicy(ctx, libdomain.NewRBACDomain(dom), libdomain.NewRBACObject(child), libdomain.NewRBACObject(parent))
 	require.NoError(t, err)
 }
 
-func addSubjectGroupingPolicy(ctx context.Context, t *testing.T, rbacRepository RBACRepository, dom, sub, obj string) {
+func addSubjectGroupingPolicy(ctx context.Context, t *testing.T, rbacRepository *gateway.RBACRepository, dom, sub, obj string) {
 	t.Helper()
 	err := rbacRepository.CreateSubjectGroupingPolicy(ctx, libdomain.NewRBACDomain(dom), libdomain.NewRBACUser(sub), libdomain.NewRBACRole(obj))
 	require.NoError(t, err)
