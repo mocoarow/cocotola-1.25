@@ -33,7 +33,15 @@ type Config struct {
 	Log    *libgateway.LogConfig   `yaml:"log" validate:"required"`
 }
 
-const AppName = "cocotola-empty"
+const (
+	AppName = "cocotola-empty"
+
+	defaultHTTPPort             = 8080
+	defaultMetricsPort          = 8081
+	defaultReadHeaderTimeoutSec = 10
+	defaultShutdownTimeSec      = 10
+	defaultSamplingPercentage   = 100
+)
 
 func main() {
 	exitCode, err := run()
@@ -51,9 +59,9 @@ func run() (int, error) {
 
 	cfg := &Config{
 		Server: &ServerConfig{
-			HTTPPort:             8080,
-			MetricsPort:          8081,
-			ReadHeaderTimeoutSec: 10,
+			HTTPPort:             defaultHTTPPort,
+			MetricsPort:          defaultMetricsPort,
+			ReadHeaderTimeoutSec: defaultReadHeaderTimeoutSec,
 			Gin: &libhandler.Config{
 				CORS: &libhandler.CORSConfig{
 					AllowOrigins: "*",
@@ -71,13 +79,13 @@ func run() (int, error) {
 				},
 			},
 			Shutdown: &libcontroller.ShutdownConfig{
-				TimeSec1: 10,
-				TimeSec2: 10,
+				TimeSec1: defaultShutdownTimeSec,
+				TimeSec2: defaultShutdownTimeSec,
 			},
 		},
 		Trace: &libgateway.TraceConfig{
 			Exporter:           "google",
-			SamplingPercentage: 100,
+			SamplingPercentage: defaultSamplingPercentage,
 			OTLP:               nil,
 			Uptrace:            nil,
 			Google: &libgateway.GoogleTraceConfig{

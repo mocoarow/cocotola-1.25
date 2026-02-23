@@ -4,7 +4,6 @@ package gateway_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -23,7 +22,7 @@ func TestUserRepository_CreateAndFindUser_shouldReturnUser_whenOwnerCreates(t *t
 		defer teardownOrganization(t, tr, orgID)
 
 		userRepo := gateway.NewUserRepository(tr.dbc)
-		param := testNewCreateUserParameter(t, fmt.Sprintf("login_%s", RandString(4)), "USERNAME_U", "PASSWORD_U")
+		param := testNewCreateUserParameter(t, "login_"+RandString(4), "USERNAME_U", "PASSWORD_U")
 		userID, err := userRepo.CreateUser(ctx, owner, param)
 		require.NoError(t, err)
 

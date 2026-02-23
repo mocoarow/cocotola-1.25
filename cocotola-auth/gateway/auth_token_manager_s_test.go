@@ -148,7 +148,6 @@ func TestAuthTokenManager_GetUserInfo(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			m := gateway.NewAuthTokenManager(ctx, tt.fields.SigningKey, tt.fields.SigningMethod, tt.fields.TokenTimeout, tt.fields.RefreshTimeout)

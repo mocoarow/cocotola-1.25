@@ -125,7 +125,7 @@ func (r *OrganizationRepository) CreateOrganization(ctx context.Context, operato
 	}
 
 	if organization.ID == 0 {
-		return nil, fmt.Errorf("organization.ID is 0")
+		return nil, errors.New("organization.ID is 0")
 	}
 
 	organizationID, err := domain.NewOrganizationID(organization.ID)

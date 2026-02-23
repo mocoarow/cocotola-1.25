@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	tracer = otel.Tracer("github.com/mocoarow/cocotola-1.25/cocotola-init/initialize")
+	tracer = otel.Tracer("github.com/mocoarow/cocotola-1.25/cocotola-init/initialize") //nolint:gochecknoglobals
 )

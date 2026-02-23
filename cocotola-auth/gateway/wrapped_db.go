@@ -1,8 +1,6 @@
 package gateway
 
 import (
-	"fmt"
-
 	"gorm.io/gorm"
 
 	"github.com/mocoarow/cocotola-1.25/cocotola-auth/domain"
@@ -27,38 +25,38 @@ func newWrappedDB(dbc *libgateway.DBConnection, organizationID *domain.Organizat
 	}
 }
 
-func (x *wrappedDB) Table(name string, args ...interface{}) *wrappedDB {
+func (x *wrappedDB) Table(name string, args ...any) *wrappedDB {
 	x.db = x.db.Table(name, args...)
 
 	return x
 }
 
-func (x *wrappedDB) Select(query interface{}, args ...interface{}) *wrappedDB {
+func (x *wrappedDB) Select(query any, args ...any) *wrappedDB {
 	x.db = x.db.Select(query, args...)
 
 	return x
 }
 
-func (x *wrappedDB) Where(query interface{}, args ...interface{}) *wrappedDB {
+func (x *wrappedDB) Where(query any, args ...any) *wrappedDB {
 	x.db = x.db.Where(query, args...)
 
 	return x
 }
 
-func (x *wrappedDB) Joins(query string, args ...interface{}) *wrappedDB {
+func (x *wrappedDB) Joins(query string, args ...any) *wrappedDB {
 	x.db = x.db.Joins(query, args...)
 
 	return x
 }
 
 func (x *wrappedDB) WhereOrganizationID(table HasTableName, organizationID *domain.OrganizationID) *wrappedDB {
-	x.db = x.db.Where(fmt.Sprintf("%s.organization_id = ?", table.TableName()), organizationID.Int())
+	x.db = x.db.Where(table.TableName()+".organization_id = ?", organizationID.Int())
 
 	return x
 }
 
 func (x *wrappedDB) WhereNotDeleted(table HasTableName) *wrappedDB {
-	x.db = x.db.Where(fmt.Sprintf("%s.deleted = ?", table.TableName()), x.dbc.Dialect.BoolDefaultValue())
+	x.db = x.db.Where(table.TableName()+".deleted = ?", x.dbc.Dialect.BoolDefaultValue())
 
 	return x
 }

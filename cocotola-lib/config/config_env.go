@@ -9,7 +9,7 @@ import (
 func ExpandEnvWithDefaults(varName string) string {
 	// Check if it contains :-
 	if strings.Contains(varName, ":-") {
-		parts := strings.SplitN(varName, ":-", 2)
+		parts := strings.SplitN(varName, ":-", 2) //nolint:mnd
 		name := parts[0]
 		defaultValue := parts[1]
 

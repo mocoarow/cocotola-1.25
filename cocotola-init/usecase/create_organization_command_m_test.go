@@ -4,7 +4,6 @@ package usecase_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -23,9 +22,6 @@ func TestCreateOrganizationCommand_Execute_shouldProvisionOrganizationResources_
 	ctx := context.Background()
 
 	for dialect, dbc := range testlibgateway.ListDB() {
-		dialect := dialect
-		dbc := dbc
-
 		t.Run(dialect.Name(), func(t *testing.T) {
 			t.Parallel()
 
@@ -36,7 +32,7 @@ func TestCreateOrganizationCommand_Execute_shouldProvisionOrganizationResources_
 			gw := initialize.NewCreateOrganizationCommandGateway(dbc)
 			cmd := usecase.NewCreateOrganizationCommand(ctx, gw)
 
-			orgName := fmt.Sprintf("org-%s", randString(10))
+			orgName := "org-" + randString(10)
 			orgID, err := cmd.Execute(ctx, systemAdmin, orgName)
 			require.NoError(t, err)
 			require.NotNil(t, orgID)
@@ -53,7 +49,7 @@ func TestCreateOrganizationCommand_Execute_shouldProvisionOrganizationResources_
 			authorizationManager, err := authgateway.NewAuthorizationManager(ctx, dbc)
 			require.NoError(t, err)
 
-			ownerParam, err := authservice.NewCreateUserParameter(fmt.Sprintf("owner_%s", randString(6)), fmt.Sprintf("Owner %s", randString(6)), "owner-password", "", "", "", "")
+			ownerParam, err := authservice.NewCreateUserParameter("owner_"+randString(6), "Owner "+randString(6), "owner-password", "", "", "", "")
 			require.NoError(t, err)
 			ownerID, err := userRepo.CreateUser(ctx, sysOwner, ownerParam)
 			require.NoError(t, err)

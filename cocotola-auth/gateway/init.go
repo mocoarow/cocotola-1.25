@@ -5,8 +5,10 @@ import (
 )
 
 var (
-	tracer = otel.Tracer("github.com/mocoarow/cocotola-1.25/cocotola-auth/gateway")
+	tracer = otel.Tracer("github.com/mocoarow/cocotola-1.25/cocotola-auth/gateway") //nolint:gochecknoglobals
+)
 
+const (
 	OrganizationTableName       = "mb_organization"
 	UserTableName               = "mb_user"
 	PairOfUserAndGroupTableName = "mb_user_n_group"
