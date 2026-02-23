@@ -73,7 +73,7 @@ func (r *RBACRepository) initEnforcer(_ context.Context) *casbin.Enforcer {
 	return r.enforcer
 }
 
-func (r *RBACRepository) CreatePolicy(ctx context.Context, domain libdomain.RBACDomainInterface, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObjectInterface, effect libdomain.RBACEffect) error {
+func (r *RBACRepository) CreatePolicy(ctx context.Context, domain libdomain.RBACDomainInterface, subject libdomain.RBACSubject, action libdomain.RBACActionInterface, object libdomain.RBACObjectInterface, effect libdomain.RBACEffectInterface) error {
 	e := r.initEnforcer(ctx)
 
 	if _, err := e.AddNamedPolicy("p", subject.Subject(), object.Object(), action.Action(), effect.Effect(), domain.Domain()); err != nil {
@@ -83,7 +83,7 @@ func (r *RBACRepository) CreatePolicy(ctx context.Context, domain libdomain.RBAC
 	return nil
 }
 
-func (r *RBACRepository) DeletePolicy(ctx context.Context, domain libdomain.RBACDomain, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObjectInterface, effect libdomain.RBACEffect) error {
+func (r *RBACRepository) DeletePolicy(ctx context.Context, domain libdomain.RBACDomainInterface, subject libdomain.RBACSubject, action libdomain.RBACActionInterface, object libdomain.RBACObjectInterface, effect libdomain.RBACEffectInterface) error {
 	e := r.initEnforcer(ctx)
 
 	if _, err := e.RemoveNamedPolicy("p", subject.Subject(), object.Object(), action.Action(), effect.Effect(), domain.Domain()); err != nil {

@@ -72,40 +72,40 @@ func (r *RBACObject) Object() string {
 	return r.value
 }
 
-type RBACAction interface {
+type RBACActionInterface interface {
 	Action() string
 }
 
-type rbacAction struct {
+type RBACAction struct {
 	value string
 }
 
-func NewRBACAction(value string) RBACAction {
-	return &rbacAction{value: value}
+func NewRBACAction(value string) *RBACAction {
+	return &RBACAction{value: value}
 }
 
-func (r *rbacAction) Action() string {
+func (r *RBACAction) Action() string {
 	return r.value
 }
 
-type RBACEffect interface {
+type RBACEffectInterface interface {
 	Effect() string
 }
 
-type rbacEffect struct {
+type RBACEffect struct {
 	value string
 }
 
-func NewRBACEffect(value string) RBACEffect {
-	return &rbacEffect{value: value}
+func NewRBACEffect(value string) *RBACEffect {
+	return &RBACEffect{value: value}
 }
 
-func (r *rbacEffect) Effect() string {
+func (r *RBACEffect) Effect() string {
 	return r.value
 }
 
 type ActionObjectEffect struct {
-	Action RBACAction
+	Action *RBACAction
 	Object *RBACObject
-	Effect RBACEffect
+	Effect *RBACEffect
 }
