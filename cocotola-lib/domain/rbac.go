@@ -4,9 +4,7 @@ type RBACSubjectInterface interface {
 	Subject() string
 }
 
-type RBACUserInterface interface {
-	RBACSubjectInterface
-}
+type RBACUserInterface RBACSubjectInterface
 
 type RBACUser struct {
 	value string

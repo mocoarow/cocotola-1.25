@@ -118,13 +118,8 @@ linters:
         linters:
           - dupl
           - exhaustruct
-          - wrapcheck
           - goconst
           - gochecknoglobals
-      - path: domain/
-        linters:
-          # - ireturn
-          - iface
 formatters:
   enable:
     - gofmt
