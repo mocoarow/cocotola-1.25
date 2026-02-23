@@ -22,7 +22,6 @@ go_library(
     deps = [
         "//cocotola-auth/domain",
         "//cocotola-lib/domain",
-        "//cocotola-lib/service",
     ],
 )
 

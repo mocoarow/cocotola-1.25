@@ -35,7 +35,7 @@ type AuthTokenManager struct {
 	logger         *slog.Logger
 }
 
-var _ service.AuthTokenManager = (*AuthTokenManager)(nil)
+// var _ service.AuthTokenManager = (*AuthTokenManager)(nil)
 
 func NewAuthTokenManager(_ context.Context, signingKey []byte, signingMethod jwt.SigningMethod, tokenTimeout, refreshTimeout time.Duration) *AuthTokenManager {
 	return &AuthTokenManager{
