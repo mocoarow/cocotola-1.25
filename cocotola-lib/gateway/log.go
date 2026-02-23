@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	slogotel "github.com/remychantenay/slog-otel"
+	"github.com/mocoarow/slogotel"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/otel/log/global"
 	sdklog "go.opentelemetry.io/otel/sdk/log"
@@ -48,9 +48,7 @@ func InitLog(ctx context.Context, logConfig *LogConfig, appName string) (func(),
 		jsonHandler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{ //nolint:exhaustruct
 			Level: defaultLogLevel,
 		})
-		handler := slogotel.OtelHandler{ //nolint:exhaustruct
-			Next: jsonHandler,
-		}
+		handler := slogotel.New(jsonHandler)
 		slog.SetDefault(slog.New(handler))
 		return func() {
 			// No-op

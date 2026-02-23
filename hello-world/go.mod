@@ -1,3 +1,3 @@
 module github.com/mocoarow/cocotola-1.25/hello-world
 
-go 1.25.4
+go 1.25.7

@@ -14,7 +14,7 @@ type systemToken struct {
 
 var _ SystemToken = (*systemToken)(nil)
 
-func NewSystemToken() SystemToken { //nolint:ireturn
+func NewSystemToken() SystemToken {
 	if systemTokenCounter.Load() != 0 {
 		panic("system token can be created only once")
 	}
