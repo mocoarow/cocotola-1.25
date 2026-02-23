@@ -55,7 +55,7 @@ func (m *AuthorizationManager) AddUserToGroup(ctx context.Context, operator doma
 	return nil
 }
 
-func (m *AuthorizationManager) AttachPolicyToUser(ctx context.Context, operator domain.UserInterface, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObject, effect libdomain.RBACEffect) error {
+func (m *AuthorizationManager) AttachPolicyToUser(ctx context.Context, operator domain.UserInterface, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObjectInterface, effect libdomain.RBACEffect) error {
 	ctx, span := tracer.Start(ctx, "authorizationManager.AttachPolicyToUser")
 	defer span.End()
 
@@ -68,7 +68,7 @@ func (m *AuthorizationManager) AttachPolicyToUser(ctx context.Context, operator 
 	return nil
 }
 
-func (m *AuthorizationManager) AttachPolicyToUserBySystemAdmin(ctx context.Context, _ domain.SystemAdminInterface, organizationID *domain.OrganizationID, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObject, effect libdomain.RBACEffect) error {
+func (m *AuthorizationManager) AttachPolicyToUserBySystemAdmin(ctx context.Context, _ domain.SystemAdminInterface, organizationID *domain.OrganizationID, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObjectInterface, effect libdomain.RBACEffect) error {
 	rbacDomain := domain.NewRBACDomainFromOrganization(organizationID)
 
 	if err := m.rbacRepo.CreatePolicy(ctx, rbacDomain, subject, action, object, effect); err != nil {
@@ -77,7 +77,7 @@ func (m *AuthorizationManager) AttachPolicyToUserBySystemAdmin(ctx context.Conte
 
 	return nil
 }
-func (m *AuthorizationManager) AttachPolicyToUserBySystemOwner(ctx context.Context, operator domain.SystemOwnerInterface, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObject, effect libdomain.RBACEffect) error {
+func (m *AuthorizationManager) AttachPolicyToUserBySystemOwner(ctx context.Context, operator domain.SystemOwnerInterface, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObjectInterface, effect libdomain.RBACEffect) error {
 	organizationID := operator.GetOrganizationID()
 	rbacDomain := domain.NewRBACDomainFromOrganization(organizationID)
 
@@ -88,7 +88,7 @@ func (m *AuthorizationManager) AttachPolicyToUserBySystemOwner(ctx context.Conte
 	return nil
 }
 
-func (m *AuthorizationManager) AttachPolicyToGroup(ctx context.Context, operator domain.UserInterface, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObject, effect libdomain.RBACEffect) error {
+func (m *AuthorizationManager) AttachPolicyToGroup(ctx context.Context, operator domain.UserInterface, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObjectInterface, effect libdomain.RBACEffect) error {
 	rbacDomain := domain.NewRBACDomainFromOrganization(operator.GetOrganizationID())
 
 	if err := m.rbacRepo.CreatePolicy(ctx, rbacDomain, subject, action, object, effect); err != nil {
@@ -98,7 +98,7 @@ func (m *AuthorizationManager) AttachPolicyToGroup(ctx context.Context, operator
 	return nil
 }
 
-func (m *AuthorizationManager) AttachPolicyToGroupBySystemAdmin(ctx context.Context, _ domain.SystemAdminInterface, organizationID *domain.OrganizationID, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObject, effect libdomain.RBACEffect) error {
+func (m *AuthorizationManager) AttachPolicyToGroupBySystemAdmin(ctx context.Context, _ domain.SystemAdminInterface, organizationID *domain.OrganizationID, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObjectInterface, effect libdomain.RBACEffect) error {
 	rbacDomain := domain.NewRBACDomainFromOrganization(organizationID)
 
 	if err := m.rbacRepo.CreatePolicy(ctx, rbacDomain, subject, action, object, effect); err != nil {
@@ -108,7 +108,7 @@ func (m *AuthorizationManager) AttachPolicyToGroupBySystemAdmin(ctx context.Cont
 	return nil
 }
 
-func (m *AuthorizationManager) AddObjectToObject(ctx context.Context, operator domain.SystemOwnerInterface, child, parent libdomain.RBACObject) error {
+func (m *AuthorizationManager) AddObjectToObject(ctx context.Context, operator domain.SystemOwnerInterface, child, parent libdomain.RBACObjectInterface) error {
 	rbacDomain := domain.NewRBACDomainFromOrganization(operator.GetOrganizationID())
 
 	if err := m.rbacRepo.CreateObjectGroupingPolicy(ctx, rbacDomain, child, parent); err != nil {
@@ -118,7 +118,7 @@ func (m *AuthorizationManager) AddObjectToObject(ctx context.Context, operator d
 	return nil
 }
 
-func (m *AuthorizationManager) CheckAuthorization(ctx context.Context, operator domain.UserInterface, rbacAction libdomain.RBACAction, rbacObject libdomain.RBACObject) (bool, error) {
+func (m *AuthorizationManager) CheckAuthorization(ctx context.Context, operator domain.UserInterface, rbacAction libdomain.RBACAction, rbacObject libdomain.RBACObjectInterface) (bool, error) {
 	rbacDomain := domain.NewRBACDomainFromOrganization(operator.GetOrganizationID())
 
 	userGroups, err := m.pairRepo.FindUserGroupsByUserID(ctx, operator, operator.GetUserID())

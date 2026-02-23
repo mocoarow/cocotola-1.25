@@ -22,11 +22,11 @@ func NewRBACRoleFromSpace(organizationID *OrganizationID, spaceID *SpaceID) *lib
 	return libdomain.NewRBACRole(fmt.Sprintf("domain:%d,space:%d", organizationID.Int(), spaceID.Int()))
 }
 
-func NewRBACObjectFromGroup(organizationID *OrganizationID, userRoleID *UserGroupID) libdomain.RBACObject {
+func NewRBACObjectFromGroup(organizationID *OrganizationID, userRoleID *UserGroupID) *libdomain.RBACObject {
 	return libdomain.NewRBACObject(fmt.Sprintf("domain:%d,role:%d", organizationID.Int(), userRoleID.Int()))
 }
 
-func NewRBACAllUserRolesObjectFromOrganization(organizationID *OrganizationID) libdomain.RBACObject {
+func NewRBACAllUserRolesObjectFromOrganization(organizationID *OrganizationID) *libdomain.RBACObject {
 	return libdomain.NewRBACObject(fmt.Sprintf("domain:%d,role:*", organizationID.Int()))
 }
 

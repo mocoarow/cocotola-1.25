@@ -73,7 +73,7 @@ func (r *RBACRepository) initEnforcer(_ context.Context) *casbin.Enforcer {
 	return r.enforcer
 }
 
-func (r *RBACRepository) CreatePolicy(ctx context.Context, domain libdomain.RBACDomainInterface, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObject, effect libdomain.RBACEffect) error {
+func (r *RBACRepository) CreatePolicy(ctx context.Context, domain libdomain.RBACDomainInterface, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObjectInterface, effect libdomain.RBACEffect) error {
 	e := r.initEnforcer(ctx)
 
 	if _, err := e.AddNamedPolicy("p", subject.Subject(), object.Object(), action.Action(), effect.Effect(), domain.Domain()); err != nil {
@@ -83,7 +83,7 @@ func (r *RBACRepository) CreatePolicy(ctx context.Context, domain libdomain.RBAC
 	return nil
 }
 
-func (r *RBACRepository) DeletePolicy(ctx context.Context, domain libdomain.RBACDomain, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObject, effect libdomain.RBACEffect) error {
+func (r *RBACRepository) DeletePolicy(ctx context.Context, domain libdomain.RBACDomain, subject libdomain.RBACSubject, action libdomain.RBACAction, object libdomain.RBACObjectInterface, effect libdomain.RBACEffect) error {
 	e := r.initEnforcer(ctx)
 
 	if _, err := e.RemoveNamedPolicy("p", subject.Subject(), object.Object(), action.Action(), effect.Effect(), domain.Domain()); err != nil {
@@ -113,7 +113,7 @@ func (r *RBACRepository) DeleteSubjectGroupingPolicy(ctx context.Context, domain
 	return nil
 }
 
-func (r *RBACRepository) CreateObjectGroupingPolicy(ctx context.Context, domain libdomain.RBACDomainInterface, child libdomain.RBACObject, parent libdomain.RBACObject) error {
+func (r *RBACRepository) CreateObjectGroupingPolicy(ctx context.Context, domain libdomain.RBACDomainInterface, child libdomain.RBACObjectInterface, parent libdomain.RBACObjectInterface) error {
 	e := r.initEnforcer(ctx)
 
 	if _, err := e.AddNamedGroupingPolicy("g2", child.Object(), parent.Object(), domain.Domain()); err != nil {
@@ -123,7 +123,7 @@ func (r *RBACRepository) CreateObjectGroupingPolicy(ctx context.Context, domain 
 	return nil
 }
 
-func (r *RBACRepository) DeleteObjectGroupingPolicy(ctx context.Context, dom libdomain.RBACDomainInterface, child libdomain.RBACObject, parent libdomain.RBACObject) error {
+func (r *RBACRepository) DeleteObjectGroupingPolicy(ctx context.Context, dom libdomain.RBACDomainInterface, child libdomain.RBACObjectInterface, parent libdomain.RBACObjectInterface) error {
 	e := r.initEnforcer(ctx)
 
 	if _, err := e.RemoveNamedGroupingPolicy("g2", child.Object(), parent.Object(), dom.Domain()); err != nil {

@@ -56,19 +56,19 @@ func (r *RBACDomain) Domain() string {
 	return r.value
 }
 
-type RBACObject interface {
+type RBACObjectInterface interface {
 	Object() string
 }
 
-type rbacObject struct {
+type RBACObject struct {
 	value string
 }
 
-func NewRBACObject(value string) RBACObject {
-	return &rbacObject{value: value}
+func NewRBACObject(value string) *RBACObject {
+	return &RBACObject{value: value}
 }
 
-func (r *rbacObject) Object() string {
+func (r *RBACObject) Object() string {
 	return r.value
 }
 
@@ -106,6 +106,6 @@ func (r *rbacEffect) Effect() string {
 
 type ActionObjectEffect struct {
 	Action RBACAction
-	Object RBACObject
+	Object *RBACObject
 	Effect RBACEffect
 }

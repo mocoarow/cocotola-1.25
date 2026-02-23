@@ -186,7 +186,7 @@ func initApp(_ context.Context, systemToken domain.SystemToken, parent gin.IRout
 		handler.InitGuestRouter(guestUsecase, v1)
 	}
 	authUsecase := newVerifyAccessTokenQuery(systemToken, orgRepo, authTokenManager, userRepo)
-	bearerTokenAuthMiddleware := middleware.NewBearerTokenAuthMiddleware(systemToken, authUsecase)
+	bearerTokenAuthMiddleware := middleware.NewBearerTokenAuthMiddleware(authUsecase)
 	{
 		profileUsecase := newProfileUsecase(orgRepo, userRepo, spaceManager)
 		handler.InitProfileRouter(profileUsecase, v1, bearerTokenAuthMiddleware)
