@@ -90,20 +90,20 @@ linters:
         - .Errorf(
         - .Errorf
         - errors.New(
-    wsl_v5:
-      allow-first-in-block: true
-      allow-whole-block: false
-      branch-max-lines: 2
-      disable:
-        - if
-        - expr
-        - switch
-        - append
-        - range
-        - assign
-        - decl
-        - return
-        - defer
+    # wsl_v5:
+    #   allow-first-in-block: true
+    #   allow-whole-block: false
+    #   branch-max-lines: 2
+    #   disable:
+    #     - if
+    #     - expr
+    #     - switch
+    #     - append
+    #     - range
+    #     - assign
+    #     - decl
+    #     - return
+    #     - defer
   exclusions:
     generated: lax
     presets:

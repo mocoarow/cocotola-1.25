@@ -1,11 +1,11 @@
 package domain
 
-type RBACSubject interface {
+type RBACSubjectInterface interface {
 	Subject() string
 }
 
 type RBACUserInterface interface {
-	RBACSubject
+	RBACSubjectInterface
 }
 
 type RBACUser struct {
@@ -21,7 +21,7 @@ func (r *RBACUser) Subject() string {
 }
 
 type RBACRoleInterface interface {
-	RBACSubject
+	RBACSubjectInterface
 	Role() string
 }
 
