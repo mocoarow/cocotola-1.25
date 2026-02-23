@@ -1,6 +1,6 @@
 module github.com/mocoarow/cocotola-1.25/cocotola-lib
 
-go 1.25.4
+go 1.25.7
 
 require (
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.31.0

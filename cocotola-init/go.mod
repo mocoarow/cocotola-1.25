@@ -1,6 +1,6 @@
 module github.com/mocoarow/cocotola-1.25/cocotola-init
 
-go 1.25.4
+go 1.25.7
 
 require (
 	github.com/mocoarow/cocotola-1.25/cocotola-auth v0.0.0-20260223012300-7a8161781c3c

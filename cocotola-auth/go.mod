@@ -1,6 +1,6 @@
 module github.com/mocoarow/cocotola-1.25/cocotola-auth
 
-go 1.25.4
+go 1.25.7
 
 require (
 	github.com/casbin/casbin/v3 v3.8.1
