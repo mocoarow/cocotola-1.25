@@ -6,12 +6,10 @@ go_library(
     srcs = [
         "auth_token_manager.go",
         "authorization_manager.go",
-        "helper.go",
         "init.go",
         "organization_repository.go",
         "pair_of_user_and_group_repository.go",
         "rbac_repository.go",
-        "repository_factory.go",
         "space_manager.go",
         "space_repository.go",
         "user_group_repository.go",
@@ -31,7 +29,6 @@ smart_go_test(
     deps = [
         ":service",
         "//cocotola-auth/domain",
-        "//cocotola-lib/domain",
         "@com_github_stretchr_testify//mock",
     ],
 )
