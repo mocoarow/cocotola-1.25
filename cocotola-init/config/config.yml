@@ -11,7 +11,7 @@ db:
     password: ${INIT_MYSQL_PASSWORD}
     host: ${INIT_MYSQL_HOST:-127.0.0.1}
     port: ${INIT_MYSQL_PORT:-3306}
-    database: ${INIT_MYSQL_DATABASE}
+    database: ${INIT_MYSQL_DATABASE:-local}
   postgres:
     username: ${INIT_POSTGRES_USERNAME}
     password: ${INIT_POSTGRES_PASSWORD}
@@ -21,7 +21,7 @@ db:
 trace:
   exporter: ${TRACE_EXPORTER:-none}
   otlp:
-    endpoint: ${TRACE_OTLP_ENDPOINT}
+    endpoint: ${TRACE_OTLP_ENDPOINT:-localhost:4318}
     insecure: ${TRACE_OTLP_INSECURE:-true}
     useGoogleAuth: ${TRACE_OTLP_USE_GOOGLE_AUTH:-false}
     googleAuthAudienceUrl: ${TRACE_OTLP_GOOGLE_AUTH_AUDIENCE_URL:-https://cloudtrace.googleapis.com/}

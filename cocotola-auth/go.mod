@@ -3,8 +3,8 @@ module github.com/mocoarow/cocotola-1.25/cocotola-auth
 go 1.25.4
 
 require (
-	github.com/casbin/casbin/v2 v2.135.0
-	github.com/casbin/gorm-adapter/v3 v3.39.0
+	github.com/casbin/casbin/v3 v3.8.1
+	github.com/casbin/gorm-adapter/v3 v3.41.0
 	github.com/gin-gonic/gin v1.11.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20260223012300-7a8161781c3c

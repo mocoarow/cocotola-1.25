@@ -42,9 +42,9 @@ db:
 trace:
   exporter: ${TRACE_EXPORTER:-none}
   google:
-    projectId: ${TRACE_GOOGLE_PROJECT_ID}
+    projectId: ${TRACE_GOOGLE_PROJECT_ID:-none}
   otlp:
-    endpoint: ${TRACE_OTLP_ENDPOINT}
+    endpoint: ${TRACE_OTLP_ENDPOINT:-localhost:4318}
     insecure: ${TRACE_OTLP_INSECURE:-true}
 log:
   level: ${APP_LOG_LEVEL:-info}
