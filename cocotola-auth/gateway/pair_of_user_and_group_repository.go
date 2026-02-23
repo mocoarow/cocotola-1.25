@@ -17,7 +17,7 @@ type PairOfUserAndGroupRepository struct {
 	rbacRepo *RBACRepository
 }
 
-var _ service.PairOfUserAndGroupRepository = (*PairOfUserAndGroupRepository)(nil)
+// var _ service.PairOfUserAndGroupRepository = (*PairOfUserAndGroupRepository)(nil)
 
 func NewPairOfUserAndGroupRepository(ctx context.Context, dbc *libgateway.DBConnection) *PairOfUserAndGroupRepository {
 	rbacRepo, err := NewRBACRepository(ctx, dbc)

@@ -38,17 +38,17 @@ type CreatePublicGroupFunc func(ctx context.Context, operator domain.SystemOwner
 
 type FindUserGroupByKeyFunc func(ctx context.Context, operator domain.UserInterface, key string) (*domain.UserGroup, error)
 
-type UserGroupRepository interface {
-	FindAllUserGroups(ctx context.Context, operator domain.UserInterface) ([]*domain.UserGroup, error)
+// type UserGroupRepository interface {
+// 	FindAllUserGroups(ctx context.Context, operator domain.UserInterface) ([]*domain.UserGroup, error)
 
-	FindSystemOwnerGroup(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.UserGroup, error)
+// 	FindSystemOwnerGroup(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.UserGroup, error)
 
-	FindUserGroupByKey(ctx context.Context, operator domain.UserInterface, key string) (*domain.UserGroup, error)
-	FindUserGroupByID(ctx context.Context, operator domain.UserInterface, userGroupID *domain.UserGroupID) (*domain.UserGroup, error)
-	CreateOwnerGroup(ctx context.Context, operator domain.SystemOwnerInterface, organizationID *domain.OrganizationID) (*domain.UserGroupID, error)
-	CreatePublicGroup(ctx context.Context, operator domain.SystemOwnerInterface, organizationID *domain.OrganizationID) (*domain.UserGroupID, error)
+// 	FindUserGroupByKey(ctx context.Context, operator domain.UserInterface, key string) (*domain.UserGroup, error)
+// 	FindUserGroupByID(ctx context.Context, operator domain.UserInterface, userGroupID *domain.UserGroupID) (*domain.UserGroup, error)
+// 	CreateOwnerGroup(ctx context.Context, operator domain.SystemOwnerInterface, organizationID *domain.OrganizationID) (*domain.UserGroupID, error)
+// 	CreatePublicGroup(ctx context.Context, operator domain.SystemOwnerInterface, organizationID *domain.OrganizationID) (*domain.UserGroupID, error)
 
-	CreateSystemOwnerGroup(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.UserGroupID, error)
+// 	CreateSystemOwnerGroup(ctx context.Context, operator domain.SystemAdminInterface, organizationID *domain.OrganizationID) (*domain.UserGroupID, error)
 
-	AddUserGroup(ctx context.Context, operator domain.OwnerInterface, parameter *AddUserGroupParameter) (*domain.UserGroupID, error)
-}
+// 	AddUserGroup(ctx context.Context, operator domain.OwnerInterface, parameter *AddUserGroupParameter) (*domain.UserGroupID, error)
+// }

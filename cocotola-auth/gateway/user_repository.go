@@ -90,11 +90,7 @@ func (e *userEntity) toSystemOwner(_ context.Context, userGroup []*domain.UserGr
 
 type UserRepository struct {
 	dbc *libgateway.DBConnection
-	// rf      service.RepositoryFactory
-	//
 }
-
-// var _ service.UserRepository = (*UserRepository)(nil)
 
 func NewUserRepository(dbc *libgateway.DBConnection) *UserRepository {
 	return &UserRepository{

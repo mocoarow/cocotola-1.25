@@ -55,7 +55,7 @@ type UserGroupRepository struct {
 	logger *slog.Logger
 }
 
-var _ service.UserGroupRepository = (*UserGroupRepository)(nil)
+// var _ service.UserGroupRepository = (*UserGroupRepository)(nil)
 
 func NewUserGroupRepository(dbc *libgateway.DBConnection) *UserGroupRepository {
 	return &UserGroupRepository{
