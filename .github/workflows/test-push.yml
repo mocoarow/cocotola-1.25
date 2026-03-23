@@ -60,7 +60,7 @@ jobs:
       #   run: task convert-coverage-sonar
 
       # https://github.com/codecov/codecov-action/tree/v5.4.3
-      - uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
+      - uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.lcov
