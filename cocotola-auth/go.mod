@@ -8,7 +8,7 @@ require (
 	github.com/gin-gonic/gin v1.11.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/mocoarow/cocotola-1.25/cocotola-lib v0.0.0-20260223012300-7a8161781c3c
-	github.com/ohler55/ojg v1.27.0
+	github.com/ohler55/ojg v1.28.1
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/otel v1.40.0

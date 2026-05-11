@@ -11,9 +11,9 @@ require (
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/hashicorp/go-multierror v1.1.1
+	github.com/mocoarow/slogotel v0.1.0
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/prometheus/client_golang v1.23.2
-	github.com/remychantenay/slog-otel v1.3.5
 	github.com/samber/slog-gin v1.21.0
 	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/contrib/bridges/otelslog v0.15.0
